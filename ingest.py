@@ -33,7 +33,7 @@ CHECKPOINT_FILE = os.path.join(WORKING_DIR, "ingest_checkpoint.txt")
 
 # Nơi chứa các file zip backup (Sẽ tạo thành một thư mục riêng để dễ quản lý)
 ZIP_BACKUP_DIR = "/content/chatbot/lightrag_snapshots" 
-SAVE_EVERY_N_CHUNKS = 3  # Cứ sau 3 chunks sẽ nén một file mới
+SAVE_EVERY_N_CHUNKS = 1  # Cứ sau 1 chunks sẽ nén một file mới
 
 @wrap_embedding_func_with_attrs(
     embedding_dim=768,
