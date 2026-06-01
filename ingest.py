@@ -5,6 +5,7 @@ import asyncio
 from pathlib import Path
 from tqdm import tqdm
 from datetime import datetime  # Thêm thư viện để lấy thời gian thực cho tên file
+import time
 
 # ========================================================
 # 🔥 ĐOẠN VÁ LỖI TIKTOKEN CHẶN <|endoftext|> TRÊN COLAB
@@ -141,25 +142,45 @@ async def main():
         return
 
     # Chỉ xử lý phần còn lại chưa chạy
-    remaining_chunks = chunks[start_chunk_index:]
-    print(f"🚀 Bắt đầu xử lý tiếp từ chunk {start_chunk_index + 1}/{total_chunks}...")
+    remaining_chunks = chunks[start_chunk_index:start_chunk_index+2]
+    print(f"🚀 [DEBUG MODE] Bắt đầu đo thời gian chi tiết cho {len(remaining_chunks)} chunks...")
 
     # Vòng lặp nạp dữ liệu
-    for i, chunk in enumerate(tqdm(remaining_chunks, desc="🤖 Đang xử lý")):
+    for i, chunk in enumerate(remaining_chunks):
         actual_index = start_chunk_index + i
+        print(f"\n──────────────────────────────────────────────────")
+        print(f"📝 [Chunk {actual_index + 1}] Kích thước ký tự: {len(chunk)}")
+        print(f"👉 Nội dung chunk (30 ký tự đầu): {chunk[:30]}...")
+        
         try:
+            # ⏱️ Đo bước 1: Gọi LLM trích xuất + Embedding đưa vào LightRAG
+            start_time = time.time()
+            print(f"⏳ [Step 1/2] Đang gửi chunk sang LightRAG (LLM Extract & Embed)...")
+            
             await rag.ainsert(chunk)
             
-            # Kiểm tra định kỳ sau mỗi N chunks
+            rag_time = time.time() - start_time
+            print(f"⏱️ [Done Step 1] LightRAG xử lý xong mất: {rag_time:.2f} giây")
+            
+            # ⏱️ Đo bước 2: Tiến hành đóng gói ZIP
             if (i + 1) % SAVE_EVERY_N_CHUNKS == 0:
-                # Ép LightRAG lưu toàn bộ dữ liệu tạm thời từ RAM xuống disk trước khi nén
-                await rag.force_start_index()
+                print(f"⏳ [Step 2/2] Đang tiến hành nén ZIP sao lưu...")
+                zip_start = time.time()
+                
                 save_progress_and_zip(actual_index + 1)
+                
+                zip_time = time.time() - zip_start
+                print(f"⏱️ [Done Step 2] Nén ZIP hoàn tất mất: {zip_time:.2f} giây")
                 
         except Exception as e:
             print(f"\n❌ Lỗi tại chunk {actual_index + 1}: {e}")
             save_progress_and_zip(actual_index)
-            
+
+    print(f"\n──────────────────────────────────────────────────")
+    print("✅ Hoàn tất lượt chạy Debug đo thời gian!")   
+    # Kết thúc xử lý hoàn chỉnh toàn bộ script
+    save_progress_and_zip(total_chunks)
+
     # Kết thúc xử lý hoàn chỉnh toàn bộ script
     await rag.force_start_index()
     save_progress_and_zip(total_chunks)
