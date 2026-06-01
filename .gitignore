@@ -1,0 +1,23 @@
+# Bỏ qua các file cấu hình môi trường và thư viện
+node_modules/
+dist/
+build/
+.env
+
+# --- CẤU HÌNH CHO .VENV ---
+.venv/*
+!.venv/Lib/
+.venv/Lib/*
+!.venv/Lib/site-packages/
+.venv/Lib/site-packages/*
+!.venv/Lib/site-packages/lightrag/
+# ---------------------------
+
+.DS_Store
+Models/gemma-4-E2B-it-Q4_K_M.gguf
+
+# Bỏ qua các file log và file hệ thống
+*.log
+*.tmp
+.vscode/
+.idea/

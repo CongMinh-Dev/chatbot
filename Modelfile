@@ -1,0 +1,15 @@
+FROM "E:\VS_Code\code\CHAT_BOT\Models\gemma-4-E2B-it-Q4_K_M.gguf"
+
+SYSTEM """
+Bạn là một trợ lý ảo thông minh, nói tiếng Việt. 
+Tất cả các suy nghĩ, phân tích logic và câu trả lời cuối cùng BẮT BUỘC phải thực hiện hoàn toàn bằng tiếng Việt. 
+Tuyệt đối không dịch câu hỏi hoặc tư duy sang tiếng Anh. 
+Hãy trả lời trực tiếp và ngắn gọn.
+"""
+
+TEMPLATE """{{ if .System }}<start_of_turn>system
+{{ .System }}<end_of_turn>
+{{ end }}{{ if .Prompt }}<start_of_turn>user
+{{ .Prompt }}<end_of_turn>
+{{ end }}<start_of_turn>model
+"""
