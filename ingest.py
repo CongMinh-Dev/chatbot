@@ -4,13 +4,27 @@ import shutil
 import asyncio
 from pathlib import Path
 from tqdm import tqdm
+
+# ========================================================
+# 🔥 ĐOẠN VÁ LỖI TIKTOKEN CHẶN <|endoftext|> TRÊN COLAB
+# ========================================================
+import tiktoken
+_orig_encode = tiktoken.Encoding.encode
+def safe_encode(self, text, *args, **kwargs):
+    if 'allowed_special' not in kwargs and 'disallowed_special' not in kwargs:
+        kwargs['allowed_special'] = 'all'
+        kwargs['disallowed_special'] = ()
+    return _orig_encode(self, text, *args, **kwargs)
+tiktoken.Encoding.encode = safe_encode
+# ========================================================
+
 from lightrag import LightRAG
 from lightrag.utils import wrap_embedding_func_with_attrs
 from lightrag.llm.ollama import ollama_model_complete, ollama_embed
 from langchain_community.document_loaders import PyPDFLoader, TextLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 
-# 🛠️ SỬA ĐƯỜNG DẪN THƯ MỤC CƠ SỞ DỮ LIỆU ĐỒ THỊ
+# Cấu hình đường dẫn tuyệt đối theo đúng cấu trúc thư mục của bạn
 WORKING_DIR = "/content/chatbot/lightrag_db"
 
 @wrap_embedding_func_with_attrs(
@@ -22,7 +36,9 @@ async def custom_ollama_embed(texts, **kwargs):
     return await ollama_embed(texts, model="embeddinggemma", **kwargs)
 
 async def main():
+    # Xóa dữ liệu lỗi cũ để khởi động lại một cách sạch sẽ
     if os.path.exists(WORKING_DIR):
+        print("🧹 Đang làm sạch thư mục đồ thị cũ...")
         shutil.rmtree(WORKING_DIR)
     os.makedirs(WORKING_DIR, exist_ok=True)
 
@@ -36,17 +52,18 @@ async def main():
             "language": "Vietnamese",
             "entity_relationship_graph_type": "default"
         }
+        
     )
+    rag.entity_extract_max_gleaning = 1,
+    rag.max_gleaning = 0
     
     rag.chunk_size = 500
     rag.chunk_overlap = 100
     rag.max_gleaning = 0
     await rag.initialize_storages()
 
-    print("📂 Quét tài liệu...")
+    print("📂 Quét tài liệu tại thư mục /content/chatbot/papers ...")
     docs_text = []
-    
-    # 🛠️ SỬA ĐƯỜNG DẪN THƯ MỤC CHỨA TÀI LIỆU CỦA BẠN
     source_dir = Path("/content/chatbot/papers")
     
     if not source_dir.exists():
@@ -58,7 +75,7 @@ async def main():
     for ext in ["**/*.pdf", "**/*.txt", "**/*.md"]:
         file_paths.extend(list(source_dir.glob(ext)))
         
-    print(f"🔍 Tìm thấy tổng cộng {len(file_paths)} file tài liệu tại {source_dir}")
+    print(f"🔍 Tìm thấy tổng cộng {len(file_paths)} file tài liệu.")
 
     for path_obj in file_paths:
         path = str(path_obj)
@@ -70,8 +87,6 @@ async def main():
                 if content.strip():
                     docs_text.append(content)
                     print(f"📖 Đã nạp thành công PDF: {path_obj.name}")
-                else:
-                    print(f"⚠️ Cảnh báo: File PDF {path_obj.name} bị rỗng (hoặc file quét ảnh dạng scan)")
             elif ext in [".txt", ".md"]:
                 content = TextLoader(path, encoding="utf-8").load()[0].page_content
                 if content.strip():
@@ -84,12 +99,13 @@ async def main():
         print("❌ Không có bất kỳ dữ liệu văn bản nào được trích xuất thành công để phân mảnh!")
         return
 
-    # Tiến hành chia nhỏ văn bản
+    # Tiến hành chia nhỏ văn bản thành các chunks 500 ký tự
     text_splitter = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=100)
     chunks = text_splitter.split_text("\n\n".join(docs_text))
     
     print(f"⚡ Bắt đầu xây dựng đồ thị với {len(chunks)} phân đoạn...")
     
+    # Nạp trực tiếp từng phân đoạn vào LightRAG thông qua cơ chế bất đồng bộ
     for i, chunk in enumerate(tqdm(chunks, desc="🤖 Đang xử lý")):
         try:
             await rag.ainsert(chunk)
@@ -98,13 +114,14 @@ async def main():
             
     print("\n✅ Hoàn tất nạp dữ liệu!")
     
-    # Đóng gói file zip và lưu ngay trong thư mục chatbot cho bạn dễ quản lý
+    # Đóng gói sản phẩm cuối cùng thành file Zip
     zip_output_path = "/content/chatbot/lightrag_db_exported"
     shutil.make_archive(zip_output_path, 'zip', WORKING_DIR)
     print(f"📦 Đã đóng gói thành công file đồ thị tại: {zip_output_path}.zip")
 
 if __name__ == '__main__':
     try:
+        # Colab chạy sẵn một event loop nền, cần kiểm tra để tránh xung đột
         loop = asyncio.get_event_loop()
         if loop.is_running():
             loop.create_task(main())
