@@ -1,18 +1,45 @@
 # -*- coding: utf-8 -*-
 import os
 import glob
-import requests
+import shutil
+import asyncio
 from tqdm import tqdm
+from lightrag import LightRAG
+from lightrag.utils import wrap_embedding_func_with_attrs
+from lightrag.llm.ollama import ollama_model_complete, ollama_embed
 from langchain_community.document_loaders import PyPDFLoader, TextLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 
-# 🔴 THAY ĐƯỜNG LINK NGROK BẠN NHẬN ĐƯỢC TỪ COLAB VÀO ĐÂY
-url_ngrok="https://5535-35-240-158-30.ngrok-free.app/"
-API_URL = f"{url_ngrok}api/ingest"
-EXPORT_URL = f"{url_ngrok}api/export"
+WORKING_DIR = "./lightrag_db"
 
-def main():
-    print("📂 Quét tài liệu tại Local...")
+@wrap_embedding_func_with_attrs(
+    embedding_dim=768,      # Gemma embedding dùng 768 chiều
+    max_token_size=8192,
+    model_name="embeddinggemma"
+)
+# Hàm bọc để chỉ định model embedding cho Ollama
+async def custom_ollama_embed(texts, **kwargs):
+    return await ollama_embed(texts, model="embeddinggemma", **kwargs)
+
+async def main():
+    if os.path.exists(WORKING_DIR):
+        print("🧹 Đang xóa sạch dữ liệu cũ...")
+        shutil.rmtree(WORKING_DIR)
+    os.makedirs(WORKING_DIR, exist_ok=True)
+
+    print("🧠 Đang khởi tạo LightRAG kết nối Ollama (Local)...")
+    rag = LightRAG(
+        working_dir=WORKING_DIR,
+        llm_model_func=ollama_model_complete,
+        llm_model_name="qwen3.5:9b", # Tên model LLM của bạn trong Ollama
+        embedding_func=custom_ollama_embed, 
+    )
+    
+    rag.chunk_size = 500
+    rag.chunk_overlap = 100
+    await rag.initialize_storages()
+
+    print("📂 Quét tài liệu...")
     docs_text = []
     file_paths = glob.glob("./papers/**/*.*", recursive=True)
 
@@ -27,27 +54,15 @@ def main():
         except Exception as e:
             print(f"⚠️ Lỗi đọc file {path}: {e}")
 
-    # Cắt nhỏ văn bản thành các chunks
     chunks = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=100).split_text("\n\n".join(docs_text))
     
-    print(f"⚡ Đang gửi {len(chunks)} phân đoạn lên Google Colab (GPU) để trích xuất Đồ thị...")
-    
-    with tqdm(total=len(chunks), desc="🤖 Đang chuyển dữ liệu") as pbar:
+    print(f"⚡ Bắt đầu xây dựng đồ thị với {len(chunks)} phân đoạn...")
+    with tqdm(total=len(chunks), desc="🤖 Đang xử lý") as pbar:
         for chunk in chunks:
-            try:
-                # Gửi request POST lên API Colab
-                response = requests.post(API_URL, json={"chunk": chunk})
-                if response.status_code != 200:
-                    print(f"\n⚠️ Lỗi xử lý chunk: {response.text}")
-            except Exception as e:
-                print(f"\n⚠️ Lỗi kết nối tới Colab: {e}")
+            await rag.ainsert(chunk)
             pbar.update(1)
             
-    print("\n✅ Đã gửi toàn bộ dữ liệu! Đang yêu cầu Colab đóng gói Đồ thị...")
-    
-    # Gọi API bắt Colab đóng gói zip thư mục DB lại
-    res = requests.get(EXPORT_URL)
-    print(res.json().get("message", "Xong! Hãy lên giao diện Colab tải file 'lightrag_db_exported.zip' về."))
+    print("\n✅ Hoàn tất nạp dữ liệu!")
 
 if __name__ == "__main__":
-    main()
+    asyncio.run(main())
