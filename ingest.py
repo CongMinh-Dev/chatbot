@@ -36,7 +36,7 @@ async def custom_ollama_embed(texts, **kwargs):
     return await ollama_embed(texts, model="embeddinggemma", **kwargs)
 
 async def main():
-    # ❌ KHÔNG XÓA THƯ MỤC CŨ NỮA ĐỂ GIỮ CHECKPOINT KHHI COLAB BỊ TẮT
+    # ❌ KHÔNG XÓA THƯ MỤC CŨ NỮA ĐỂ GIỮ LẠI CHECKPOINT KHI TẮT COLAB
     if not os.path.exists(WORKING_DIR):
         os.makedirs(WORKING_DIR, exist_ok=True)
         print("📁 Đã tạo thư mục lưu trữ đồ thị mới.")
@@ -44,24 +44,23 @@ async def main():
         print("🔄 Phát hiện dữ liệu cũ! Chế độ RESUME (Chạy tiếp tục) đã được kích hoạt.")
 
     print("🧠 Đang khởi tạo LightRAG kết nối Ollama...")
+    # Loại bỏ các tham số truyền sai tên gây lỗi TypeError
     rag = LightRAG(
         working_dir=WORKING_DIR,
         llm_model_func=ollama_model_complete,
         llm_model_name="qwen3.5:9b", 
         embedding_func=custom_ollama_embed, 
-        
-        # Giữ số worker an toàn cho GPU T4 local
-        llm_async_max_workers=1,
-        embedding_async_max_workers=8,
-        
         addon_params={
             "language": "Vietnamese",
             "entity_relationship_graph_type": "default"
         }
     )
     
-    # Giữ nguyên độ chính xác cao mặc định của bạn (không dùng tinh giản)
-    # RAG sẽ quét kỹ để trích xuất sâu các mối quan hệ râu ria
+    # Giữ nguyên độ chính xác cao theo ý bạn (cho phép trích xuất sâu các mối quan hệ)
+    # Cấu hình kích thước chunk
+    rag.chunk_size = 500
+    rag.chunk_overlap = 100
+    
     await rag.initialize_storages()
 
     print("📂 Quét tài liệu tại thư mục /content/chatbot/papers ...")
@@ -105,27 +104,32 @@ async def main():
     
     print(f"⚡ Tổng số phân đoạn cần kiểm tra/xử lý: {len(chunks)}")
     
-    # Vòng lặp xử lý từng chunk và auto-save liên tục
+    # Vòng lặp xử lý từng chunk và tự động lưu vết liên tục
     for i, chunk in enumerate(tqdm(chunks, desc="🤖 Đang xử lý")):
         try:
-            # Hàm ainsert sẽ tự check md5/chuỗi hash của chunk, nếu trùng trong DB nó sẽ bỏ qua rất nhanh
+            # Hàm ainsert sẽ tự kiểm tra mã hóa/hash của chunk, nếu trùng khớp trong DB cũ nó sẽ tự động bỏ qua cực nhanh
             await rag.ainsert(chunk)
             
-            # 📦 CỨ XỬ LÝ XONG 1 CHUNK LÀ NÉN LẠI NGAY LẬP TỨC
+            # 📦 CỨ XỬ LÝ XONG 1 CHUNK LÀ NÊN LẠI GHI ĐÈ NGAY LẬP TỨC
             shutil.make_archive(ZIP_OUTPUT_PATH, 'zip', WORKING_DIR)
             
         except Exception as e:
             print(f"\n❌ Lỗi tại chunk {i+1}: {e}")
             
     print("\n✅ HOÀN TẤT TOÀN BỘ TIẾN TRÌNH!")
-    print(f"📦 File đồ thị cuối cùng đã sẵn sàng tại: {ZIP_OUTPUT_PATH}.zip")
+    print(f"📦 File đồ thị đã sẵn sàng tại: {ZIP_OUTPUT_PATH}.zip")
 
 if __name__ == '__main__':
     try:
-        loop = asyncio.get_event_loop()
-        if loop.is_running():
+        # Xử lý lấy event loop một cách an toàn để tránh cảnh báo trên Colab
+        try:
+            loop = asyncio.get_running_loop()
+        except RuntimeError:
+            loop = None
+
+        if loop and loop.is_running():
             loop.create_task(main())
         else:
-            loop.run_until_complete(main())
-    except RuntimeError:
-        asyncio.run(main())
+            asyncio.run(main())
+    except Exception as e:
+        print(f"❌ Lỗi khởi chạy: {e}")
