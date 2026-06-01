@@ -25,7 +25,8 @@ from langchain_community.document_loaders import PyPDFLoader, TextLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 
 WORKING_DIR = "/content/chatbot/lightrag_db"
-ZIP_OUTPUT_PATH = "/content/chatbot/lightrag_db_exported"
+# Thư mục chứa các file zip backup
+ZIP_DIR = "/content/chatbot/backups"
 
 @wrap_embedding_func_with_attrs(
     embedding_dim=768,
@@ -36,15 +37,17 @@ async def custom_ollama_embed(texts, **kwargs):
     return await ollama_embed(texts, model="embeddinggemma", **kwargs)
 
 async def main():
-    # ❌ KHÔNG XÓA THƯ MỤC CŨ NỮA ĐỂ GIỮ LẠI CHECKPOINT KHI TẮT COLAB
+    # Kích hoạt chế độ Resume nếu thư mục đã tồn tại dữ liệu
     if not os.path.exists(WORKING_DIR):
         os.makedirs(WORKING_DIR, exist_ok=True)
         print("📁 Đã tạo thư mục lưu trữ đồ thị mới.")
     else:
         print("🔄 Phát hiện dữ liệu cũ! Chế độ RESUME (Chạy tiếp tục) đã được kích hoạt.")
 
+    # Tạo thư mục chứa các file zip nếu chưa có
+    os.makedirs(ZIP_DIR, exist_ok=True)
+
     print("🧠 Đang khởi tạo LightRAG kết nối Ollama...")
-    # Loại bỏ các tham số truyền sai tên gây lỗi TypeError
     rag = LightRAG(
         working_dir=WORKING_DIR,
         llm_model_func=ollama_model_complete,
@@ -56,11 +59,8 @@ async def main():
         }
     )
     
-    # Giữ nguyên độ chính xác cao theo ý bạn (cho phép trích xuất sâu các mối quan hệ)
-    # Cấu hình kích thước chunk
     rag.chunk_size = 500
     rag.chunk_overlap = 100
-    
     await rag.initialize_storages()
 
     print("📂 Quét tài liệu tại thư mục /content/chatbot/papers ...")
@@ -104,24 +104,24 @@ async def main():
     
     print(f"⚡ Tổng số phân đoạn cần kiểm tra/xử lý: {len(chunks)}")
     
-    # Vòng lặp xử lý từng chunk và tự động lưu vết liên tục
+    # Vòng lặp xử lý từng chunk và tạo bản sao lưu riêng biệt
     for i, chunk in enumerate(tqdm(chunks, desc="🤖 Đang xử lý")):
         try:
-            # Hàm ainsert sẽ tự kiểm tra mã hóa/hash của chunk, nếu trùng khớp trong DB cũ nó sẽ tự động bỏ qua cực nhanh
             await rag.ainsert(chunk)
             
-            # 📦 CỨ XỬ LÝ XONG 1 CHUNK LÀ NÊN LẠI GHI ĐÈ NGAY LẬP TỨC
-            shutil.make_archive(ZIP_OUTPUT_PATH, 'zip', WORKING_DIR)
+            # 📦 TẠO FILE ZIP RIÊNG THEO THỨ TỰ CHUNK (KHÔNG GHI ĐÈ FILE CŨ)
+            chunk_num = i + 1
+            zip_output_path = os.path.join(ZIP_DIR, f"lightrag_db_chunk_{chunk_num}")
+            shutil.make_archive(zip_output_path, 'zip', WORKING_DIR)
             
         except Exception as e:
             print(f"\n❌ Lỗi tại chunk {i+1}: {e}")
             
     print("\n✅ HOÀN TẤT TOÀN BỘ TIẾN TRÌNH!")
-    print(f"📦 File đồ thị đã sẵn sàng tại: {ZIP_OUTPUT_PATH}.zip")
+    print(f"📦 Tất cả các file zip lưu theo tiến độ đã nằm trong thư mục: {ZIP_DIR}")
 
 if __name__ == '__main__':
     try:
-        # Xử lý lấy event loop một cách an toàn để tránh cảnh báo trên Colab
         try:
             loop = asyncio.get_running_loop()
         except RuntimeError:
