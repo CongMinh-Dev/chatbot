@@ -153,7 +153,7 @@ async def main():
             # Kiểm tra định kỳ sau mỗi N chunks
             if (i + 1) % SAVE_EVERY_N_CHUNKS == 0:
                 # Ép LightRAG lưu toàn bộ dữ liệu tạm thời từ RAM xuống disk trước khi nén
-                await rag.kv_storage.index_done_callback()
+                await rag.force_start_index()
                 save_progress_and_zip(actual_index + 1)
                 
         except Exception as e:
@@ -161,16 +161,16 @@ async def main():
             save_progress_and_zip(actual_index)
             
     # Kết thúc xử lý hoàn chỉnh toàn bộ script
-    await rag.kv_storage.index_done_callback()
+    await rag.force_start_index()
     save_progress_and_zip(total_chunks)
     print("\n✅ Hoàn tất toàn bộ tiến trình nạp dữ liệu!")
 
 if __name__ == '__main__':
+    # Giải quyết triệt để xung đột Loop trên Colab/Jupyter
+    import nest_asyncio
+    nest_asyncio.apply()
+    
     try:
-        loop = asyncio.get_event_loop()
-        if loop.is_running():
-            loop.create_task(main())
-        else:
-            loop.run_until_complete(main())
-    except RuntimeError:
         asyncio.run(main())
+    except Exception as e:
+        print(f"❌ Tiến trình bị gián đoạn: {e}")
