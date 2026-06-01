@@ -24,8 +24,8 @@ from lightrag.llm.ollama import ollama_model_complete, ollama_embed
 from langchain_community.document_loaders import PyPDFLoader, TextLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 
-# Cấu hình đường dẫn tuyệt đối theo đúng cấu trúc thư mục của bạn
 WORKING_DIR = "/content/chatbot/lightrag_db"
+ZIP_OUTPUT_PATH = "/content/chatbot/lightrag_db_exported"
 
 @wrap_embedding_func_with_attrs(
     embedding_dim=768,
@@ -36,11 +36,12 @@ async def custom_ollama_embed(texts, **kwargs):
     return await ollama_embed(texts, model="embeddinggemma", **kwargs)
 
 async def main():
-    # Xóa dữ liệu lỗi cũ để khởi động lại một cách sạch sẽ
-    if os.path.exists(WORKING_DIR):
-        print("🧹 Đang làm sạch thư mục đồ thị cũ...")
-        shutil.rmtree(WORKING_DIR)
-    os.makedirs(WORKING_DIR, exist_ok=True)
+    # ❌ KHÔNG XÓA THƯ MỤC CŨ NỮA ĐỂ GIỮ CHECKPOINT KHHI COLAB BỊ TẮT
+    if not os.path.exists(WORKING_DIR):
+        os.makedirs(WORKING_DIR, exist_ok=True)
+        print("📁 Đã tạo thư mục lưu trữ đồ thị mới.")
+    else:
+        print("🔄 Phát hiện dữ liệu cũ! Chế độ RESUME (Chạy tiếp tục) đã được kích hoạt.")
 
     print("🧠 Đang khởi tạo LightRAG kết nối Ollama...")
     rag = LightRAG(
@@ -48,18 +49,19 @@ async def main():
         llm_model_func=ollama_model_complete,
         llm_model_name="qwen3.5:9b", 
         embedding_func=custom_ollama_embed, 
+        
+        # Giữ số worker an toàn cho GPU T4 local
+        llm_async_max_workers=1,
+        embedding_async_max_workers=8,
+        
         addon_params={
             "language": "Vietnamese",
             "entity_relationship_graph_type": "default"
         }
-        
     )
-    rag.entity_extract_max_gleaning = 1,
-    rag.max_gleaning = 0
     
-    rag.chunk_size = 500
-    rag.chunk_overlap = 100
-    rag.max_gleaning = 0
+    # Giữ nguyên độ chính xác cao mặc định của bạn (không dùng tinh giản)
+    # RAG sẽ quét kỹ để trích xuất sâu các mối quan hệ râu ria
     await rag.initialize_storages()
 
     print("📂 Quét tài liệu tại thư mục /content/chatbot/papers ...")
@@ -70,7 +72,6 @@ async def main():
         print(f"❌ Không tìm thấy thư mục tại đường dẫn: {source_dir}")
         return
         
-    # Tìm kiếm đệ quy toàn bộ file tài liệu
     file_paths = []
     for ext in ["**/*.pdf", "**/*.txt", "**/*.md"]:
         file_paths.extend(list(source_dir.glob(ext)))
@@ -86,42 +87,41 @@ async def main():
                 content = "\n".join([p.page_content for p in pages])
                 if content.strip():
                     docs_text.append(content)
-                    print(f"📖 Đã nạp thành công PDF: {path_obj.name}")
+                    print(f"📖 Đã nạp PDF: {path_obj.name}")
             elif ext in [".txt", ".md"]:
                 content = TextLoader(path, encoding="utf-8").load()[0].page_content
                 if content.strip():
                     docs_text.append(content)
-                    print(f"📖 Đã nạp thành công Text: {path_obj.name}")
+                    print(f"📖 Đã nạp Text: {path_obj.name}")
         except Exception as e:
-            print(f"⚠️ Lỗi khi cố đọc file {path_obj.name}: {e}")
+            print(f"⚠️ Lỗi đọc file {path_obj.name}: {e}")
 
     if not docs_text:
-        print("❌ Không có bất kỳ dữ liệu văn bản nào được trích xuất thành công để phân mảnh!")
+        print("❌ Không có dữ liệu để phân mảnh!")
         return
 
-    # Tiến hành chia nhỏ văn bản thành các chunks 500 ký tự
     text_splitter = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=100)
     chunks = text_splitter.split_text("\n\n".join(docs_text))
     
-    print(f"⚡ Bắt đầu xây dựng đồ thị với {len(chunks)} phân đoạn...")
+    print(f"⚡ Tổng số phân đoạn cần kiểm tra/xử lý: {len(chunks)}")
     
-    # Nạp trực tiếp từng phân đoạn vào LightRAG thông qua cơ chế bất đồng bộ
+    # Vòng lặp xử lý từng chunk và auto-save liên tục
     for i, chunk in enumerate(tqdm(chunks, desc="🤖 Đang xử lý")):
         try:
+            # Hàm ainsert sẽ tự check md5/chuỗi hash của chunk, nếu trùng trong DB nó sẽ bỏ qua rất nhanh
             await rag.ainsert(chunk)
+            
+            # 📦 CỨ XỬ LÝ XONG 1 CHUNK LÀ NÉN LẠI NGAY LẬP TỨC
+            shutil.make_archive(ZIP_OUTPUT_PATH, 'zip', WORKING_DIR)
+            
         except Exception as e:
             print(f"\n❌ Lỗi tại chunk {i+1}: {e}")
             
-    print("\n✅ Hoàn tất nạp dữ liệu!")
-    
-    # Đóng gói sản phẩm cuối cùng thành file Zip
-    zip_output_path = "/content/chatbot/lightrag_db_exported"
-    shutil.make_archive(zip_output_path, 'zip', WORKING_DIR)
-    print(f"📦 Đã đóng gói thành công file đồ thị tại: {zip_output_path}.zip")
+    print("\n✅ HOÀN TẤT TOÀN BỘ TIẾN TRÌNH!")
+    print(f"📦 File đồ thị cuối cùng đã sẵn sàng tại: {ZIP_OUTPUT_PATH}.zip")
 
 if __name__ == '__main__':
     try:
-        # Colab chạy sẵn một event loop nền, cần kiểm tra để tránh xung đột
         loop = asyncio.get_event_loop()
         if loop.is_running():
             loop.create_task(main())
