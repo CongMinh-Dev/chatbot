@@ -102,7 +102,7 @@ async def main():
     print(f"⚡ Bắt đầu xây dựng đồ thị với {len(chunks)} phân đoạn...")
     
     # Nạp trực tiếp từng phân đoạn vào LightRAG thông qua cơ chế bất đồng bộ
-    zip_output_path = "/content/chatbot/lightrag_db_exported"
+    zip_output_path = "/content/chatbot/lightrag_snapshots"
     for i, chunk in enumerate(tqdm(chunks, desc="🤖 Đang xử lý")):
         try:
             await rag.ainsert(chunk)
