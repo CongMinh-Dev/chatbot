@@ -2,6 +2,7 @@
 import os
 import shutil
 import asyncio
+import logging  # <-- Thư viện để quản lý và bắt log bằng chữ
 from pathlib import Path
 from tqdm import tqdm
 
@@ -23,14 +24,47 @@ from lightrag.llm.ollama import ollama_model_complete, ollama_embed
 from langchain_community.document_loaders import PyPDFLoader, TextLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 
-# Cấu hình đường dẫn tuyệt đối theo đúng cấu trúc thư mục của bạn
 WORKING_DIR = "/content/chatbot/lightrag_db"
+checkpoint_file = os.path.join(WORKING_DIR, "resume_checkpoint.txt")
+
+# Khai báo các biến toàn cục để bộ bắt log có thể dùng chung với hàm main
+CURRENT_CHUNK_INDEX = 0
+LOGGED_PERSIST_SUCCESS = False
+
+# ========================================================
+# 🎯 BỘ ĐỌC LOG VÀ SO SÁNH CHỮ TỰ ĐỘNG
+# ========================================================
+class LightRAGLogInterceptor(logging.Handler):
+    def emit(self, record):
+        global LOGGED_PERSIST_SUCCESS
+        
+        # 1. Lấy ra nội dung thông báo bằng chữ (String) từ hệ thống log
+        log_message = record.getMessage()
+        
+        # 2. So sánh trực tiếp bằng chữ xem có đúng cụm từ yêu cầu không
+        if "In memory DB persist to disk" in log_message:
+            # Đánh dấu là đã tìm thấy dòng chữ thành công
+            LOGGED_PERSIST_SUCCESS = True
+            
+            # 3. Tiến hành ghi luôn index của chunk xuống file txt
+            try:
+                with open(checkpoint_file, "w") as f:
+                    # CURRENT_CHUNK_INDEX + 1 nghĩa là lần sau mở lên sẽ chạy chunk tiếp theo
+                    f.write(str(CURRENT_CHUNK_INDEX + 1))
+                print(f"\n💾 [Hệ thống Log] Phát hiện chữ 'In memory DB persist to disk' -> Đã chốt sổ chunk {CURRENT_CHUNK_INDEX + 1} vào txt.")
+            except Exception as e:
+                print(f"\n❌ Lỗi khi ghi file checkpoint từ Log: {e}")
+
+# Kích hoạt bộ lọc log này để nghe trọn vẹn thư viện lightrag
+logger = logging.getLogger("lightrag")
+logger.addHandler(LightRAGLogInterceptor())
+# ========================================================
 
 
 
-# --------------
 async def main():
-    # ❌ KHÔNG XÓA THƯ MỤC CŨ NỮA! Để dữ liệu cũ được giữ nguyên.
+    global CURRENT_CHUNK_INDEX, LOGGED_PERSIST_SUCCESS
+    
     os.makedirs(WORKING_DIR, exist_ok=True)
 
     print("🧠 Đang khởi tạo LightRAG kết nối Ollama...")
@@ -49,17 +83,15 @@ async def main():
     rag.max_gleaning = 0
     await rag.initialize_storages()
 
-    # --- KHU VỰC ĐỌC FILE CHECKPOINT (KIỂM TRA TIẾN TRÌNH CŨ) ----
-    checkpoint_file = os.path.join(WORKING_DIR, "resume_checkpoint.txt")
-    start_chunk_index = 0 # Mặc định chạy từ đầu (chunk 0)
-
+    # Đọc checkpoint cũ để bỏ qua các chunk đã xong lần trước
+    start_chunk_index = 0
     if os.path.exists(checkpoint_file):
         try:
             with open(checkpoint_file, "r") as f:
                 start_chunk_index = int(f.read().strip())
-            print(f"🔄 Tìm thấy tiến trình cũ! Sẽ tiếp tục chạy từ chunk thứ: {start_chunk_index + 1}")
+            print(f"🔄 Đang tiếp tục tiến trình cũ! Sẽ bắt đầu chạy từ chunk thứ: {start_chunk_index + 1}")
         except Exception:
-            print("⚠️ File checkpoint bị lỗi, sẽ chạy lại từ đầu cho an toàn.")
+            pass
 
     print("📂 Quét tài liệu tại thư mục /content/chatbot/papers ...")
     docs_text = []
@@ -73,8 +105,6 @@ async def main():
     for ext in ["**/*.pdf", "**/*.txt", "**/*.md"]:
         file_paths.extend(list(source_dir.glob(ext)))
         
-    print(f"🔍 Tìm thấy tổng cộng {len(file_paths)} file tài liệu.")
-
     for path_obj in file_paths:
         path = str(path_obj)
         try:
@@ -90,54 +120,52 @@ async def main():
             print(f"⚠️ Lỗi khi đọc file {path_obj.name}: {e}")
 
     if not docs_text:
-        print("❌ Không có dữ liệu văn bản nào!")
+        print("❌ Không có dữ liệu văn bản!")
         return
 
-    # Chia nhỏ văn bản thành các chunks
     text_splitter = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=100)
     chunks = text_splitter.split_text("\n\n".join(docs_text))
-    
     total_chunks = len(chunks)
-    print(f"⚡ Tổng số phân đoạn cần xử lý: {total_chunks}")
 
-    # Bỏ qua các chunk đã xử lý thành công lần trước
     if start_chunk_index >= total_chunks:
         print("🎉 Toàn bộ dữ liệu đã được xử lý xong từ trước rồi!")
         return
         
-    # --- VÒNG LẶP XỬ LÝ (CHỈ CHẠY TỪ START_CHUNK_INDEX) ---
+    # --- VÒNG LẶP XỬ LÝ CHUNKS ---
     for i in range(start_chunk_index, total_chunks):
         chunk = chunks[i]
+        
+        # Đồng bộ biến i hiện tại sang biến toàn cục để Bộ đọc log nhận diện đúng số thứ tự chunk
+        CURRENT_CHUNK_INDEX = i  
+        LOGGED_PERSIST_SUCCESS = False # Reset lại cờ xác nhận trước khi nạp chunk mới
+        
         print(f"\n🤖 Đang xử lý chunk {i+1}/{total_chunks}...")
         try:
             await rag.ainsert(chunk)
             
-            # Ghi nhận đã xử lý xong chunk này vào file checkpoint
-            with open(checkpoint_file, "w") as f:
-                f.write(str(i + 1)) # Lần sau mở lên sẽ chạy từ chunk (i + 1)
+            # Sau khi chạy xong hàm ainsert, kiểm tra xem bộ đọc log có kích hoạt cờ thành công lên không
+            if not LOGGED_PERSIST_SUCCESS:
+                print(f"⚠️ [Cảnh báo] Chunk {i+1} đã kết thúc lệnh nhưng Bộ đọc log KHÔNG tìm thấy chữ 'In memory DB persist to disk'.")
+                print("🛑 Hệ thống tự động dừng để bảo vệ checkpoint!")
+                return # Dừng chương trình ngay, giữ nguyên checkpoint cũ
                 
             await asyncio.sleep(0.5) 
         except Exception as e:
-            print(f"❌ Lỗi tại chunk {i+1}: {e}")
-            print("⚠️ Hệ thống tạm dừng. Hãy chạy lại script sau khi sửa lỗi hoặc có điện lại.")
-            return # Dừng chương trình để không ghi đè checkpoint sai
+            print(f"❌ Lỗi crash tại chunk {i+1}: {e}")
+            return
             
-    # Xóa file checkpoint đi nếu đã hoàn thành 100% để lần sau nạp data mới không bị lẫn
+    # Nếu đã chạy đến đây tức là hoàn thành 100% không lỗi, xóa file checkpoint đi
     if os.path.exists(checkpoint_file):
         os.remove(checkpoint_file)
 
-    # Đóng gói sản phẩm cuối cùng
-    zip_output_dir = "/content/chatbot/lightrag_snapshots"
-    os.makedirs(zip_output_dir, exist_ok=True)
-    final_zip_path = os.path.join(zip_output_dir, "lightrag_final_backup")
-    
+    zip_output_path = "/content/chatbot/lightrag_snapshots/lightrag_final_backup"
+    os.makedirs("/content/chatbot/lightrag_snapshots", exist_ok=True)
     print("\n📦 Đang đóng gói toàn bộ đồ thị tri thức...")
-    shutil.make_archive(final_zip_path, 'zip', WORKING_DIR)
-    print(f"✅ Hoàn tất nạp dữ liệu! File của bạn: {final_zip_path}.zip")
+    shutil.make_archive(zip_output_path, 'zip', WORKING_DIR)
+    print(f"✅ Hoàn tất nạp dữ liệu! File của bạn: {zip_output_path}.zip")
 
 if __name__ == '__main__':
     try:
-        # Colab chạy sẵn một event loop nền, cần kiểm tra để tránh xung đột
         loop = asyncio.get_event_loop()
         if loop.is_running():
             loop.create_task(main())
