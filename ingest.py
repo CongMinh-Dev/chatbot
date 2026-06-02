@@ -46,7 +46,7 @@ async def main():
     rag = LightRAG(
         working_dir=WORKING_DIR,
         llm_model_func=ollama_model_complete,
-        llm_model_name="qwen2.5:7b", 
+        llm_model_name="qwen3.5:9b",
         embedding_func=custom_ollama_embed, 
         addon_params={
             "language": "Vietnamese",
