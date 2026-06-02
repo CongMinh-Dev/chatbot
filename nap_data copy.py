@@ -36,17 +36,13 @@ async def custom_ollama_embed(texts, **kwargs):
     return await ollama_embed(texts, model="embeddinggemma", **kwargs)
 
 async def main():
-    # Xóa dữ liệu lỗi cũ để khởi động lại một cách sạch sẽ
-    if os.path.exists(WORKING_DIR):
-        print("🧹 Đang làm sạch thư mục đồ thị cũ...")
-        shutil.rmtree(WORKING_DIR)
     os.makedirs(WORKING_DIR, exist_ok=True)
 
     print("🧠 Đang khởi tạo LightRAG kết nối Ollama...")
     rag = LightRAG(
         working_dir=WORKING_DIR,
         llm_model_func=ollama_model_complete,
-        llm_model_name="qwen3.5:9b", 
+        llm_model_name="qwen2.5:7b",
         embedding_func=custom_ollama_embed, 
         addon_params={
             "language": "Vietnamese",
@@ -102,18 +98,20 @@ async def main():
     print(f"⚡ Bắt đầu xây dựng đồ thị với {len(chunks)} phân đoạn...")
     
     # Nạp trực tiếp từng phân đoạn vào LightRAG thông qua cơ chế bất đồng bộ
+    zip_output_path = "/content/chatbot/lightrag_snapshots"
     for i, chunk in enumerate(tqdm(chunks, desc="🤖 Đang xử lý")):
         try:
             await rag.ainsert(chunk)
+            await asyncio.sleep(2)
+            dynamic_zip_path = f"{zip_output_path}/lightrag_chunk_{i+1}"
+            shutil.make_archive(dynamic_zip_path, 'zip', WORKING_DIR)
+            print(f"📦 Đã đóng gói thành công file đồ thị tại: {zip_output_path}.zip")
         except Exception as e:
             print(f"\n❌ Lỗi tại chunk {i+1}: {e}")
             
     print("\n✅ Hoàn tất nạp dữ liệu!")
     
-    # Đóng gói sản phẩm cuối cùng thành file Zip
-    zip_output_path = "/content/chatbot/lightrag_db_exported"
-    shutil.make_archive(zip_output_path, 'zip', WORKING_DIR)
-    print(f"📦 Đã đóng gói thành công file đồ thị tại: {zip_output_path}.zip")
+    
 
 if __name__ == '__main__':
     try:
