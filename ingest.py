@@ -4,8 +4,6 @@ import shutil
 import asyncio
 from pathlib import Path
 from tqdm import tqdm
-from datetime import datetime  # Thêm thư viện để lấy thời gian thực cho tên file
-import time
 
 # ========================================================
 # 🔥 ĐOẠN VÁ LỖI TIKTOKEN CHẶN <|endoftext|> TRÊN COLAB
@@ -26,15 +24,8 @@ from lightrag.llm.ollama import ollama_model_complete, ollama_embed
 from langchain_community.document_loaders import PyPDFLoader, TextLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 
-# ========================================================
-# 📁 CẤU HÌNH ĐƯỜNG DẪN (Nên đổi sang Google Drive nếu cần)
-# ========================================================
+# Cấu hình đường dẫn tuyệt đối theo đúng cấu trúc thư mục của bạn
 WORKING_DIR = "/content/chatbot/lightrag_db"
-CHECKPOINT_FILE = os.path.join(WORKING_DIR, "ingest_checkpoint.txt")
-
-# Nơi chứa các file zip backup (Sẽ tạo thành một thư mục riêng để dễ quản lý)
-ZIP_BACKUP_DIR = "/content/chatbot/lightrag_snapshots" 
-SAVE_EVERY_N_CHUNKS = 1  # Cứ sau 1 chunks sẽ nén một file mới
 
 @wrap_embedding_func_with_attrs(
     embedding_dim=768,
@@ -44,52 +35,27 @@ SAVE_EVERY_N_CHUNKS = 1  # Cứ sau 1 chunks sẽ nén một file mới
 async def custom_ollama_embed(texts, **kwargs):
     return await ollama_embed(texts, model="embeddinggemma", **kwargs)
 
-def save_progress_and_zip(current_index):
-    """Ghi nhận vị trí đã xử lý và tiến hành đóng gói dữ liệu THÀNH FILE MỚI (Không ghi đè)"""
-    # 1. Ghi lại index tiếp theo cần xử lý vào file checkpoint cục bộ
-    with open(CHECKPOINT_FILE, "w", encoding="utf-8") as f:
-        f.write(str(current_index))
-    
-    # 2. Tạo tên file zip độc nhất dựa trên số chunk và thời gian thực
-    timestamp = datetime.now().strftime("%Hh%Mm%Ss")
-    zip_filename = f"lightrag_db_chunk_{current_index}_{timestamp}"
-    full_zip_path = os.path.join(ZIP_BACKUP_DIR, zip_filename)
-    
-    # 3. Tiến hành nén liên tiếp
-    shutil.make_archive(full_zip_path, 'zip', WORKING_DIR)
-    print(f"\n💾 Đã lưu checkpoint tại chunk {current_index} | Cập nhật file backup mới: {full_zip_path}.zip")
-
 async def main():
+    # Xóa dữ liệu lỗi cũ để khởi động lại một cách sạch sẽ
+    if os.path.exists(WORKING_DIR):
+        print("🧹 Đang làm sạch thư mục đồ thị cũ...")
+        shutil.rmtree(WORKING_DIR)
     os.makedirs(WORKING_DIR, exist_ok=True)
-    os.makedirs(ZIP_BACKUP_DIR, exist_ok=True)
-
-    # Đọc checkpoint cũ nếu có
-    start_chunk_index = 0
-    if os.path.exists(CHECKPOINT_FILE):
-        try:
-            with open(CHECKPOINT_FILE, "r", encoding="utf-8") as f:
-                start_chunk_index = int(f.read().strip())
-            print(f"🔄 Tìm thấy tiến trình cũ. Sẽ tiếp tục chạy từ chunk thứ: {start_chunk_index + 1}")
-        except Exception:
-            print("⚠️ File checkpoint lỗi hoặc không đọc được. Sẽ chạy lại từ đầu.")
-            start_chunk_index = 0
 
     print("🧠 Đang khởi tạo LightRAG kết nối Ollama...")
     rag = LightRAG(
         working_dir=WORKING_DIR,
         llm_model_func=ollama_model_complete,
-        llm_model_name="qwen3.5:9b", 
+        llm_model_name="qwen2.5:7b", 
         embedding_func=custom_ollama_embed, 
         addon_params={
             "language": "Vietnamese",
             "entity_relationship_graph_type": "default"
         }
     )
-    rag.chunk_size = 500
+    rag.chunk_size = 200
     rag.chunk_overlap = 100
     rag.max_gleaning = 0
-    
-    # Tự động nạp lại các file đồ thị cũ (.json) từ WORKING_DIR nếu có sẵn
     await rag.initialize_storages()
 
     print("📂 Quét tài liệu tại thư mục /content/chatbot/papers ...")
@@ -100,14 +66,13 @@ async def main():
         print(f"❌ Không tìm thấy thư mục tại đường dẫn: {source_dir}")
         return
         
+    # Tìm kiếm đệ quy toàn bộ file tài liệu
     file_paths = []
     for ext in ["**/*.pdf", "**/*.txt", "**/*.md"]:
         file_paths.extend(list(source_dir.glob(ext)))
         
     print(f"🔍 Tìm thấy tổng cộng {len(file_paths)} file tài liệu.")
 
-    # Sắp xếp để đảm bảo thứ tự chunk luôn đồng nhất giữa các lần chạy lại
-    file_paths.sort() 
     for path_obj in file_paths:
         path = str(path_obj)
         try:
@@ -130,68 +95,35 @@ async def main():
         print("❌ Không có bất kỳ dữ liệu văn bản nào được trích xuất thành công để phân mảnh!")
         return
 
-    # Tiến hành chia nhỏ văn bản thành các chunks 
+    # Tiến hành chia nhỏ văn bản thành các chunks 500 ký tự
     text_splitter = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=100)
     chunks = text_splitter.split_text("\n\n".join(docs_text))
     
-    total_chunks = len(chunks)
-    print(f"⚡ Tổng số phân đoạn tìm thấy: {total_chunks}")
+    print(f"⚡ Bắt đầu xây dựng đồ thị với {len(chunks)} phân đoạn...")
     
-    if start_chunk_index >= total_chunks:
-        print("✅ Toàn bộ các chunk đã được xử lý xong từ trước đó!")
-        return
-
-    # Chỉ xử lý phần còn lại chưa chạy
-    remaining_chunks = chunks[start_chunk_index:start_chunk_index+2]
-    print(f"🚀 [DEBUG MODE] Bắt đầu đo thời gian chi tiết cho {len(remaining_chunks)} chunks...")
-
-    # Vòng lặp nạp dữ liệu
-    for i, chunk in enumerate(remaining_chunks):
-        actual_index = start_chunk_index + i
-        print(f"\n──────────────────────────────────────────────────")
-        print(f"📝 [Chunk {actual_index + 1}] Kích thước ký tự: {len(chunk)}")
-        print(f"👉 Nội dung chunk (30 ký tự đầu): {chunk[:30]}...")
-        
+    # Nạp trực tiếp từng phân đoạn vào LightRAG thông qua cơ chế bất đồng bộ
+    zip_output_path = "/content/chatbot/lightrag_db_exported"
+    for i, chunk in enumerate(tqdm(chunks, desc="🤖 Đang xử lý")):
         try:
-            # ⏱️ Đo bước 1: Gọi LLM trích xuất + Embedding đưa vào LightRAG
-            start_time = time.time()
-            print(f"⏳ [Step 1/2] Đang gửi chunk sang LightRAG (LLM Extract & Embed)...")
-            
             await rag.ainsert(chunk)
-            
-            rag_time = time.time() - start_time
-            print(f"⏱️ [Done Step 1] LightRAG xử lý xong mất: {rag_time:.2f} giây")
-            
-            # ⏱️ Đo bước 2: Tiến hành đóng gói ZIP
-            if (i + 1) % SAVE_EVERY_N_CHUNKS == 0:
-                print(f"⏳ [Step 2/2] Đang tiến hành nén ZIP sao lưu...")
-                zip_start = time.time()
-                
-                save_progress_and_zip(actual_index + 1)
-                
-                zip_time = time.time() - zip_start
-                print(f"⏱️ [Done Step 2] Nén ZIP hoàn tất mất: {zip_time:.2f} giây")
-                
+            await asyncio.sleep(2)
+            dynamic_zip_path = f"{zip_output_path}/lightrag_chunk_{i+1}"
+            shutil.make_archive(dynamic_zip_path, 'zip', WORKING_DIR)
+            print(f"📦 Đã đóng gói thành công file đồ thị tại: {zip_output_path}.zip")
         except Exception as e:
-            print(f"\n❌ Lỗi tại chunk {actual_index + 1}: {e}")
-            save_progress_and_zip(actual_index)
-
-    print(f"\n──────────────────────────────────────────────────")
-    print("✅ Hoàn tất lượt chạy Debug đo thời gian!")   
-    # Kết thúc xử lý hoàn chỉnh toàn bộ script
-    save_progress_and_zip(total_chunks)
-
-    # Kết thúc xử lý hoàn chỉnh toàn bộ script
-    await rag.force_start_index()
-    save_progress_and_zip(total_chunks)
-    print("\n✅ Hoàn tất toàn bộ tiến trình nạp dữ liệu!")
+            print(f"\n❌ Lỗi tại chunk {i+1}: {e}")
+            
+    print("\n✅ Hoàn tất nạp dữ liệu!")
+    
+    
 
 if __name__ == '__main__':
-    # Giải quyết triệt để xung đột Loop trên Colab/Jupyter
-    import nest_asyncio
-    nest_asyncio.apply()
-    
     try:
+        # Colab chạy sẵn một event loop nền, cần kiểm tra để tránh xung đột
+        loop = asyncio.get_event_loop()
+        if loop.is_running():
+            loop.create_task(main())
+        else:
+            loop.run_until_complete(main())
+    except RuntimeError:
         asyncio.run(main())
-    except Exception as e:
-        print(f"❌ Tiến trình bị gián đoạn: {e}")
