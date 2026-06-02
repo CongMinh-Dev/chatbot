@@ -53,7 +53,7 @@ async def main():
             "entity_relationship_graph_type": "default"
         }
     )
-    rag.chunk_size = 200
+    rag.chunk_size = 500
     rag.chunk_overlap = 100
     rag.max_gleaning = 0
     await rag.initialize_storages()
