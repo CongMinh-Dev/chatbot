@@ -1,0 +1,1623 @@
+{
+  "Nguyễn Văn Hùng<SEP>Trần Thị Mai": {
+    "chunk_ids": [
+      "chunk-cdef2a60c00766ca5c2ccd01c3e98b2b",
+      "chunk-e2dc67ff1091cb27ad44ef40a394fc35"
+    ],
+    "count": 2,
+    "update_time": 1780404432,
+    "_id": "Nguyễn Văn Hùng<SEP>Trần Thị Mai"
+  },
+  "Lê Hoàng Nam<SEP>Viện Cây ăn quả miền Nam (SOFRI)": {
+    "chunk_ids": [
+      "chunk-cdef2a60c00766ca5c2ccd01c3e98b2b",
+      "chunk-e2dc67ff1091cb27ad44ef40a394fc35"
+    ],
+    "count": 2,
+    "update_time": 1780404433,
+    "_id": "Lê Hoàng Nam<SEP>Viện Cây ăn quả miền Nam (SOFRI)"
+  },
+  "Khoa Nông nghiệp, Trường Đại học Cần Thơ<SEP>Nguyễn Văn Hùng": {
+    "chunk_ids": [
+      "chunk-cdef2a60c00766ca5c2ccd01c3e98b2b",
+      "chunk-e2dc67ff1091cb27ad44ef40a394fc35"
+    ],
+    "count": 2,
+    "update_time": 1780404431,
+    "_id": "Khoa Nông nghiệp, Trường Đại học Cần Thơ<SEP>Nguyễn Văn Hùng"
+  },
+  "Lê Hoàng Nam<SEP>Nguyễn Văn Hùng": {
+    "chunk_ids": [
+      "chunk-cdef2a60c00766ca5c2ccd01c3e98b2b"
+    ],
+    "count": 1,
+    "create_time": 1780403686,
+    "update_time": 1780403686,
+    "_id": "Lê Hoàng Nam<SEP>Nguyễn Văn Hùng"
+  },
+  "Viện Cây ăn quả miền Nam<SEP>nvhung@ctu.edu.vn": {
+    "chunk_ids": [
+      "chunk-33b72e294f49b796c9b1fbddeeac87a0"
+    ],
+    "count": 1,
+    "create_time": 1780403708,
+    "update_time": 1780403708,
+    "_id": "Viện Cây ăn quả miền Nam<SEP>nvhung@ctu.edu.vn"
+  },
+  "Sầu riêng<SEP>phân bón vô cơ": {
+    "chunk_ids": [
+      "chunk-33b72e294f49b796c9b1fbddeeac87a0"
+    ],
+    "count": 1,
+    "create_time": 1780403708,
+    "update_time": 1780403708,
+    "_id": "Sầu riêng<SEP>phân bón vô cơ"
+  },
+  "Sầu riêng<SEP>phân hữu cơ vi sinh": {
+    "chunk_ids": [
+      "chunk-33b72e294f49b796c9b1fbddeeac87a0"
+    ],
+    "count": 1,
+    "create_time": 1780403709,
+    "update_time": 1780403709,
+    "_id": "Sầu riêng<SEP>phân hữu cơ vi sinh"
+  },
+  "Sầu riêng<SEP>phân khoáng NPK tối ưu": {
+    "chunk_ids": [
+      "chunk-33b72e294f49b796c9b1fbddeeac87a0"
+    ],
+    "count": 1,
+    "create_time": 1780403709,
+    "update_time": 1780403709,
+    "_id": "Sầu riêng<SEP>phân khoáng NPK tối ưu"
+  },
+  "chất trái sầu riêng Ri6<SEP>phân hữu cơ vi sinh": {
+    "chunk_ids": [
+      "chunk-a8221763d1ce4a9767d04bcabd68c16e"
+    ],
+    "count": 1,
+    "create_time": 1780403745,
+    "update_time": 1780403745,
+    "_id": "chất trái sầu riêng Ri6<SEP>phân hữu cơ vi sinh"
+  },
+  "RCBD<SEP>vườn sầu riêng 7 năm tuổi": {
+    "chunk_ids": [
+      "chunk-a8221763d1ce4a9767d04bcabd68c16e"
+    ],
+    "count": 1,
+    "create_time": 1780403745,
+    "update_time": 1780403745,
+    "_id": "RCBD<SEP>vườn sầu riêng 7 năm tuổi"
+  },
+  "NPK<SEP>phân hữu cơ vi sinh": {
+    "chunk_ids": [
+      "chunk-a8221763d1ce4a9767d04bcabd68c16e"
+    ],
+    "count": 1,
+    "create_time": 1780403746,
+    "update_time": 1780403746,
+    "_id": "NPK<SEP>phân hữu cơ vi sinh"
+  },
+  "lượng chất hữu cơ (OM) trong đất<SEP>Đất": {
+    "chunk_ids": [
+      "chunk-0bf2a02a6dbba1ffe7070a96338717f7"
+    ],
+    "count": 1,
+    "create_time": 1780403777,
+    "update_time": 1780403777,
+    "_id": "lượng chất hữu cơ (OM) trong đất<SEP>Đất"
+  },
+  "Durio zibethinus Murr.<SEP>Sầu riêng Ri6": {
+    "chunk_ids": [
+      "chunk-0bf2a02a6dbba1ffe7070a96338717f7"
+    ],
+    "count": 1,
+    "create_time": 1780403777,
+    "update_time": 1780403777,
+    "_id": "Durio zibethinus Murr.<SEP>Sầu riêng Ri6"
+  },
+  "Năng suất<SEP>Phân bón tích hợp": {
+    "chunk_ids": [
+      "chunk-0bf2a02a6dbba1ffe7070a96338717f7"
+    ],
+    "count": 1,
+    "create_time": 1780403777,
+    "update_time": 1780403777,
+    "_id": "Năng suất<SEP>Phân bón tích hợp"
+  },
+  "lượng chất hữu cơ trong đất<SEP>Đất": {
+    "chunk_ids": [
+      "chunk-0bf2a02a6dbba1ffe7070a96338717f7"
+    ],
+    "count": 1,
+    "create_time": 1780403777,
+    "update_time": 1780403777,
+    "_id": "lượng chất hữu cơ trong đất<SEP>Đất"
+  },
+  "Năng suất<SEP>lượng chất hữu cơ (OM) trong đất": {
+    "chunk_ids": [
+      "chunk-0bf2a02a6dbba1ffe7070a96338717f7"
+    ],
+    "count": 1,
+    "create_time": 1780403777,
+    "update_time": 1780403777,
+    "_id": "Năng suất<SEP>lượng chất hữu cơ (OM) trong đất"
+  },
+  "phân bón hóa học<SEP>sượng múi, cháy vách ngăn": {
+    "chunk_ids": [
+      "chunk-2b5fcb92304d62c2dfeb4f4eb3811127"
+    ],
+    "count": 1,
+    "create_time": 1780403806,
+    "update_time": 1780403806,
+    "_id": "phân bón hóa học<SEP>sượng múi, cháy vách ngăn"
+  },
+  "hương vị tự nhiên của trái cây<SEP>phân bón hóa học": {
+    "chunk_ids": [
+      "chunk-2b5fcb92304d62c2dfeb4f4eb3811127"
+    ],
+    "count": 1,
+    "create_time": 1780403807,
+    "update_time": 1780403807,
+    "_id": "hương vị tự nhiên của trái cây<SEP>phân bón hóa học"
+  },
+  "phân bón hóa học<SEP>đất bị chua hóa (pH giảm sâu": {
+    "chunk_ids": [
+      "chunk-2b5fcb92304d62c2dfeb4f4eb3811127"
+    ],
+    "count": 1,
+    "create_time": 1780403807,
+    "update_time": 1780403807,
+    "_id": "phân bón hóa học<SEP>đất bị chua hóa (pH giảm sâu"
+  },
+  "Phytophthora palmivora<SEP>thối rễ, xì mủ": {
+    "chunk_ids": [
+      "chunk-f30b93bdfe02a0c37cc165aa77430ffc"
+    ],
+    "count": 1,
+    "create_time": 1780403850,
+    "update_time": 1780403850,
+    "_id": "Phytophthora palmivora<SEP>thối rễ, xì mủ"
+  },
+  "hiệu quả kinh tế, tính bền vững sinh thái<SEP>quy trình phân bón tích hợp": {
+    "chunk_ids": [
+      "chunk-f30b93bdfe02a0c37cc165aa77430ffc"
+    ],
+    "count": 1,
+    "create_time": 1780403850,
+    "update_time": 1780403850,
+    "_id": "hiệu quả kinh tế, tính bền vững sinh thái<SEP>quy trình phân bón tích hợp"
+  },
+  "giống sầu riêng Ri6<SEP>thí nghiệm": {
+    "chunk_ids": [
+      "chunk-c28c928c92c33474c6225b6141933c7e"
+    ],
+    "count": 1,
+    "create_time": 1780403895,
+    "update_time": 1780403895,
+    "_id": "giống sầu riêng Ri6<SEP>thí nghiệm"
+  },
+  "huyện Vũng Liêm<SEP>thí nghiệm": {
+    "chunk_ids": [
+      "chunk-c28c928c92c33474c6225b6141933c7e"
+    ],
+    "count": 1,
+    "create_time": 1780403896,
+    "update_time": 1780403896,
+    "_id": "huyện Vũng Liêm<SEP>thí nghiệm"
+  },
+  "thí nghiệm<SEP>đất phù sa cổ": {
+    "chunk_ids": [
+      "chunk-c28c928c92c33474c6225b6141933c7e"
+    ],
+    "count": 1,
+    "create_time": 1780403896,
+    "update_time": 1780403896,
+    "_id": "thí nghiệm<SEP>đất phù sa cổ"
+  },
+  "phân hữu cơ vi sinh<SEP>thí nghiệm": {
+    "chunk_ids": [
+      "chunk-c28c928c92c33474c6225b6141933c7e"
+    ],
+    "count": 1,
+    "create_time": 1780403896,
+    "update_time": 1780403896,
+    "_id": "phân hữu cơ vi sinh<SEP>thí nghiệm"
+  },
+  "World Athletics Championship<SEP>World Athletics Federation": {
+    "chunk_ids": [
+      "chunk-c28c928c92c33474c6225b6141933c7e",
+      "chunk-f95ced4f447334b64417538cb44fd21a",
+      "chunk-30ce2dbd7a3c935f4614c2bd603bdc4d"
+    ],
+    "count": 3,
+    "update_time": 1780406135,
+    "_id": "World Athletics Championship<SEP>World Athletics Federation"
+  },
+  "phân Urea<SEP>thí nghiệm": {
+    "chunk_ids": [
+      "chunk-c28c928c92c33474c6225b6141933c7e"
+    ],
+    "count": 1,
+    "create_time": 1780403897,
+    "update_time": 1780403897,
+    "_id": "phân Urea<SEP>thí nghiệm"
+  },
+  "Super lân<SEP>thí nghiệm": {
+    "chunk_ids": [
+      "chunk-c28c928c92c33474c6225b6141933c7e"
+    ],
+    "count": 1,
+    "create_time": 1780403897,
+    "update_time": 1780403897,
+    "_id": "Super lân<SEP>thí nghiệm"
+  },
+  "Kali clorua<SEP>thí nghiệm": {
+    "chunk_ids": [
+      "chunk-c28c928c92c33474c6225b6141933c7e"
+    ],
+    "count": 1,
+    "create_time": 1780403898,
+    "update_time": 1780403898,
+    "_id": "Kali clorua<SEP>thí nghiệm"
+  },
+  "Kali sunfat<SEP>thí nghiệm": {
+    "chunk_ids": [
+      "chunk-c28c928c92c33474c6225b6141933c7e"
+    ],
+    "count": 1,
+    "create_time": 1780403898,
+    "update_time": 1780403898,
+    "_id": "Kali sunfat<SEP>thí nghiệm"
+  },
+  "Phương Pháp Bố Trí Thí Nghiem<SEP>Thí Nghiệm": {
+    "chunk_ids": [
+      "chunk-5272f4653db96b70adfbe957a924beaa"
+    ],
+    "count": 1,
+    "create_time": 1780403944,
+    "update_time": 1780403944,
+    "_id": "Phương Pháp Bố Trí Thí Nghiem<SEP>Thí Nghiệm"
+  },
+  "Nghiệm Thức<SEP>Đối Chứng": {
+    "chunk_ids": [
+      "chunk-5272f4653db96b70adfbe957a924beaa"
+    ],
+    "count": 1,
+    "create_time": 1780403944,
+    "update_time": 1780403944,
+    "_id": "Nghiệm Thức<SEP>Đối Chứng"
+  },
+  "Công Thức Khuyến Cáo Nông Nghiệp<SEP>Đối Chứng": {
+    "chunk_ids": [
+      "chunk-5272f4653db96b70adfbe957a924beaa"
+    ],
+    "count": 1,
+    "create_time": 1780403945,
+    "update_time": 1780403945,
+    "_id": "Công Thức Khuyến Cáo Nông Nghiệp<SEP>Đối Chứng"
+  },
+  "Khoáng Tối Ưu<SEP>Nghiệm Thức": {
+    "chunk_ids": [
+      "chunk-5272f4653db96b70adfbe957a924beaa"
+    ],
+    "count": 1,
+    "create_time": 1780403945,
+    "update_time": 1780403945,
+    "_id": "Khoáng Tối Ưu<SEP>Nghiệm Thức"
+  },
+  "Khối Hoàn Toàn Ngẫu Nhiên (RCBD)<SEP>Phương Pháp Bố Trí Thí Nghiem": {
+    "chunk_ids": [
+      "chunk-5272f4653db96b70adfbe957a924beaa"
+    ],
+    "count": 1,
+    "create_time": 1780403946,
+    "update_time": 1780403946,
+    "_id": "Khối Hoàn Toàn Ngẫu Nhiên (RCBD)<SEP>Phương Pháp Bố Trí Thí Nghiem"
+  },
+  "Công Thức Khuyến Cáo Nông Nghiệp<SEP>Khoáng Tối Ưu": {
+    "chunk_ids": [
+      "chunk-5272f4653db96b70adfbe957a924beaa"
+    ],
+    "count": 1,
+    "create_time": 1780403946,
+    "update_time": 1780403946,
+    "_id": "Công Thức Khuyến Cáo Nông Nghiệp<SEP>Khoáng Tối Ưu"
+  },
+  "Bảng 1. Quy trình phân bổ lượng dinh dưỡng nguyên chất theo giai đoạn của Nghiệm thức 4 (NT4)<SEP>Giai đoạn sinh lý": {
+    "chunk_ids": [
+      "chunk-707693172cb7ba48e2ea1de4ca2d37e0"
+    ],
+    "count": 1,
+    "create_time": 1780403998,
+    "update_time": 1780403998,
+    "_id": "Bảng 1. Quy trình phân bổ lượng dinh dưỡng nguyên chất theo giai đoạn của Nghiệm thức 4 (NT4)<SEP>Giai đoạn sinh lý"
+  },
+  "N (g/cây)<SEP>Phân hữu cơ (kg/cây)": {
+    "chunk_ids": [
+      "chunk-707693172cb7ba48e2ea1de4ca2d37e0"
+    ],
+    "count": 1,
+    "create_time": 1780403998,
+    "update_time": 1780403998,
+    "_id": "N (g/cây)<SEP>Phân hữu cơ (kg/cây)"
+  },
+  "P2O5 (g/cây)<SEP>Phân hữu cơ (kg/cây)": {
+    "chunk_ids": [
+      "chunk-707693172cb7ba48e2ea1de4ca2d37e0"
+    ],
+    "count": 1,
+    "create_time": 1780403998,
+    "update_time": 1780403998,
+    "_id": "P2O5 (g/cây)<SEP>Phân hữu cơ (kg/cây)"
+  },
+  "Giai đoạn sinh lý<SEP>N (g/cây)": {
+    "chunk_ids": [
+      "chunk-707693172cb7ba48e2ea1de4ca2d37e0"
+    ],
+    "count": 1,
+    "create_time": 1780403998,
+    "update_time": 1780403998,
+    "_id": "Giai đoạn sinh lý<SEP>N (g/cây)"
+  },
+  "K2O (g/cây)<SEP>Phân hữu cơ (kg/cây)": {
+    "chunk_ids": [
+      "chunk-707693172cb7ba48e2ea1de4ca2d37e0"
+    ],
+    "count": 1,
+    "create_time": 1780403999,
+    "update_time": 1780403999,
+    "_id": "K2O (g/cây)<SEP>Phân hữu cơ (kg/cây)"
+  },
+  "Carbon-Fiber Spikes<SEP>Noah Carter": {
+    "chunk_ids": [
+      "chunk-707693172cb7ba48e2ea1de4ca2d37e0",
+      "chunk-113f4d2d6f8561a4181d26a733ae1171"
+    ],
+    "count": 2,
+    "update_time": 1780404387,
+    "_id": "Carbon-Fiber Spikes<SEP>Noah Carter"
+  },
+  "Giai đoạn sinh lý<SEP>Phân hữu cơ (kg/cây)": {
+    "chunk_ids": [
+      "chunk-707693172cb7ba48e2ea1de4ca2d37e0"
+    ],
+    "count": 1,
+    "create_time": 1780404000,
+    "update_time": 1780404000,
+    "_id": "Giai đoạn sinh lý<SEP>Phân hữu cơ (kg/cây)"
+  },
+  "Giai đoạn sinh lý<SEP>P2O5 (g/cây)": {
+    "chunk_ids": [
+      "chunk-707693172cb7ba48e2ea1de4ca2d37e0"
+    ],
+    "count": 1,
+    "create_time": 1780404000,
+    "update_time": 1780404000,
+    "_id": "Giai đoạn sinh lý<SEP>P2O5 (g/cây)"
+  },
+  "Giai đoạn sinh lý<SEP>K2O (g/cây)": {
+    "chunk_ids": [
+      "chunk-707693172cb7ba48e2ea1de4ca2d37e0"
+    ],
+    "count": 1,
+    "create_time": 1780404001,
+    "update_time": 1780404001,
+    "_id": "Giai đoạn sinh lý<SEP>K2O (g/cây)"
+  },
+  "Phân hóa mầm hoa & Ra hoa<SEP>Sau thu hoạch & Phục hồi cây": {
+    "chunk_ids": [
+      "chunk-d8a8636aa7c4bcbd5aaf7ccb8cc73c14"
+    ],
+    "count": 1,
+    "create_time": 1780404034,
+    "update_time": 1780404034,
+    "_id": "Phân hóa mầm hoa & Ra hoa<SEP>Sau thu hoạch & Phục hồi cây"
+  },
+  "Trái lớn & Tích lũy đường (> 60 ngày)<SEP>Đậu trái & Nuôi trái non (< 60 ngày)": {
+    "chunk_ids": [
+      "chunk-d8a8636aa7c4bcbd5aaf7ccb8cc73c14"
+    ],
+    "count": 1,
+    "create_time": 1780404034,
+    "update_time": 1780404034,
+    "_id": "Trái lớn & Tích lũy đường (> 60 ngày)<SEP>Đậu trái & Nuôi trái non (< 60 ngày)"
+  },
+  "100m Sprint Record<SEP>Noah Carter": {
+    "chunk_ids": [
+      "chunk-d8a8636aa7c4bcbd5aaf7ccb8cc73c14"
+    ],
+    "count": 1,
+    "create_time": 1780404034,
+    "update_time": 1780404034,
+    "_id": "100m Sprint Record<SEP>Noah Carter"
+  },
+  "Sau thu hoạch & Phục hồi cây<SEP>Đậu trái & Nuôi trái non (< 60 ngày)": {
+    "chunk_ids": [
+      "chunk-d8a8636aa7c4bcbd5aaf7ccb8cc73c14"
+    ],
+    "count": 1,
+    "create_time": 1780404035,
+    "update_time": 1780404035,
+    "_id": "Sau thu hoạch & Phục hồi cây<SEP>Đậu trái & Nuôi trái non (< 60 ngày)"
+  },
+  "Phân hóa mầm hoa & Ra hoa<SEP>Trái lớn & Tích lũy đường (> 60 ngày)": {
+    "chunk_ids": [
+      "chunk-d8a8636aa7c4bcbd5aaf7ccb8cc73c14"
+    ],
+    "count": 1,
+    "create_time": 1780404035,
+    "update_time": 1780404035,
+    "_id": "Phân hóa mầm hoa & Ra hoa<SEP>Trái lớn & Tích lũy đường (> 60 ngày)"
+  },
+  "(tấn/ha)<SEP>measurement_unit": {
+    "chunk_ids": [
+      "chunk-f95ced4f447334b64417538cb44fd21a"
+    ],
+    "count": 1,
+    "create_time": 1780404088,
+    "update_time": 1780404088,
+    "_id": "(tấn/ha)<SEP>measurement_unit"
+  },
+  "chỉ tiêu phẩm chất<SEP>hàm lượng chất rắn hòa tan tổng số, tỷ lệ sượng trái, độ dày cơm múi": {
+    "chunk_ids": [
+      "chunk-f95ced4f447334b64417538cb44fd21a"
+    ],
+    "count": 1,
+    "create_time": 1780404088,
+    "update_time": 1780404088,
+    "_id": "chỉ tiêu phẩm chất<SEP>hàm lượng chất rắn hòa tan tổng số, tỷ lệ sượng trái, độ dày cơm múi"
+  },
+  "pHH2O, hữu cơ tổng số (OM, %)<SEP>Đất": {
+    "chunk_ids": [
+      "chunk-f95ced4f447334b64417538cb44fd21a"
+    ],
+    "count": 1,
+    "create_time": 1780404088,
+    "update_time": 1780404088,
+    "_id": "pHH2O, hữu cơ tổng số (OM, %)<SEP>Đất"
+  },
+  "KẾT QUẢ VÀ THẢO LUẬN<SEP>Tạp chí Khoa học Nông nghiệp Việt Nam": {
+    "chunk_ids": [
+      "chunk-f95ced4f447334b64417538cb44fd21a"
+    ],
+    "count": 1,
+    "create_time": 1780404088,
+    "update_time": 1780404088,
+    "_id": "KẾT QUẢ VÀ THẢO LUẬN<SEP>Tạp chí Khoa học Nông nghiệp Việt Nam"
+  },
+  "NT4<SEP>Tạp Chí Khoa Học Nông nghiệp Việt Nam": {
+    "chunk_ids": [
+      "chunk-8f71153619528c78d90620e631e39af1"
+    ],
+    "count": 1,
+    "create_time": 1780404136,
+    "update_time": 1780404136,
+    "_id": "NT4<SEP>Tạp Chí Khoa Học Nông nghiệp Việt Nam"
+  },
+  "NT1<SEP>Tạp Chí Khoa Học Nông nghiệp Việt Nam": {
+    "chunk_ids": [
+      "chunk-8f71153619528c78d90620e631e39af1"
+    ],
+    "count": 1,
+    "create_time": 1780404137,
+    "update_time": 1780404137,
+    "_id": "NT1<SEP>Tạp Chí Khoa Học Nông nghiệp Việt Nam"
+  },
+  "NT4<SEP>kết quả và thảo luận": {
+    "chunk_ids": [
+      "chunk-8f71153619528c78d90620e631e39af1"
+    ],
+    "count": 1,
+    "create_time": 1780404137,
+    "update_time": 1780404137,
+    "_id": "NT4<SEP>kết quả và thảo luận"
+  },
+  "100m Sprint Record<SEP>World Athletics Federation": {
+    "chunk_ids": [
+      "chunk-8f71153619528c78d90620e631e39af1",
+      "chunk-624c054c4d7eb5fd5206e73c3051a337"
+    ],
+    "count": 2,
+    "update_time": 1780406254,
+    "_id": "100m Sprint Record<SEP>World Athletics Federation"
+  },
+  "NT1<SEP>kết quả và thảo luận": {
+    "chunk_ids": [
+      "chunk-8f71153619528c78d90620e631e39af1"
+    ],
+    "count": 1,
+    "create_time": 1780404137,
+    "update_time": 1780404137,
+    "_id": "NT1<SEP>kết quả và thảo luận"
+  },
+  "NT4<SEP>thu hoạch": {
+    "chunk_ids": [
+      "chunk-8f71153619528c78d90620e631e39af1"
+    ],
+    "count": 1,
+    "create_time": 1780404137,
+    "update_time": 1780404137,
+    "_id": "NT4<SEP>thu hoạch"
+  },
+  "NT1<SEP>thu hoạch": {
+    "chunk_ids": [
+      "chunk-8f71153619528c78d90620e631e39af1"
+    ],
+    "count": 1,
+    "create_time": 1780404139,
+    "update_time": 1780404139,
+    "_id": "NT1<SEP>thu hoạch"
+  },
+  "NT4<SEP>chế độ dinh dưỡng": {
+    "chunk_ids": [
+      "chunk-8f71153619528c78d90620e631e39af1"
+    ],
+    "count": 1,
+    "create_time": 1780404139,
+    "update_time": 1780404139,
+    "_id": "NT4<SEP>chế độ dinh dưỡng"
+  },
+  "Bảng 2<SEP>NT4": {
+    "chunk_ids": [
+      "chunk-a917d903439a77eea4cdc1887047d41b"
+    ],
+    "count": 1,
+    "create_time": 1780404170,
+    "update_time": 1780404170,
+    "_id": "Bảng 2<SEP>NT4"
+  },
+  "NT1<SEP>Năng suất thực tế": {
+    "chunk_ids": [
+      "chunk-a917d903439a77eea4cdc1887047d41b"
+    ],
+    "count": 1,
+    "create_time": 1780404170,
+    "update_time": 1780404170,
+    "_id": "NT1<SEP>Năng suất thực tế"
+  },
+  "NT2<SEP>Năng suất thực tế": {
+    "chunk_ids": [
+      "chunk-a917d903439a77eea4cdc1887047d41b"
+    ],
+    "count": 1,
+    "create_time": 1780404172,
+    "update_time": 1780404172,
+    "_id": "NT2<SEP>Năng suất thực tế"
+  },
+  "NT3<SEP>Năng suất thực tế": {
+    "chunk_ids": [
+      "chunk-a917d903439a77eea4cdc1887047d41b"
+    ],
+    "count": 1,
+    "create_time": 1780404172,
+    "update_time": 1780404172,
+    "_id": "NT3<SEP>Năng suất thực tế"
+  },
+  "NT4<SEP>Năng suất thực tế": {
+    "chunk_ids": [
+      "chunk-a917d903439a77eea4cdc1887047d41b"
+    ],
+    "count": 1,
+    "create_time": 1780404173,
+    "update_time": 1780404173,
+    "_id": "NT4<SEP>Năng suất thực tế"
+  },
+  "Bảng 2<SEP>NT3": {
+    "chunk_ids": [
+      "chunk-a917d903439a77eea4cdc1887047d41b"
+    ],
+    "count": 1,
+    "create_time": 1780404173,
+    "update_time": 1780404173,
+    "_id": "Bảng 2<SEP>NT3"
+  },
+  "chất lượng trái sầu riêng<SEP>cắt giảm lượng đạm hóa học": {
+    "chunk_ids": [
+      "chunk-ad94d20007684b1b20e9e5a36e4f4fed"
+    ],
+    "count": 1,
+    "create_time": 1780404203,
+    "update_time": 1780404203,
+    "_id": "chất lượng trái sầu riêng<SEP>cắt giảm lượng đạm hóa học"
+  },
+  "NT4<SEP>muity sarium": {
+    "chunk_ids": [
+      "chunk-ad94d20007684b1b20e9e5a36e4f4fed"
+    ],
+    "count": 1,
+    "create_time": 1780404203,
+    "update_time": 1780404203,
+    "_id": "NT4<SEP>muity sarium"
+  },
+  "bổ sung Kali dạng gốc sunfat (K2SO4)<SEP>chất lượng trái sầu riêng": {
+    "chunk_ids": [
+      "chunk-ad94d20007684b1b20e9e5a36e4f4fed"
+    ],
+    "count": 1,
+    "create_time": 1780404205,
+    "update_time": 1780404205,
+    "_id": "bổ sung Kali dạng gốc sunfat (K2SO4)<SEP>chất lượng trái sầu riêng"
+  },
+  "lô nông dân<SEP>tỷ lệ sượng múi": {
+    "chunk_ids": [
+      "chunk-83024bfae732965059df9a1f8a716d8f"
+    ],
+    "count": 1,
+    "create_time": 1780404240,
+    "update_time": 1780404240,
+    "_id": "lô nông dân<SEP>tỷ lệ sượng múi"
+  },
+  "lượng nước absorption<SEP>phân hữu cơ": {
+    "chunk_ids": [
+      "chunk-83024bfae732965059df9a1f8a716d8f"
+    ],
+    "count": 1,
+    "create_time": 1780404240,
+    "update_time": 1780404240,
+    "_id": "lượng nước absorption<SEP>phân hữu cơ"
+  },
+  "lô xử lý NT4<SEP>tỷ lệ sượng múi": {
+    "chunk_ids": [
+      "chunk-83024bfae732965059df9a1f8a716d8f"
+    ],
+    "count": 1,
+    "create_time": 1780404240,
+    "update_time": 1780404240,
+    "_id": "lô xử lý NT4<SEP>tỷ lệ sượng múi"
+  },
+  "NT4<SEP>phân hữu cơ": {
+    "chunk_ids": [
+      "chunk-83024bfae732965059df9a1f8a716d8f"
+    ],
+    "count": 1,
+    "create_time": 1780404241,
+    "update_time": 1780404241,
+    "_id": "NT4<SEP>phân hữu cơ"
+  },
+  "lô<SEP>phân hữu cơ vi sinh (NT3 và NT4)": {
+    "chunk_ids": [
+      "chunk-391dd083fcec5bf45e0e1cca6290dc3b"
+    ],
+    "count": 1,
+    "create_time": 1780404286,
+    "update_time": 1780404286,
+    "_id": "lô<SEP>phân hữu cơ vi sinh (NT3 và NT4)"
+  },
+  "hữu cơ (OM)<SEP>Độ pH2O của đất tại NT4": {
+    "chunk_ids": [
+      "chunk-391dd083fcec5bf45e0e1cca6290dc3b"
+    ],
+    "count": 1,
+    "create_time": 1780404286,
+    "update_time": 1780404286,
+    "_id": "hữu cơ (OM)<SEP>Độ pH2O của đất tại NT4"
+  },
+  "hữu cơ (OM)<SEP>rễ tơ": {
+    "chunk_ids": [
+      "chunk-391dd083fcec5bf45e0e1cca6290dc3b"
+    ],
+    "count": 1,
+    "create_time": 1780404286,
+    "update_time": 1780404286,
+    "_id": "hữu cơ (OM)<SEP>rễ tơ"
+  },
+  "hàm lượng hữu cơ (OM)<SEP>phân hữu cơ vi sinh (NT3 và NT4)": {
+    "chunk_ids": [
+      "chunk-391dd083fcec5bf45e0e1cca6290dc3b"
+    ],
+    "count": 1,
+    "create_time": 1780404286,
+    "update_time": 1780404286,
+    "_id": "hàm lượng hữu cơ (OM)<SEP>phân hữu cơ vi sinh (NT3 và NT4)"
+  },
+  "keo đất<SEP>phân hữu cơ vi sinh (NT3 và NT4)": {
+    "chunk_ids": [
+      "chunk-391dd083fcec5bf45e0e1cca6290dc3b"
+    ],
+    "count": 1,
+    "create_time": 1780404287,
+    "update_time": 1780404287,
+    "_id": "keo đất<SEP>phân hữu cơ vi sinh (NT3 và NT4)"
+  },
+  "hàm lượng hữu cơ (OM)<SEP>độc chất hữu cơ tích tụ": {
+    "chunk_ids": [
+      "chunk-391dd083fcec5bf45e0e1cca6290dc3b"
+    ],
+    "count": 1,
+    "create_time": 1780404287,
+    "update_time": 1780404287,
+    "_id": "hàm lượng hữu cơ (OM)<SEP>độc chất hữu cơ tích tụ"
+  },
+  "hàm lượng hữu cơ (OM)<SEP>Độ pH2O của đất tại NT4": {
+    "chunk_ids": [
+      "chunk-391dd083fcec5bf45e0e1cca6290dc3b"
+    ],
+    "count": 1,
+    "create_time": 1780404287,
+    "update_time": 1780404287,
+    "_id": "hàm lượng hữu cơ (OM)<SEP>Độ pH2O của đất tại NT4"
+  },
+  "hàm lượng hữu cơ (OM)<SEP>rễ tơ": {
+    "chunk_ids": [
+      "chunk-391dd083fcec5bf45e0e1cca6290dc3b"
+    ],
+    "count": 1,
+    "create_time": 1780404288,
+    "update_time": 1780404288,
+    "_id": "hàm lượng hữu cơ (OM)<SEP>rễ tơ"
+  },
+  "cây sầu riêng Ri6<SEP>ĐBSCL": {
+    "chunk_ids": [
+      "chunk-f45ab806a12912df0e791b330f926ec1"
+    ],
+    "count": 1,
+    "create_time": 1780404326,
+    "update_time": 1780404326,
+    "_id": "cây sầu riêng Ri6<SEP>ĐBSCL"
+  },
+  "Tạp chí Khoa học Nông nghiệp Việt Nam<SEP>quy trình": {
+    "chunk_ids": [
+      "chunk-f45ab806a12912df0e791b330f926ec1"
+    ],
+    "count": 1,
+    "create_time": 1780404326,
+    "update_time": 1780404326,
+    "_id": "Tạp chí Khoa học Nông nghiệp Việt Nam<SEP>quy trình"
+  },
+  "cây sầu riêng Ri6<SEP>phẩm chất trái": {
+    "chunk_ids": [
+      "chunk-f45ab806a12912df0e791b330f926ec1"
+    ],
+    "count": 1,
+    "create_time": 1780404327,
+    "update_time": 1780404327,
+    "_id": "cây sầu riêng Ri6<SEP>phẩm chất trái"
+  },
+  "Tạp chí Khoa học Nông nghiệp Việt Nam (2026)<SEP>quy trình": {
+    "chunk_ids": [
+      "chunk-f45ab806a12912df0e791b330f926ec1"
+    ],
+    "count": 1,
+    "create_time": 1780404328,
+    "update_time": 1780404328,
+    "_id": "Tạp chí Khoa học Nông nghiệp Việt Nam (2026)<SEP>quy trình"
+  },
+  "Giáo Trình Canh Tác Cây Ăn Trái Nhiệt Đới Bền Vững<SEP>Nguyễn Minh Châu": {
+    "chunk_ids": [
+      "chunk-113f4d2d6f8561a4181d26a733ae1171"
+    ],
+    "count": 1,
+    "create_time": 1780404386,
+    "update_time": 1780404386,
+    "_id": "Giáo Trình Canh Tác Cây Ăn Trái Nhiệt Đới Bền Vững<SEP>Nguyễn Minh Châu"
+  },
+  "Nghiên Cứu Động Thái Dinh Dưỡng Và Kỹ Thuật Xử Lý Ra Hoa Sầu Riêng Tại ĐBSCL<SEP>Trần Văn Hầu": {
+    "chunk_ids": [
+      "chunk-113f4d2d6f8561a4181d26a733ae1171"
+    ],
+    "count": 1,
+    "create_time": 1780404386,
+    "update_time": 1780404386,
+    "_id": "Nghiên Cứu Động Thái Dinh Dưỡng Và Kỹ Thuật Xử Lý Ra Hoa Sầu Riêng Tại ĐBSCL<SEP>Trần Văn Hầu"
+  },
+  "Durian Nutrition and Fertilization Management in Southeast Asia<SEP>Partridge, I.": {
+    "chunk_ids": [
+      "chunk-113f4d2d6f8561a4181d26a733ae1171"
+    ],
+    "count": 1,
+    "create_time": 1780404386,
+    "update_time": 1780404386,
+    "_id": "Durian Nutrition and Fertilization Management in Southeast Asia<SEP>Partridge, I."
+  },
+  "Nghiên Cứu Động Thái Dinh Dưỡng Và Kỹ Thuật Xử Lý Ra Hoa Sầu Riêng Tại ĐBSCL<SEP>Tạp Chí Khoa Học Trường Đại Học Cần Thơ": {
+    "chunk_ids": [
+      "chunk-113f4d2d6f8561a4181d26a733ae1171"
+    ],
+    "count": 1,
+    "create_time": 1780404387,
+    "update_time": 1780404387,
+    "_id": "Nghiên Cứu Động Thái Dinh Dưỡng Và Kỹ Thuật Xử Lý Ra Hoa Sầu Riêng Tại ĐBSCL<SEP>Tạp Chí Khoa Học Trường Đại Học Cần Thơ"
+  },
+  "Tạp Chí Khoa Học Nông Nghiệp Việt Nam<SEP>số 4 năm 2026": {
+    "chunk_ids": [
+      "chunk-113f4d2d6f8561a4181d26a733ae1171"
+    ],
+    "count": 1,
+    "create_time": 1780404387,
+    "update_time": 1780404387,
+    "_id": "Tạp Chí Khoa Học Nông Nghiệp Việt Nam<SEP>số 4 năm 2026"
+  },
+  "ACIAR Technical Reports<SEP>Durian Nutrition and Fertilization Management in Southeast Asia": {
+    "chunk_ids": [
+      "chunk-113f4d2d6f8561a4181d26a733ae1171"
+    ],
+    "count": 1,
+    "create_time": 1780404387,
+    "update_time": 1780404387,
+    "_id": "ACIAR Technical Reports<SEP>Durian Nutrition and Fertilization Management in Southeast Asia"
+  },
+  "Giáo Trình Canh Tác Cây Ăn Trái Nhiệt Đới Bền Vững<SEP>Nhà Xuất Bản Nông Nghiệp": {
+    "chunk_ids": [
+      "chunk-113f4d2d6f8561a4181d26a733ae1171"
+    ],
+    "count": 1,
+    "create_time": 1780404387,
+    "update_time": 1780404387,
+    "_id": "Giáo Trình Canh Tác Cây Ăn Trái Nhiệt Đới Bền Vững<SEP>Nhà Xuất Bản Nông Nghiệp"
+  },
+  "Nguyễn Văn Hùng<SEP>Tạp Chí Khoa Học Và Công Nghệ Nông Nghiep Việt Nam": {
+    "chunk_ids": [
+      "chunk-e2dc67ff1091cb27ad44ef40a394fc35"
+    ],
+    "count": 1,
+    "create_time": 1780404431,
+    "update_time": 1780404431,
+    "_id": "Nguyễn Văn Hùng<SEP>Tạp Chí Khoa Học Và Công Nghệ Nông Nghiep Việt Nam"
+  },
+  "Trần Thị Mai<SEP>Tạp Chí Khoa Học Và Công Nghệ Nông Nghiep Việt Nam": {
+    "chunk_ids": [
+      "chunk-e2dc67ff1091cb27ad44ef40a394fc35"
+    ],
+    "count": 1,
+    "create_time": 1780404431,
+    "update_time": 1780404431,
+    "_id": "Trần Thị Mai<SEP>Tạp Chí Khoa Học Và Công Nghệ Nông Nghiep Việt Nam"
+  },
+  "Lê Hoàng Nam<SEP>Tạp Chí Khoa Học Và Công Nghệ Nông Nghiep Việt Nam": {
+    "chunk_ids": [
+      "chunk-e2dc67ff1091cb27ad44ef40a394fc35"
+    ],
+    "count": 1,
+    "create_time": 1780404432,
+    "update_time": 1780404432,
+    "_id": "Lê Hoàng Nam<SEP>Tạp Chí Khoa Học Và Công Nghệ Nông Nghiep Việt Nam"
+  },
+  "Khoa Nông nghiệp, Trường Đại học Cần Thơ<SEP>Trần Thị Mai": {
+    "chunk_ids": [
+      "chunk-e2dc67ff1091cb27ad44ef40a394fc35"
+    ],
+    "count": 1,
+    "create_time": 1780404433,
+    "update_time": 1780404433,
+    "_id": "Khoa Nông nghiệp, Trường Đại học Cần Thơ<SEP>Trần Thị Mai"
+  },
+  "Paclobutrazol (PBZ)<SEP>Phân bón lá chứa hàm lượng lân, kali cao": {
+    "chunk_ids": [
+      "chunk-cd3c5bb2f8d626b687f5e36efd8526f6"
+    ],
+    "count": 1,
+    "create_time": 1780404473,
+    "update_time": 1780404473,
+    "_id": "Paclobutrazol (PBZ)<SEP>Phân bón lá chứa hàm lượng lân, kali cao"
+  },
+  "Phân bón lá chứa hàm lượng lân, kali cao<SEP>Ri6": {
+    "chunk_ids": [
+      "chunk-cd3c5bb2f8d626b687f5e36efd8526f6"
+    ],
+    "count": 1,
+    "create_time": 1780404473,
+    "update_time": 1780404473,
+    "_id": "Phân bón lá chứa hàm lượng lân, kali cao<SEP>Ri6"
+  },
+  "Paclobutrazol (PBZ)<SEP>Ri6": {
+    "chunk_ids": [
+      "chunk-cd3c5bb2f8d626b687f5e36efd8526f6"
+    ],
+    "count": 1,
+    "create_time": 1780404474,
+    "update_time": 1780404474,
+    "_id": "Paclobutrazol (PBZ)<SEP>Ri6"
+  },
+  "Monthong<SEP>Paclobutrazol (PBZ)": {
+    "chunk_ids": [
+      "chunk-cd3c5bb2f8d626b687f5e36efd8526f6"
+    ],
+    "count": 1,
+    "create_time": 1780404474,
+    "update_time": 1780404474,
+    "_id": "Monthong<SEP>Paclobutrazol (PBZ)"
+  },
+  "Monthong<SEP>Phân bón lá chứa hàm lượng lân, kali cao": {
+    "chunk_ids": [
+      "chunk-cd3c5bb2f8d626b687f5e36efd8526f6"
+    ],
+    "count": 1,
+    "create_time": 1780404474,
+    "update_time": 1780404474,
+    "_id": "Monthong<SEP>Phân bón lá chứa hàm lượng lân, kali cao"
+  },
+  "Paclobutrazol<SEP>Ri6": {
+    "chunk_ids": [
+      "chunk-1589c1f679a5eacca3e3d21619795b82"
+    ],
+    "count": 1,
+    "create_time": 1780404502,
+    "update_time": 1780404502,
+    "_id": "Paclobutrazol<SEP>Ri6"
+  },
+  "KH2PO4<SEP>Monthong": {
+    "chunk_ids": [
+      "chunk-1589c1f679a5eacca3e3d21619795b82"
+    ],
+    "count": 1,
+    "create_time": 1780404502,
+    "update_time": 1780404502,
+    "_id": "KH2PO4<SEP>Monthong"
+  },
+  "Durio zibethinus<SEP>sầu riêng trái vụ": {
+    "chunk_ids": [
+      "chunk-1589c1f679a5eacca3e3d21619795b82"
+    ],
+    "count": 1,
+    "create_time": 1780404502,
+    "update_time": 1780404502,
+    "_id": "Durio zibethinus<SEP>sầu riêng trái vụ"
+  },
+  "KH2PO4<SEP>Paclobutrazol": {
+    "chunk_ids": [
+      "chunk-1589c1f679a5eacca3e3d21619795b82"
+    ],
+    "count": 1,
+    "create_time": 1780404503,
+    "update_time": 1780404503,
+    "_id": "KH2PO4<SEP>Paclobutrazol"
+  },
+  "(Durio zibethinus Murr.)<SEP>Sầu Riêng": {
+    "chunk_ids": [
+      "chunk-21e97bb5c3f336756c04d45db0dd1dd8"
+    ],
+    "count": 1,
+    "create_time": 1780405960,
+    "update_time": 1780405960,
+    "_id": "(Durio zibethinus Murr.)<SEP>Sầu Riêng"
+  },
+  "(carbon-fiber spikes)<SEP>Noah Carter": {
+    "chunk_ids": [
+      "chunk-21e97bb5c3f336756c04d45db0dd1dd8"
+    ],
+    "count": 1,
+    "create_time": 1780405960,
+    "update_time": 1780405960,
+    "_id": "(carbon-fiber spikes)<SEP>Noah Carter"
+  },
+  "(Durio zibethinus Murr.)<SEP>(sầu riêng)": {
+    "chunk_ids": [
+      "chunk-21e97bb5c3f336756c04d45db0dd1dd8"
+    ],
+    "count": 1,
+    "create_time": 1780405961,
+    "update_time": 1780405961,
+    "_id": "(Durio zibethinus Murr.)<SEP>(sầu riêng)"
+  },
+  "(Durio zibethinus Murr.)<SEP>mùa thuận": {
+    "chunk_ids": [
+      "chunk-21e97bb5c3f336756c04d45db0dd1dd8"
+    ],
+    "count": 1,
+    "create_time": 1780405961,
+    "update_time": 1780405961,
+    "_id": "(Durio zibethinus Murr.)<SEP>mùa thuận"
+  },
+  "(World Athletics Championship)<SEP>Noah Carter": {
+    "chunk_ids": [
+      "chunk-21e97bb5c3f336756c04d45db0dd1dd8"
+    ],
+    "count": 1,
+    "create_time": 1780405961,
+    "update_time": 1780405961,
+    "_id": "(World Athletics Championship)<SEP>Noah Carter"
+  },
+  "(Durio zibethinus Murr.)<SEP>được mùa mất giá": {
+    "chunk_ids": [
+      "chunk-21e97bb5c3f336756c04d45db0dd1dd8"
+    ],
+    "count": 1,
+    "create_time": 1780405961,
+    "update_time": 1780405961,
+    "_id": "(Durio zibethinus Murr.)<SEP>được mùa mất giá"
+  },
+  "(Durio zibethinus Murr.)<SEP>(mùa thuận)": {
+    "chunk_ids": [
+      "chunk-21e97bb5c3f336756c04d45db0dd1dd8"
+    ],
+    "count": 1,
+    "create_time": 1780405962,
+    "update_time": 1780405962,
+    "_id": "(Durio zibethinus Murr.)<SEP>(mùa thuận)"
+  },
+  "(Durio zibethinus Murr.)<SEP>World Athletics Federation": {
+    "chunk_ids": [
+      "chunk-21e97bb5c3f336756c04d45db0dd1dd8"
+    ],
+    "count": 1,
+    "create_time": 1780405962,
+    "update_time": 1780405962,
+    "_id": "(Durio zibethinus Murr.)<SEP>World Athletics Federation"
+  },
+  "(Durio zibethinus Murr.)<SEP>(carbon-fiber spikes)": {
+    "chunk_ids": [
+      "chunk-21e97bb5c3f336756c04d45db0dd1dd8"
+    ],
+    "count": 1,
+    "create_time": 1780405962,
+    "update_time": 1780405962,
+    "_id": "(Durio zibethinus Murr.)<SEP>(carbon-fiber spikes)"
+  },
+  "(Durio zibethinus Murr.)<SEP>(World Athletics Federation)": {
+    "chunk_ids": [
+      "chunk-21e97bb5c3f336756c04d45db0dd1dd8"
+    ],
+    "count": 1,
+    "create_time": 1780405963,
+    "update_time": 1780405963,
+    "_id": "(Durio zibethinus Murr.)<SEP>(World Athletics Federation)"
+  },
+  "xử lý ra hoa trái vụ<SEP>ĐBSCL": {
+    "chunk_ids": [
+      "chunk-cab6449b9c5128e5ce43eae86540c254"
+    ],
+    "count": 1,
+    "create_time": 1780405995,
+    "update_time": 1780405995,
+    "_id": "xử lý ra hoa trái vụ<SEP>ĐBSCL"
+  },
+  "người nông dân<SEP>xử lý ra hoa trái vụ": {
+    "chunk_ids": [
+      "chunk-cab6449b9c5128e5ce43eae86540c254"
+    ],
+    "count": 1,
+    "create_time": 1780405995,
+    "update_time": 1780405995,
+    "_id": "người nông dân<SEP>xử lý ra hoa trái vụ"
+  },
+  "mực nước ngầm cao<SEP>điều kiện tiên quyết để phân hóa mầm hoa sầu riêng": {
+    "chunk_ids": [
+      "chunk-a7a0af2748f77c910b597ecff7056306"
+    ],
+    "count": 1,
+    "create_time": 1780406039,
+    "update_time": 1780406039,
+    "_id": "mực nước ngầm cao<SEP>điều kiện tiên quyết để phân hóa mầm hoa sầu riêng"
+  },
+  "quy trình kỹ thuật tổng hợp<SEP>sầu riêng giống Ri6 và Monthong": {
+    "chunk_ids": [
+      "chunk-a7a0af2748f77c910b597ecff7056306"
+    ],
+    "count": 1,
+    "create_time": 1780406039,
+    "update_time": 1780406039,
+    "_id": "quy trình kỹ thuật tổng hợp<SEP>sầu riêng giống Ri6 và Monthong"
+  },
+  "nghiên cứu này<SEP>sầu riêng giống Ri6 và Monthong": {
+    "chunk_ids": [
+      "chunk-a7a0af2748f77c910b597ecff7056306"
+    ],
+    "count": 1,
+    "create_time": 1780406040,
+    "update_time": 1780406040,
+    "_id": "nghiên cứu này<SEP>sầu riêng giống Ri6 và Monthong"
+  },
+  "cơ giới ngăn nước<SEP>quy trình kỹ thuật tổng hợp": {
+    "chunk_ids": [
+      "chunk-a7a0af2748f77c910b597ecff7056306"
+    ],
+    "count": 1,
+    "create_time": 1780406040,
+    "update_time": 1780406040,
+    "_id": "cơ giới ngăn nước<SEP>quy trình kỹ thuật tổng hợp"
+  },
+  "hóa chất sinh trưởng<SEP>quy trình kỹ thuật tổng hợp": {
+    "chunk_ids": [
+      "chunk-a7a0af2748f77c910b597ecff7056306"
+    ],
+    "count": 1,
+    "create_time": 1780406041,
+    "update_time": 1780406041,
+    "_id": "hóa chất sinh trưởng<SEP>quy trình kỹ thuật tổng hợp"
+  },
+  "quy trình kỹ thuật tổng hợp<SEP>trái vụ": {
+    "chunk_ids": [
+      "chunk-a7a0af2748f77c910b597ecff7056306"
+    ],
+    "count": 1,
+    "create_time": 1780406042,
+    "update_time": 1780406042,
+    "_id": "quy trình kỹ thuật tổng hợp<SEP>trái vụ"
+  },
+  "mực nước ngầm cao<SEP>quy trình kỹ thuật tổng hợp": {
+    "chunk_ids": [
+      "chunk-a7a0af2748f77c910b597ecff7056306"
+    ],
+    "count": 1,
+    "create_time": 1780406042,
+    "update_time": 1780406042,
+    "_id": "mực nước ngầm cao<SEP>quy trình kỹ thuật tổng hợp"
+  },
+  "Cơi đọt thứ 2<SEP>Mạnh": {
+    "chunk_ids": [
+      "chunk-8ec606c812acdadaee8cf51356973084"
+    ],
+    "count": 1,
+    "create_time": 1780406087,
+    "update_time": 1780406087,
+    "_id": "Cơi đọt thứ 2<SEP>Mạnh"
+  },
+  "Paclobutrazol<SEP>RCBD": {
+    "chunk_ids": [
+      "chunk-8ec606c812acdadaee8cf51356973084"
+    ],
+    "count": 1,
+    "create_time": 1780406087,
+    "update_time": 1780406087,
+    "_id": "Paclobutrazol<SEP>RCBD"
+  },
+  "RCBD (Kiểu khối hoàn toàn ngẫu nhiên)<SEP>Tạp chí Khoa học Nông nghiệp Việt Nam": {
+    "chunk_ids": [
+      "chunk-8ec606c812acdadaee8cf51356973084"
+    ],
+    "count": 1,
+    "create_time": 1780406087,
+    "update_time": 1780406087,
+    "_id": "RCBD (Kiểu khối hoàn toàn ngẫu nhiên)<SEP>Tạp chí Khoa học Nông nghiệp Việt Nam"
+  },
+  "Mạnh<SEP>Sâu bệnh nguy hiểm": {
+    "chunk_ids": [
+      "chunk-8ec606c812acdadaee8cf51356973084"
+    ],
+    "count": 1,
+    "create_time": 1780406088,
+    "update_time": 1780406088,
+    "_id": "Mạnh<SEP>Sâu bệnh nguy hiểm"
+  },
+  "RCBD<SEP>Tạp chí Khoa học Nông nghiệp Việt Nam": {
+    "chunk_ids": [
+      "chunk-8ec606c812acdadaee8cf51356973084"
+    ],
+    "count": 1,
+    "create_time": 1780406088,
+    "update_time": 1780406088,
+    "_id": "RCBD<SEP>Tạp chí Khoa học Nông nghiệp Việt Nam"
+  },
+  "Paclobutrazol<SEP>RCBD (Kiểu khối hoàn toàn ngẫu nhiên)": {
+    "chunk_ids": [
+      "chunk-8ec606c812acdadaee8cf51356973084"
+    ],
+    "count": 1,
+    "create_time": 1780406088,
+    "update_time": 1780406088,
+    "_id": "Paclobutrazol<SEP>RCBD (Kiểu khối hoàn toàn ngẫu nhiên)"
+  },
+  "CT1<SEP>CT2": {
+    "chunk_ids": [
+      "chunk-30ce2dbd7a3c935f4614c2bd603bdc4d",
+      "chunk-eb4d3340fc564f484d1841879a536eca"
+    ],
+    "count": 2,
+    "update_time": 1780406288,
+    "_id": "CT1<SEP>CT2"
+  },
+  "CT3<SEP>CT4": {
+    "chunk_ids": [
+      "chunk-30ce2dbd7a3c935f4614c2bd603bdc4d"
+    ],
+    "count": 1,
+    "create_time": 1780406133,
+    "update_time": 1780406133,
+    "_id": "CT3<SEP>CT4"
+  },
+  "CT2<SEP>CT3": {
+    "chunk_ids": [
+      "chunk-30ce2dbd7a3c935f4614c2bd603bdc4d"
+    ],
+    "count": 1,
+    "create_time": 1780406134,
+    "update_time": 1780406134,
+    "_id": "CT2<SEP>CT3"
+  },
+  "CT1<SEP>CT3": {
+    "chunk_ids": [
+      "chunk-30ce2dbd7a3c935f4614c2bd603bdc4d",
+      "chunk-eb4d3340fc564f484d1841879a536eca"
+    ],
+    "count": 2,
+    "update_time": 1780406289,
+    "_id": "CT1<SEP>CT3"
+  },
+  "CT2<SEP>CT4": {
+    "chunk_ids": [
+      "chunk-30ce2dbd7a3c935f4614c2bd603bdc4d"
+    ],
+    "count": 1,
+    "create_time": 1780406134,
+    "update_time": 1780406134,
+    "_id": "CT2<SEP>CT4"
+  },
+  "CT3<SEP>Paclobutrazol": {
+    "chunk_ids": [
+      "chunk-30ce2dbd7a3c935f4614c2bd603bdc4d",
+      "chunk-eb4d3340fc564f484d1841879a536eca"
+    ],
+    "count": 2,
+    "update_time": 1780406288,
+    "_id": "CT3<SEP>Paclobutrazol"
+  },
+  "Bước 1<SEP>Paclobutrazol": {
+    "chunk_ids": [
+      "chunk-30ce2dbd7a3c935f4614c2bd603bdc4d"
+    ],
+    "count": 1,
+    "create_time": 1780406135,
+    "update_time": 1780406135,
+    "_id": "Bước 1<SEP>Paclobutrazol"
+  },
+  "CT4<SEP>Paclobutrazol": {
+    "chunk_ids": [
+      "chunk-30ce2dbd7a3c935f4614c2bd603bdc4d",
+      "chunk-eb4d3340fc564f484d1841879a536eca"
+    ],
+    "count": 2,
+    "update_time": 1780406288,
+    "_id": "CT4<SEP>Paclobutrazol"
+  },
+  "CT2<SEP>Paclobutrazol": {
+    "chunk_ids": [
+      "chunk-30ce2dbd7a3c935f4614c2bd603bdc4d",
+      "chunk-eb4d3340fc564f484d1841879a536eca"
+    ],
+    "count": 2,
+    "update_time": 1780406287,
+    "_id": "CT2<SEP>Paclobutrazol"
+  },
+  "CT1<SEP>CT4": {
+    "chunk_ids": [
+      "chunk-30ce2dbd7a3c935f4614c2bd603bdc4d",
+      "chunk-eb4d3340fc564f484d1841879a536eca"
+    ],
+    "count": 2,
+    "update_time": 1780406289,
+    "_id": "CT1<SEP>CT4"
+  },
+  "Super lân<SEP>unce": {
+    "chunk_ids": [
+      "chunk-c8dfb7c8a976bcf07d28ce2fea95341c"
+    ],
+    "count": 1,
+    "create_time": 1780406156,
+    "update_time": 1780406156,
+    "_id": "Super lân<SEP>unce"
+  },
+  "Paclobutrazol<SEP>method": {
+    "chunk_ids": [
+      "chunk-c8dfb7c8a976bcf07d28ce2fea95341c"
+    ],
+    "count": 1,
+    "create_time": 1780406156,
+    "update_time": 1780406156,
+    "_id": "Paclobutrazol<SEP>method"
+  },
+  "Super lân<SEP>phân bón": {
+    "chunk_ids": [
+      "chunk-c8dfb7c8a976bcf07d28ce2fea95341c"
+    ],
+    "count": 1,
+    "create_time": 1780406158,
+    "update_time": 1780406158,
+    "_id": "Super lân<SEP>phân bón"
+  },
+  "D×k<SEP>M": {
+    "chunk_ids": [
+      "chunk-94153e3dc383d7b213a8acb350bc1d3c"
+    ],
+    "count": 1,
+    "create_time": 1780406194,
+    "update_time": 1780406194,
+    "_id": "D×k<SEP>M"
+  },
+  "MKP (0:52:34)<SEP>phun": {
+    "chunk_ids": [
+      "chunk-94153e3dc383d7b213a8acb350bc1d3c"
+    ],
+    "count": 1,
+    "create_time": 1780406194,
+    "update_time": 1780406194,
+    "_id": "MKP (0:52:34)<SEP>phun"
+  },
+  "mầm hoa (mắt cua)<SEP>phun": {
+    "chunk_ids": [
+      "chunk-94153e3dc383d7b213a8acb350bc1d3c"
+    ],
+    "count": 1,
+    "create_time": 1780406195,
+    "update_time": 1780406195,
+    "_id": "mầm hoa (mắt cua)<SEP>phun"
+  },
+  "Giống Ri6<SEP>Paclobutrazol": {
+    "chunk_ids": [
+      "chunk-624c054c4d7eb5fd5206e73c3051a337"
+    ],
+    "count": 1,
+    "create_time": 1780406254,
+    "update_time": 1780406254,
+    "_id": "Giống Ri6<SEP>Paclobutrazol"
+  },
+  "Giống Monthong<SEP>Paclobutrazol": {
+    "chunk_ids": [
+      "chunk-624c054c4d7eb5fd5206e73c3051a337"
+    ],
+    "count": 1,
+    "create_time": 1780406254,
+    "update_time": 1780406254,
+    "_id": "Giống Monthong<SEP>Paclobutrazol"
+  },
+  "CT1 (ĐC)<SEP>Paclobutrazol": {
+    "chunk_ids": [
+      "chunk-624c054c4d7eb5fd5206e73c3051a337"
+    ],
+    "count": 1,
+    "create_time": 1780406255,
+    "update_time": 1780406255,
+    "_id": "CT1 (ĐC)<SEP>Paclobutrazol"
+  },
+  "CT2 (1000 ppm)<SEP>Paclobutrazol": {
+    "chunk_ids": [
+      "chunk-624c054c4d7eb5fd5206e73c3051a337"
+    ],
+    "count": 1,
+    "create_time": 1780406255,
+    "update_time": 1780406255,
+    "_id": "CT2 (1000 ppm)<SEP>Paclobutrazol"
+  },
+  "CT3 (1500 ppm)<SEP>Paclobutrazol": {
+    "chunk_ids": [
+      "chunk-624c054c4d7eb5fd5206e73c3051a337"
+    ],
+    "count": 1,
+    "create_time": 1780406256,
+    "update_time": 1780406256,
+    "_id": "CT3 (1500 ppm)<SEP>Paclobutrazol"
+  },
+  "Bảng 1<SEP>Paclobutrazol": {
+    "chunk_ids": [
+      "chunk-624c054c4d7eb5fd5206e73c3051a337"
+    ],
+    "count": 1,
+    "create_time": 1780406256,
+    "update_time": 1780406256,
+    "_id": "Bảng 1<SEP>Paclobutrazol"
+  },
+  "CT1<SEP>Paclobutrazol": {
+    "chunk_ids": [
+      "chunk-eb4d3340fc564f484d1841879a536eca"
+    ],
+    "count": 1,
+    "create_time": 1780406289,
+    "update_time": 1780406289,
+    "_id": "CT1<SEP>Paclobutrazol"
+  },
+  "gián đoạn quá trình sốc khô<SEP>tỷ lệ cây ra hoa": {
+    "chunk_ids": [
+      "chunk-ea9cf80b4636b75e2f2b29d9231c3358"
+    ],
+    "count": 1,
+    "create_time": 1780406328,
+    "update_time": 1780406328,
+    "_id": "gián đoạn quá trình sốc khô<SEP>tỷ lệ cây ra hoa"
+  },
+  "thời gian xuất hiện mắt cua<SEP>tăng nồng độ xử lý hóa chất": {
+    "chunk_ids": [
+      "chunk-ea9cf80b4636b75e2f2b29d9231c3358"
+    ],
+    "count": 1,
+    "create_time": 1780406328,
+    "update_time": 1780406328,
+    "_id": "thời gian xuất hiện mắt cua<SEP>tăng nồng độ xử lý hóa chất"
+  },
+  "tăng nồng độ xử lý hóa chất<SEP>tỷ lệ ra hoa": {
+    "chunk_ids": [
+      "chunk-ea9cf80b4636b75e2f2b29d9231c3358"
+    ],
+    "count": 1,
+    "create_time": 1780406329,
+    "update_time": 1780406329,
+    "_id": "tăng nồng độ xử lý hóa chất<SEP>tỷ lệ ra hoa"
+  },
+  "CT4<SEP>lượt": {
+    "chunk_ids": [
+      "chunk-df135134fdc07139f417c7d28bbdaaf8"
+    ],
+    "count": 1,
+    "create_time": 1780406357,
+    "update_time": 1780406357,
+    "_id": "CT4<SEP>lượt"
+  },
+  "cơi đọt sau<SEP>lượt": {
+    "chunk_ids": [
+      "chunk-df135134fdc07139f417c7d28bbdaaf8"
+    ],
+    "count": 1,
+    "create_time": 1780406358,
+    "update_time": 1780406358,
+    "_id": "cơi đọt sau<SEP>lượt"
+  },
+  "CT4<SEP>cơi đọt sau": {
+    "chunk_ids": [
+      "chunk-df135134fdc07139f417c7d28bbdaaf8"
+    ],
+    "count": 1,
+    "create_time": 1780406358,
+    "update_time": 1780406358,
+    "_id": "CT4<SEP>cơi đọt sau"
+  },
+  "giải pháp áp dụng kỹ thuật tổng hợp<SEP>sầu riêng Ri6": {
+    "chunk_ids": [
+      "chunk-b61eecaba4873885349a14a250f09514"
+    ],
+    "count": 1,
+    "create_time": 1780406399,
+    "update_time": 1780406399,
+    "_id": "giải pháp áp dụng kỹ thuật tổng hợp<SEP>sầu riêng Ri6"
+  },
+  "Noah Carter<SEP>World Athletics Championship": {
+    "chunk_ids": [
+      "chunk-b61eecaba4873885349a14a250f09514"
+    ],
+    "count": 1,
+    "create_time": 1780406399,
+    "update_time": 1780406399,
+    "_id": "Noah Carter<SEP>World Athletics Championship"
+  },
+  "Tokyo<SEP>World Athletics Championship": {
+    "chunk_ids": [
+      "chunk-b61eecaba4873885349a14a250f09514"
+    ],
+    "count": 1,
+    "create_time": 1780406400,
+    "update_time": 1780406400,
+    "_id": "Tokyo<SEP>World Athletics Championship"
+  },
+  "Monthong<SEP>giải pháp áp dụng kỹ thuật tổng hợp": {
+    "chunk_ids": [
+      "chunk-b61eecaba4873885349a14a250f09514"
+    ],
+    "count": 1,
+    "create_time": 1780406401,
+    "update_time": 1780406401,
+    "_id": "Monthong<SEP>giải pháp áp dụng kỹ thuật tổng hợp"
+  },
+  "giải pháp áp dụng kỹ thuật tổng hợp<SEP>vùng ĐBSCL": {
+    "chunk_ids": [
+      "chunk-b61eecaba4873885349a14a250f09514"
+    ],
+    "count": 1,
+    "create_time": 1780406401,
+    "update_time": 1780406401,
+    "_id": "giải pháp áp dụng kỹ thuật tổng hợp<SEP>vùng ĐBSCL"
+  },
+  "Paclobutrazol<SEP>TÀI LIỆU THAM KHẢO": {
+    "chunk_ids": [
+      "chunk-09cab8734103cdbfe3bd06007fdc767d"
+    ],
+    "count": 1,
+    "create_time": 1780406445,
+    "update_time": 1780406445,
+    "_id": "Paclobutrazol<SEP>TÀI LIỆU THAM KHẢO"
+  },
+  "Humic Acid<SEP>TÀI LIỆU THAM KHẢO": {
+    "chunk_ids": [
+      "chunk-09cab8734103cdbfe3bd06007fdc767d"
+    ],
+    "count": 1,
+    "create_time": 1780406446,
+    "update_time": 1780406446,
+    "_id": "Humic Acid<SEP>TÀI LIỆU THAM KHẢO"
+  },
+  "Fulvic Acid<SEP>TÀI LIỆU THAM KHẢO": {
+    "chunk_ids": [
+      "chunk-09cab8734103cdbfe3bd06007fdc767d"
+    ],
+    "count": 1,
+    "create_time": 1780406446,
+    "update_time": 1780406446,
+    "_id": "Fulvic Acid<SEP>TÀI LIỆU THAM KHẢO"
+  },
+  "Micronutrient Fertilizer<SEP>TÀI LIỆU THAM KHẢO": {
+    "chunk_ids": [
+      "chunk-09cab8734103cdbfe3bd06007fdc767d"
+    ],
+    "count": 1,
+    "create_time": 1780406446,
+    "update_time": 1780406446,
+    "_id": "Micronutrient Fertilizer<SEP>TÀI LIỆU THAM KHẢO"
+  },
+  "Organic Soil Recovery Process<SEP>TÀI LIỆU THAM KHẢO": {
+    "chunk_ids": [
+      "chunk-09cab8734103cdbfe3bd06007fdc767d"
+    ],
+    "count": 1,
+    "create_time": 1780406447,
+    "update_time": 1780406447,
+    "_id": "Organic Soil Recovery Process<SEP>TÀI LIỆU THAM KHẢO"
+  },
+  "Kỹ thuật trồng và xử lý ra hoa các loại cây ăn trái miền Nam<SEP>Nguyễn Minh Châu (2018)": {
+    "chunk_ids": [
+      "chunk-36069d1f1d18b0c68345409e6585ddfc"
+    ],
+    "count": 1,
+    "create_time": 1780406493,
+    "update_time": 1780406493,
+    "_id": "Kỹ thuật trồng và xử lý ra hoa các loại cây ăn trái miền Nam<SEP>Nguyễn Minh Châu (2018)"
+  },
+  "Trần Văn Hâu, & Lê Gia Hiền (2020)<SEP>Ảnh hưởng của liều lượng Paclobutrazol xử lý qua đất đến sự ra hoa trái vụ của sầu riêng Ri6 tại huyện Phong Điền, thành phố Cần Thơ": {
+    "chunk_ids": [
+      "chunk-36069d1f1d18b0c68345409e6585ddfc"
+    ],
+    "count": 1,
+    "create_time": 1780406493,
+    "update_time": 1780406493,
+    "_id": "Trần Văn Hâu, & Lê Gia Hiền (2020)<SEP>Ảnh hưởng của liều lượng Paclobutrazol xử lý qua đất đến sự ra hoa trái vụ của sầu riêng Ri6 tại huyện Phong Điền, thành phố Cần Thơ"
+  },
+  "Tạp chí Khoa học Trường Đại học Cần Thơ<SEP>Ảnh hưởng của liều lượng Paclobutrazol xử lý qua đất đến sự ra hoa trái vụ của sầu riêng Ri6 tại huyện Phong Điền, thành phố Cần Thơ": {
+    "chunk_ids": [
+      "chunk-36069d1f1d18b0c68345409e6585ddfc"
+    ],
+    "count": 1,
+    "create_time": 1780406494,
+    "update_time": 1780406494,
+    "_id": "Tạp chí Khoa học Trường Đại học Cần Thơ<SEP>Ảnh hưởng của liều lượng Paclobutrazol xử lý qua đất đến sự ra hoa trái vụ của sầu riêng Ri6 tại huyện Phong Điền, thành phố Cần Thơ"
+  },
+  "Acta Horticulturae<SEP>Poerwanto": {
+    "chunk_ids": [
+      "chunk-b8038160863963e75389605a8fa2ad20"
+    ],
+    "count": 1,
+    "create_time": 1780406524,
+    "update_time": 1780406524,
+    "_id": "Acta Horticulturae<SEP>Poerwanto"
+  },
+  "Efendi<SEP>Tạp chí Khoa học Nông nghiệp Việt Nam": {
+    "chunk_ids": [
+      "chunk-b8038160863963e75389605a8fa2ad20"
+    ],
+    "count": 1,
+    "create_time": 1780406524,
+    "update_time": 1780406524,
+    "_id": "Efendi<SEP>Tạp chí Khoa học Nông nghiệp Việt Nam"
+  },
+  "Poerwanto<SEP>Tạp chí Khoa học Nông nghiệp Việt Nam": {
+    "chunk_ids": [
+      "chunk-b8038160863963e75389605a8fa2ad20"
+    ],
+    "count": 1,
+    "create_time": 1780406524,
+    "update_time": 1780406524,
+    "_id": "Poerwanto<SEP>Tạp chí Khoa học Nông nghiệp Việt Nam"
+  },
+  "D.<SEP>Efendi": {
+    "chunk_ids": [
+      "chunk-b8038160863963e75389605a8fa2ad20"
+    ],
+    "count": 1,
+    "create_time": 1780406524,
+    "update_time": 1780406524,
+    "_id": "D.<SEP>Efendi"
+  },
+  "Poerwanto<SEP>R.": {
+    "chunk_ids": [
+      "chunk-b8038160863963e75389605a8fa2ad20"
+    ],
+    "count": 1,
+    "create_time": 1780406525,
+    "update_time": 1780406525,
+    "_id": "Poerwanto<SEP>R."
+  },
+  "Acta Horticulturae<SEP>Efendi": {
+    "chunk_ids": [
+      "chunk-b8038160863963e75389605a8fa2ad20"
+    ],
+    "count": 1,
+    "create_time": 1780406525,
+    "update_time": 1780406525,
+    "_id": "Acta Horticulturae<SEP>Efendi"
+  }
+}
