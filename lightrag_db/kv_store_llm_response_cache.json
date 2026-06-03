@@ -100,5 +100,25 @@
     "create_time": 1780461453,
     "update_time": 1780461453,
     "_id": "local:query:f8550a8cc01046051c6f1df67dfa2c9f"
+  },
+  "naive:query:1aa8b82d4d07dd5a7fb5ffaa7cc565d2": {
+    "return": "Dạ để em hỏi lại sếp.",
+    "cache_type": "query",
+    "chunk_id": null,
+    "original_prompt": "mặt trăng là gì?",
+    "queryparam": {
+      "mode": "naive",
+      "response_type": "Multiple Paragraphs",
+      "top_k": 40,
+      "chunk_top_k": 20,
+      "max_entity_tokens": 6000,
+      "max_relation_tokens": 8000,
+      "max_total_tokens": 30000,
+      "user_prompt": "",
+      "enable_rerank": true
+    },
+    "create_time": 1780490970,
+    "update_time": 1780490970,
+    "_id": "naive:query:1aa8b82d4d07dd5a7fb5ffaa7cc565d2"
   }
 }
