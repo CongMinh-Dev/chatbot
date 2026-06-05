@@ -93,7 +93,7 @@ async def main():
     await rag.initialize_storages()
 
     print("\n🚀 Đang tiến hành nạp NGUYÊN KHỐI văn bản liên tục vào LightRAG...")
-    print("💡 Hệ thống sẽ tự động băm nhỏ thông minh thành các chunk ~350 token.")
+    print("💡 Hệ thống sẽ tự động băm nhỏ thông minh thành các chunk ~500 token.")
     print("⏳ Đang chạy trích xuất thực thể đồ thị Tri thức (Vui lòng đợi)...")
     
     # Reset lại cờ bắt log ghi đĩa trước khi nạp
