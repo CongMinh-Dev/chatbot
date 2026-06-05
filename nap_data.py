@@ -4,7 +4,6 @@ import shutil
 import asyncio
 import logging  # <-- Thư viện để quản lý và bắt log bằng chữ
 from pathlib import Path
-from tqdm import tqdm
 
 # ========================================================
 # 🔥 ĐOẠN VÁ LỖI TIKTOKEN CHẶN <|endoftext|> TRÊN COLAB
@@ -21,90 +20,106 @@ tiktoken.Encoding.encode = safe_encode
 
 from lightrag import LightRAG
 from lightrag.llm.ollama import ollama_model_complete, ollama_embed
-from langchain_community.document_loaders import PyPDFLoader, TextLoader
-from langchain_text_splitters import RecursiveCharacterTextSplitter
+from langchain_community.document_loaders import PyPDFLoader
 
 WORKING_DIR = "/content/chatbot/lightrag_db"
-checkpoint_file = os.path.join(WORKING_DIR, "resume_checkpoint.txt")
 
-# Khai báo các biến toàn cục để bộ bắt log có thể dùng chung với hàm main
-CURRENT_CHUNK_INDEX = 0
+# Khai báo biến toàn cục để bộ bắt log có thể dùng chung với hàm main
 LOGGED_PERSIST_SUCCESS = False
 
 # ========================================================
-# 🎯 BỘ ĐỌC LOG VÀ SO SÁNH CHỮ TỰ ĐỘNG
+# 🤖 BỘ PHÁT HIỆN LOG GHI ĐĨA (CUSTOM LOG HANDLER)
 # ========================================================
-class LightRAGLogInterceptor(logging.Handler):
+class LightRAGLogFilter(logging.Handler):
     def emit(self, record):
         global LOGGED_PERSIST_SUCCESS
-        
-        # 1. Lấy ra nội dung thông báo bằng chữ (String) từ hệ thống log
         log_message = record.getMessage()
         
-        # 2. So sánh trực tiếp bằng chữ xem có đúng cụm từ yêu cầu không
+        # Bắt từ khóa ghi đĩa thành công của LightRAG
         if "In memory DB persist to disk" in log_message:
-            # Đánh dấu là đã tìm thấy dòng chữ thành công
             LOGGED_PERSIST_SUCCESS = True
-            
-            # 3. Tiến hành ghi luôn index của chunk xuống file txt
-            try:
-                with open(checkpoint_file, "w") as f:
-                    # CURRENT_CHUNK_INDEX + 1 nghĩa là lần sau mở lên sẽ chạy chunk tiếp theo
-                    f.write(str(CURRENT_CHUNK_INDEX + 1))
-                print(f"\n💾 [Hệ thống Log] Phát hiện chữ 'In memory DB persist to disk' -> Đã chốt sổ chunk {CURRENT_CHUNK_INDEX + 1} vào txt.")
-            except Exception as e:
-                print(f"\n❌ Lỗi khi ghi file checkpoint từ Log: {e}")
 
-# Kích hoạt bộ lọc log này để nghe trọn vẹn thư viện lightrag
-logger = logging.getLogger("lightrag")
-logger.addHandler(LightRAGLogInterceptor())
+# Cấu hình log của hệ thống để add bộ lọc phía trên vào
+logger = logging.getLogger()
+logger.setLevel(logging.INFO)
+custom_handler = LightRAGLogFilter()
+logger.addHandler(custom_handler)
 # ========================================================
 
 
+# ========================================================
+# 🛠️ KHỞI TẠO CẤU HÌNH LIGHTRAG TỐI ƯU SIÊU NHẸ CHO CPU
+# ========================================================
+rag = LightRAG(
+    working_dir=WORKING_DIR,
+    llm_model_func=ollama_model_complete,
+    llm_model_name="qwen2.5:14b",            # Tên model LLM chạy trên Colab
+    embedding_func=ollama_embed, 
+    
+    # ─── CẤU HÌNH BĂM NHỎ THEO Ý BẠN ĐỂ CPU CHẠY MƯỢT ───
+    chunk_token_size=500,         # ~500 ký tự (Giúp CPU local xử lý prompt rất nhẹ và nhanh)
+    chunk_overlap_token_size=100, # Chồng lấn 100 token giữ ngữ cảnh nối trang, chống lỗi 0 chunk
+    
+    addon_params={
+        "language": "Vietnamese",
+        "llm_model_kwargs": {"options": {"num_ctx": 8192}}, # Mở rộng ngữ cảnh khi xử lý trên GPU Colab
+        "embedding_model_name": "embeddinggemma:latest" 
+    }
+)
+
 
 # ========================================================
-# CHỈNH SỬA VỊ TRÍ 2: Đọc nguyên khối PDF và đẩy thẳng vào LightRAG
+# 🚀 HÀM CHÍNH ĐỌC PDF NGUYÊN KHỐI VÀ NẠP VÀO GRAPH_RAG
 # ========================================================
 async def main():
-    global CURRENT_CHUNK_INDEX
+    global LOGGED_PERSIST_SUCCESS
     
-    # Đường dẫn file PDF của bạn (giữ nguyên PDF, không cần đổi sang .txt)
-    file_path = "/content/chatbot/data/foodPet.pdf" 
+    file_path = "/content/chatbot/data/foodPet.pdf"
     
     if not os.path.exists(file_path):
-        print(f"❌ Không tìm thấy file dữ liệu tại: {file_path}")
+        print(f"❌ Sai đường dẫn! Không tìm thấy file dữ liệu tại: {file_path}")
         return
 
-    # 1. Đọc toàn bộ file PDF và ghép các trang thành 1 chuỗi văn bản duy nhất
-    print("📄 Đang đọc dữ liệu từ file PDF...")
+    # 1. Đọc toàn bộ nội dung text từ file PDF gốc
+    print("📄 Đang đọc toàn bộ dữ liệu từ file PDF...")
     loader = PyPDFLoader(file_path)
     docs = loader.load()
     
-    # Ghép toàn bộ nội dung text của các trang lại với nhau, giữ nguyên tính liên tục
+    # Ghép tất cả văn bản các trang lại thành 1 chuỗi lớn liên tục độc nhất
     full_pdf_text = "\n".join([doc.page_content for doc in docs])
     print(f"✅ Đọc thành công! Tổng số ký tự thô: {len(full_pdf_text)}")
 
-    # 2. Khởi tạo kho lưu trữ đồ thị
+    # 2. Khởi tạo kho lưu trữ rỗng mới
     await rag.initialize_storages()
 
-    print("\n🚀 Đang tiến hành nạp NGUYÊN KHỐI văn bản vào LightRAG...")
-    print("💡 LightRAG sẽ tự động băm thông minh theo cấu hình chunk_token_size=350.")
-    print("⏳ Quá trình trích xuất thực thể đồ thị bắt đầu (Vui lòng đợi)...")
+    print("\n🚀 Đang tiến hành nạp NGUYÊN KHỐI văn bản liên tục vào LightRAG...")
+    print("💡 Hệ thống sẽ tự động băm nhỏ thông minh thành các chunk ~350 token.")
+    print("⏳ Đang chạy trích xuất thực thể đồ thị Tri thức (Vui lòng đợi)...")
+    
+    # Reset lại cờ bắt log ghi đĩa trước khi nạp
+    LOGGED_PERSIST_SUCCESS = False
     
     try:
-        # BỎ HOÀN TOÀN vòng lặp for cũ. Đẩy nguyên khối text vào bằng 1 lệnh duy nhất.
+        # BỎ HOÀN TOÀN vòng lặp 'for chunk' cũ. Nạp trực tiếp cả khối văn bản lớn.
         await rag.ainsert(full_pdf_text)
-        print("✅ Thao tác kết thúc lệnh ainsert thành công!")
+        
+        # Kiểm tra tính an toàn dữ liệu thông qua Custom Log Handler
+        if LOGGED_PERSIST_SUCCESS:
+            print("💾 Log hệ thống: Đã xác nhận cơ sở dữ liệu đồ thị lưu xuống đĩa thành công!")
+        else:
+            print("⚠️ [Cảnh báo] Lệnh ainsert đã chạy xong nhưng hệ thống chưa kích hoạt lệnh Persist Disk.")
+            
     except Exception as e:
-        print(f"❌ Lỗi crash trong quá trình nạp dữ liệu: {e}")
+        print(f"❌ Lỗi crash trong quá trình xử lý nạp dữ liệu: {e}")
         return
 
-    # 3. Đóng gói sao lưu kết quả sau khi hoàn thành
+    # 3. Tiến hành đóng gói nén zip thư mục lightrag_db để bạn tải về máy cá nhân CPU
     zip_output_path = "/content/chatbot/lightrag_snapshots/lightrag_final_backup"
     os.makedirs("/content/chatbot/lightrag_snapshots", exist_ok=True)
-    print("\n📦 Đang đóng gói toàn bộ đồ thị tri thức mới...")
+    
+    print("\n📦 Đang đóng gói toàn bộ thư mục đồ thị tri thức siêu nhẹ...")
     shutil.make_archive(zip_output_path, 'zip', WORKING_DIR)
-    print(f"🎯 HOÀN TẤT! Đồ thị siêu nhẹ cho CPU đã được tạo thành công tại: {zip_output_path}.zip")
+    print(f"🎯 HOÀN TẤT THÀNH CÔNG! File sao lưu của bạn đã sẵn sàng tại:\n👉 {zip_output_path}.zip")
 
 if __name__ == '__main__':
     asyncio.run(main())
