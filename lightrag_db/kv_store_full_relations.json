@@ -1,42 +1,394 @@
 {
-  "doc-cdef2a60c00766ca5c2ccd01c3e98b2b": {
+  "doc-a10616f7e4cb31b490842118015cb66e": {
     "relation_pairs": [
       [
-        "Lê Hoàng Nam",
-        "Viện Cây ăn quả miền Nam (SOFRI)"
+        "Lecithin",
+        "SmartHeart Puppy Food"
       ],
       [
-        "Trần Thị Mai",
-        "Đại học Cần Thơ"
+        "DHA và Axit béo Omega-3",
+        "SmartHeart Puppy Food"
       ],
       [
-        "Tạp chí Khoa học Công nghệ Nông nghiệp Việt Nam",
-        "Đồng bằng sông Cửu Long"
+        "Choline",
+        "SmartHeart Puppy Food"
       ],
       [
-        "Nguyễn Văn Hùng",
-        "Tạp chí Khoa học Công nghệ Nông nghiệp Việt Nam"
+        "SmartHeart Puppy Food",
+        "Thái Lan"
       ],
       [
-        "Nguyễn Văn Hùng",
-        "Đại học Cần Thơ"
+        "SmartHeart",
+        "SmartHeart Puppy Food"
+      ]
+    ],
+    "count": 5,
+    "create_time": 1780497269,
+    "update_time": 1780497269,
+    "_id": "doc-a10616f7e4cb31b490842118015cb66e"
+  },
+  "doc-b7806e3fc1467ef61ba44d0e6d251f61": {
+    "relation_pairs": [
+      [
+        "SmartHeart Puppy Food",
+        "Thái Lan"
       ],
       [
-        "Lê Hoàng Nam",
-        "Tạp chí Khoa học Công nghệ Nông nghiệp Việt Nam"
+        "Bỉ",
+        "SmartHeart Puppy Food"
       ],
       [
-        "Alex",
-        "The Device"
+        "Bỉ",
+        "Thức ăn cho chó 2"
       ],
       [
-        "Trần Thị Mai",
-        "Tạp chí Khoa học Công nghệ Nông nghiệp Việt Nam"
+        "SmartHeart Puppy Food",
+        "Thức ăn cho chó 2"
+      ]
+    ],
+    "count": 4,
+    "create_time": 1780497317,
+    "update_time": 1780497317,
+    "_id": "doc-b7806e3fc1467ef61ba44d0e6d251f61"
+  },
+  "doc-aae3374937813542c55bb3c3b165890a": {
+    "relation_pairs": [
+      [
+        "SmartHeart",
+        "Đức"
+      ],
+      [
+        "Thức ăn cho chó con SmartHeart",
+        "Đức"
+      ],
+      [
+        "300000",
+        "Thức ăn cho chó con SmartHeart"
+      ]
+    ],
+    "count": 3,
+    "create_time": 1780497367,
+    "update_time": 1780497367,
+    "_id": "doc-aae3374937813542c55bb3c3b165890a"
+  },
+  "doc-e9c59c54a57810b869a71db41a37135f": {
+    "relation_pairs": [
+      [
+        "SmartHeart",
+        "Thức ăn cho chó 4"
+      ],
+      [
+        "Mỹ",
+        "Thức ăn cho chó 5"
+      ],
+      [
+        "Thức ăn cho chó 4",
+        "Đức"
+      ]
+    ],
+    "count": 3,
+    "create_time": 1780497419,
+    "update_time": 1780497419,
+    "_id": "doc-e9c59c54a57810b869a71db41a37135f"
+  },
+  "doc-7d8be99712273b092554481cfd72d2b0": {
+    "relation_pairs": [
+      [
+        "SmartHeart Puppy Food",
+        "USA"
+      ],
+      [
+        "500000 VND",
+        "SmartHeart Puppy Food"
+      ]
+    ],
+    "count": 2,
+    "create_time": 1780497465,
+    "update_time": 1780497465,
+    "_id": "doc-7d8be99712273b092554481cfd72d2b0"
+  },
+  "doc-13c803976ac2f47311d881b523a3b4fc": {
+    "relation_pairs": [
+      [
+        "Dầu cá",
+        "Thức ăn cho chó con SmartHeart"
+      ],
+      [
+        "Sữa",
+        "Thức ăn cho chó con SmartHeart"
+      ],
+      [
+        "Coline",
+        "Thức ăn cho chó con SmartHeart"
+      ],
+      [
+        "Lecithin",
+        "Thức ăn cho chó con SmartHeart"
+      ],
+      [
+        "SmartHeart",
+        "Thái Lan"
+      ]
+    ],
+    "count": 5,
+    "create_time": 1780497533,
+    "update_time": 1780497533,
+    "_id": "doc-13c803976ac2f47311d881b523a3b4fc"
+  },
+  "doc-0046c6cc6e737f4890d1e48ea6b9bc65": {
+    "relation_pairs": [
+      [
+        "SmartHeart Puppy Food",
+        "Thái Lan"
+      ],
+      [
+        "SmartHeart Puppy Food",
+        "Thức ăn cho chó 7"
+      ]
+    ],
+    "count": 2,
+    "create_time": 1780497572,
+    "update_time": 1780497572,
+    "_id": "doc-0046c6cc6e737f4890d1e48ea6b9bc65"
+  },
+  "doc-962f7ca122fd1179c8e1946a6530e136": {
+    "relation_pairs": [
+      [
+        "SmartHeart",
+        "SmartHeart Puppy Food"
+      ],
+      [
+        "Omega-3 Fatty Acids",
+        "SmartHeart Puppy Food"
+      ],
+      [
+        "Thai Lan",
+        "Thức ăn cho mèo 1"
+      ],
+      [
+        "SmartHeart Puppy Food",
+        "Thai Lan"
+      ]
+    ],
+    "count": 4,
+    "create_time": 1780497613,
+    "update_time": 1780497613,
+    "_id": "doc-962f7ca122fd1179c8e1946a6530e136"
+  },
+  "doc-13922aa886fbe37f3adaef1ea3d21d7d": {
+    "relation_pairs": [
+      [
+        "SmartHeart",
+        "Thức ăn cho mèo 1"
+      ],
+      [
+        "Thái Lan",
+        "Thức ăn cho mèo 1"
+      ],
+      [
+        "800000",
+        "Thức ăn cho mèo 1"
+      ],
+      [
+        "Thái Lan",
+        "Thức ăn cho mèo 2"
+      ]
+    ],
+    "count": 4,
+    "create_time": 1780497672,
+    "update_time": 1780497672,
+    "_id": "doc-13922aa886fbe37f3adaef1ea3d21d7d"
+  },
+  "doc-b67c83bdee9b069e8b8aee6d522784ed": {
+    "relation_pairs": [
+      [
+        "Dầu cá",
+        "SmartHeart"
+      ],
+      [
+        "Colin",
+        "SmartHeart"
+      ],
+      [
+        "100000",
+        "Thái Lan"
+      ],
+      [
+        "SmartHeart",
+        "Sữa"
+      ],
+      [
+        "Lecithin",
+        "SmartHeart"
+      ],
+      [
+        "200000",
+        "Bỉ"
+      ]
+    ],
+    "count": 6,
+    "create_time": 1780497739,
+    "update_time": 1780497739,
+    "_id": "doc-b67c83bdee9b069e8b8aee6d522784ed"
+  },
+  "doc-c5435f3d1054acd380e2c082e2fce277": {
+    "relation_pairs": [
+      [
+        "Germany",
+        "SmartHeart Puppy Food"
+      ],
+      [
+        "Belgium",
+        "SmartHeart Puppy Food"
+      ]
+    ],
+    "count": 2,
+    "create_time": 1780497786,
+    "update_time": 1780497786,
+    "_id": "doc-c5435f3d1054acd380e2c082e2fce277"
+  },
+  "doc-541b3ba12d8d4d76267d57428e3347fc": {
+    "relation_pairs": [
+      [
+        "Mỹ",
+        "SmartHeart"
+      ],
+      [
+        "Choline",
+        "SmartHeart"
+      ],
+      [
+        "Dầu cá",
+        "SmartHeart"
+      ],
+      [
+        "DHA và Axit béo Omega-3",
+        "Dầu cá"
+      ],
+      [
+        "Thức ăn cho mèo 4",
+        "Đức"
+      ],
+      [
+        "SmartHeart",
+        "Sữa"
+      ],
+      [
+        "DHA và Axit béo Omega-3",
+        "SmartHeart"
+      ],
+      [
+        "Lecithin",
+        "SmartHeart"
       ]
     ],
     "count": 8,
-    "create_time": 1780457624,
-    "update_time": 1780457624,
-    "_id": "doc-cdef2a60c00766ca5c2ccd01c3e98b2b"
+    "create_time": 1780497884,
+    "update_time": 1780497884,
+    "_id": "doc-541b3ba12d8d4d76267d57428e3347fc"
+  },
+  "doc-d7580e583baa5b10f940e9ccedaa252b": {
+    "relation_pairs": [
+      [
+        "SmartHeart",
+        "Thức ăn cho chó con SmartHeart"
+      ],
+      [
+        "Nga",
+        "SmartHeart"
+      ]
+    ],
+    "count": 2,
+    "create_time": 1780497929,
+    "update_time": 1780497929,
+    "_id": "doc-d7580e583baa5b10f940e9ccedaa252b"
+  },
+  "doc-9ca0a6643633f081bb3cef7a75be5932": {
+    "relation_pairs": [
+      [
+        "Omega-3",
+        "SmartHeart"
+      ],
+      [
+        "Nga",
+        "Thái Lan"
+      ],
+      [
+        "DHA",
+        "SmartHeart"
+      ],
+      [
+        "Colin",
+        "SmartHeart"
+      ],
+      [
+        "Lecithin",
+        "SmartHeart"
+      ],
+      [
+        "Nga",
+        "SmartHeart"
+      ]
+    ],
+    "count": 6,
+    "create_time": 1780497993,
+    "update_time": 1780497993,
+    "_id": "doc-9ca0a6643633f081bb3cef7a75be5932"
+  },
+  "doc-bd17fc630138761b2f35c0019641efbd": {
+    "relation_pairs": [
+      [
+        "SmartHeart Puppy Food",
+        "Sữa"
+      ],
+      [
+        "Colline",
+        "SmartHeart Puppy Food"
+      ],
+      [
+        "Lecithin",
+        "SmartHeart Puppy Food"
+      ],
+      [
+        "SmartHeart Puppy Food",
+        "Thai Lan"
+      ],
+      [
+        "Omega-3 Fatty Acids",
+        "SmartHeart Puppy Food"
+      ],
+      [
+        "DHA",
+        "SmartHeart Puppy Food"
+      ],
+      [
+        "Axit béo Omega-3",
+        "SmartHeart Puppy Food"
+      ],
+      [
+        "Dầu cá",
+        "SmartHeart Puppy Food"
+      ]
+    ],
+    "count": 8,
+    "create_time": 1780498086,
+    "update_time": 1780498086,
+    "_id": "doc-bd17fc630138761b2f35c0019641efbd"
+  },
+  "doc-762fe4dfd385522aa1f5f7ffc79560e4": {
+    "relation_pairs": [
+      [
+        "Cat Food 8",
+        "Thai Lan"
+      ],
+      [
+        "SmartHeart Puppy Food",
+        "Thai Lan"
+      ]
+    ],
+    "count": 2,
+    "create_time": 1780498128,
+    "update_time": 1780498128,
+    "_id": "doc-762fe4dfd385522aa1f5f7ffc79560e4"
   }
 }

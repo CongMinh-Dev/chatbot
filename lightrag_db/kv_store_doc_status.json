@@ -1,35 +1,274 @@
 {
-  "doc-cdef2a60c00766ca5c2ccd01c3e98b2b": {
+  "doc-a10616f7e4cb31b490842118015cb66e": {
     "status": "processed",
     "chunks_count": 1,
     "chunks_list": [
-      "chunk-cdef2a60c00766ca5c2ccd01c3e98b2b"
+      "chunk-a10616f7e4cb31b490842118015cb66e"
     ],
-    "content_summary": "TẠP CHÍ KHOA HỌC CÔNG NGHỆ NÔNG NGHIỆP VIỆT NAM • SỐ 04 / 2026\nNghiên cứu Ảnh hưởng của Chế độ Phân bón Tích hợp dến\nNăng suất, Chất lượng và Hàm lượng Dinh dưỡng Đất trong\nCanh tác Sầu riêng (Durio zibethinus Murr.) tại Đồng bằng Sông\nCửu Long \nNguy...",
-    "content_length": 414,
-    "created_at": "2026-06-03T03:29:00.076793+00:00",
-    "updated_at": "2026-06-03T03:33:44.675016+00:00",
+    "content_summary": "Thức ăn cho chó 1 \nMô tả sản phẩm: \nThành phần: Thức ăn dành cho chó con SmartHeart đáp ứng được nhu cầu dinh dưỡng cho chú chó con của bạn bằng cách sử dụng những thành phần có chất lượng tốt \nnhất, có bổ sung Sữa, Dầu cá, gìau DHA và Axit béo Omega...",
+    "content_length": 400,
+    "created_at": "2026-06-03T14:30:43.433092+00:00",
+    "updated_at": "2026-06-03T14:34:29.737194+00:00",
     "file_path": "unknown_source",
-    "track_id": "insert_20260603_032900_ef5e2ad1",
+    "track_id": "insert_20260603_143043_3aa89f6c",
     "metadata": {
-      "processing_start_time": 1780457340,
-      "processing_end_time": 1780457624
+      "processing_start_time": 1780497043,
+      "processing_end_time": 1780497269
     }
   },
-  "doc-33b72e294f49b796c9b1fbddeeac87a0": {
-    "status": "processing",
+  "doc-b7806e3fc1467ef61ba44d0e6d251f61": {
+    "status": "processed",
     "chunks_count": 1,
     "chunks_list": [
-      "chunk-33b72e294f49b796c9b1fbddeeac87a0"
+      "chunk-b7806e3fc1467ef61ba44d0e6d251f61"
     ],
-    "content_summary": "2Viện Cây ăn quả miền Nam (SOFRI)\n*Tác giả liên hệ: nvhung@ctu.edu.vn \nTÓM TẮT\nSầu riêng (Durio zibethinus Murr.) là cây ăn quả có giá trị kinh tế cao tại Việt Nam, tuy nhiên việc lạm dụng phân bón\nvô cơ đang gây suy thoái đất và giảm chất lượng trái...",
-    "content_length": 423,
-    "created_at": "2026-06-03T03:33:45.346624+00:00",
-    "updated_at": "2026-06-03T03:33:45.366123+00:00",
+    "content_summary": "Xuất xứ:  \nThái Lan \nGiá: \n100000 \n \nThức ăn cho chó 2 \nMô tả sản phẩm: \nThành phần: Thức ăn dành cho chó con SmartHeart đáp ứng được nhu cầu dinh dưỡng cho chú chó con của bạn bằng cách sử dụng những thành phần có chất lượng tốt \nnhất, có bổ sung Sữ...",
+    "content_length": 415,
+    "created_at": "2026-06-03T14:34:30.380321+00:00",
+    "updated_at": "2026-06-03T14:35:17.811203+00:00",
     "file_path": "unknown_source",
-    "track_id": "insert_20260603_033345_b313ba81",
+    "track_id": "insert_20260603_143430_664f5b2f",
     "metadata": {
-      "processing_start_time": 1780457625
+      "processing_start_time": 1780497270,
+      "processing_end_time": 1780497317
+    }
+  },
+  "doc-aae3374937813542c55bb3c3b165890a": {
+    "status": "processed",
+    "chunks_count": 1,
+    "chunks_list": [
+      "chunk-aae3374937813542c55bb3c3b165890a"
+    ],
+    "content_summary": "Giúp bảo vệ tim mạch \nXuất xứ:  \nBỉ \nGiá: \n200000 \n \n \nThức ăn cho chó 3 \nMô tả sản phẩm: \nThành phần: Thức ăn dành cho chó con SmartHeart đáp ứng được nhu cầu dinh dưỡng cho chú chó con của bạn bằng cách sử dụng những thành phần có chất lượng tốt \nn...",
+    "content_length": 441,
+    "created_at": "2026-06-03T14:35:18.406446+00:00",
+    "updated_at": "2026-06-03T14:36:07.853891+00:00",
+    "file_path": "unknown_source",
+    "track_id": "insert_20260603_143518_5860629d",
+    "metadata": {
+      "processing_start_time": 1780497318,
+      "processing_end_time": 1780497367
+    }
+  },
+  "doc-e9c59c54a57810b869a71db41a37135f": {
+    "status": "processed",
+    "chunks_count": 1,
+    "chunks_list": [
+      "chunk-e9c59c54a57810b869a71db41a37135f"
+    ],
+    "content_summary": "giúp tăng cường sức đề kháng\nXuất xứ:  \nĐức \nGiá: \n300000 \n \n \nThức ăn cho chó 4 \nMô tả sản phẩm: \nThành phần: Thức ăn dành cho chó con SmartHeart đáp ứng được nhu cầu dinh dưỡng cho chú chó con của bạn bằng cách sử dụng những thành phần có chất lượn...",
+    "content_length": 435,
+    "created_at": "2026-06-03T14:36:08.432779+00:00",
+    "updated_at": "2026-06-03T14:36:59.345010+00:00",
+    "file_path": "unknown_source",
+    "track_id": "insert_20260603_143608_cb357690",
+    "metadata": {
+      "processing_start_time": 1780497368,
+      "processing_end_time": 1780497419
+    }
+  },
+  "doc-7d8be99712273b092554481cfd72d2b0": {
+    "status": "processed",
+    "chunks_count": 1,
+    "chunks_list": [
+      "chunk-7d8be99712273b092554481cfd72d2b0"
+    ],
+    "content_summary": "Công dụng: \nGiúp mượt lông \nXuất xứ:  \nMỹ \nGiá: \n400000 \n \n \nThức ăn cho chó 5 \nMô tả sản phẩm: \nThành phần: Thức ăn dành cho chó con SmartHeart đáp ứng được nhu cầu dinh dưỡng cho chú chó con của bạn bằng cách sử dụng những thành phần có chất lượng ...",
+    "content_length": 444,
+    "created_at": "2026-06-03T14:36:59.931152+00:00",
+    "updated_at": "2026-06-03T14:37:45.759752+00:00",
+    "file_path": "unknown_source",
+    "track_id": "insert_20260603_143659_f5cd7c4a",
+    "metadata": {
+      "processing_start_time": 1780497419,
+      "processing_end_time": 1780497465
+    }
+  },
+  "doc-13c803976ac2f47311d881b523a3b4fc": {
+    "status": "processed",
+    "chunks_count": 1,
+    "chunks_list": [
+      "chunk-13c803976ac2f47311d881b523a3b4fc"
+    ],
+    "content_summary": "Tăng sức khỏe cho hệ tiêu hóa \nXuất xứ:  \nNga \nGiá: \n500000\nThức ăn cho chó 6 \nMô tả sản phẩm: \nThành phần: Thức ăn dành cho chó con SmartHeart đáp ứng được nhu cầu dinh dưỡng cho chú chó con của bạn bằng cách sử dụng những thành phần có chất lượng t...",
+    "content_length": 446,
+    "created_at": "2026-06-03T14:37:46.339834+00:00",
+    "updated_at": "2026-06-03T14:38:53.434263+00:00",
+    "file_path": "unknown_source",
+    "track_id": "insert_20260603_143746_c941a87d",
+    "metadata": {
+      "processing_start_time": 1780497466,
+      "processing_end_time": 1780497533
+    }
+  },
+  "doc-0046c6cc6e737f4890d1e48ea6b9bc65": {
+    "status": "processed",
+    "chunks_count": 1,
+    "chunks_list": [
+      "chunk-0046c6cc6e737f4890d1e48ea6b9bc65"
+    ],
+    "content_summary": "Giúp hạn chế rụng lông \nXuất xứ:  \nThái Lan \nGiá: \n600000 \n \n \nThức ăn cho chó 7 \nMô tả sản phẩm: \nThành phần: Thức ăn dành cho chó con SmartHeart đáp ứng được nhu cầu dinh dưỡng cho chú chó con của bạn bằng cách sử dụng những thành phần có chất lượn...",
+    "content_length": 439,
+    "created_at": "2026-06-03T14:38:54.034578+00:00",
+    "updated_at": "2026-06-03T14:39:32.943119+00:00",
+    "file_path": "unknown_source",
+    "track_id": "insert_20260603_143854_e2038497",
+    "metadata": {
+      "processing_start_time": 1780497534,
+      "processing_end_time": 1780497572
+    }
+  },
+  "doc-962f7ca122fd1179c8e1946a6530e136": {
+    "status": "processed",
+    "chunks_count": 1,
+    "chunks_list": [
+      "chunk-962f7ca122fd1179c8e1946a6530e136"
+    ],
+    "content_summary": "Giúp giảm mỡ \nXuất xứ:  \nThái Lan \nGiá: \n700000 \n \n \nThức ăn cho chó 8 \nMô tả sản phẩm: \nThành phần: Thức ăn dành cho chó con SmartHeart đáp ứng được nhu cầu dinh dưỡng cho chú chó con của bạn bằng cách sử dụng những thành phần có chất lượng tốt \nnhấ...",
+    "content_length": 444,
+    "created_at": "2026-06-03T14:39:33.527898+00:00",
+    "updated_at": "2026-06-03T14:40:13.094752+00:00",
+    "file_path": "unknown_source",
+    "track_id": "insert_20260603_143933_33dbb1df",
+    "metadata": {
+      "processing_start_time": 1780497573,
+      "processing_end_time": 1780497613
+    }
+  },
+  "doc-13922aa886fbe37f3adaef1ea3d21d7d": {
+    "status": "processed",
+    "chunks_count": 1,
+    "chunks_list": [
+      "chunk-13922aa886fbe37f3adaef1ea3d21d7d"
+    ],
+    "content_summary": "Xuất xứ:  \nThái Lan \nGiá: \n800000 \n \n \nThức ăn cho mèo 1 \nMô tả sản phẩm: \nThành phần: Thức ăn dành cho chó con SmartHeart đáp ứng được nhu cầu dinh dưỡng cho chú chó con của bạn bằng cách sử dụng những thành phần có chất lượng tốt \nnhất, có bổ sung ...",
+    "content_length": 439,
+    "created_at": "2026-06-03T14:40:13.678294+00:00",
+    "updated_at": "2026-06-03T14:41:12.281067+00:00",
+    "file_path": "unknown_source",
+    "track_id": "insert_20260603_144013_72602202",
+    "metadata": {
+      "processing_start_time": 1780497613,
+      "processing_end_time": 1780497672
+    }
+  },
+  "doc-b67c83bdee9b069e8b8aee6d522784ed": {
+    "status": "processed",
+    "chunks_count": 1,
+    "chunks_list": [
+      "chunk-b67c83bdee9b069e8b8aee6d522784ed"
+    ],
+    "content_summary": "Xuất xứ:  \nThái Lan \nGiá: \n100000 \n \nThức ăn cho mèo 2 \nMô tả sản phẩm: \nThành phần: Thức ăn dành cho chó con SmartHeart đáp ứng được nhu cầu dinh dưỡng cho chú chó con của bạn bằng cách sử dụng những thành phần có chất lượng tốt \nnhất, có bổ sung Sữ...",
+    "content_length": 410,
+    "created_at": "2026-06-03T14:41:12.872267+00:00",
+    "updated_at": "2026-06-03T14:42:19.586925+00:00",
+    "file_path": "unknown_source",
+    "track_id": "insert_20260603_144112_405573a9",
+    "metadata": {
+      "processing_start_time": 1780497672,
+      "processing_end_time": 1780497739
+    }
+  },
+  "doc-c5435f3d1054acd380e2c082e2fce277": {
+    "status": "processed",
+    "chunks_count": 1,
+    "chunks_list": [
+      "chunk-c5435f3d1054acd380e2c082e2fce277"
+    ],
+    "content_summary": "Công dụng: \nGiúp bảo vệ tim mạch \nXuất xứ:  \nBỉ \nGiá: \n200000\nThức ăn cho mèo 3 \nMô tả sản phẩm: \nThành phần: Thức ăn dành cho chó con SmartHeart đáp ứng được nhu cầu dinh dưỡng cho chú chó con của bạn bằng cách sử dụng những thành phần có chất lượng...",
+    "content_length": 450,
+    "created_at": "2026-06-03T14:42:20.192585+00:00",
+    "updated_at": "2026-06-03T14:43:06.576811+00:00",
+    "file_path": "unknown_source",
+    "track_id": "insert_20260603_144220_f65da515",
+    "metadata": {
+      "processing_start_time": 1780497740,
+      "processing_end_time": 1780497786
+    }
+  },
+  "doc-541b3ba12d8d4d76267d57428e3347fc": {
+    "status": "processed",
+    "chunks_count": 1,
+    "chunks_list": [
+      "chunk-541b3ba12d8d4d76267d57428e3347fc"
+    ],
+    "content_summary": "Xuất xứ:  \nĐức \nGiá: \n300000 \n \n \nThức ăn cho mèo 4 \nMô tả sản phẩm: \nThành phần: Thức ăn dành cho chó con SmartHeart đáp ứng được nhu cầu dinh dưỡng cho chú chó con của bạn bằng cách sử dụng những thành phần có chất lượng tốt \nnhất, có bổ sung Sữa, ...",
+    "content_length": 406,
+    "created_at": "2026-06-03T14:43:07.183798+00:00",
+    "updated_at": "2026-06-03T14:44:44.309781+00:00",
+    "file_path": "unknown_source",
+    "track_id": "insert_20260603_144307_238cb380",
+    "metadata": {
+      "processing_start_time": 1780497787,
+      "processing_end_time": 1780497884
+    }
+  },
+  "doc-d7580e583baa5b10f940e9ccedaa252b": {
+    "status": "processed",
+    "chunks_count": 1,
+    "chunks_list": [
+      "chunk-d7580e583baa5b10f940e9ccedaa252b"
+    ],
+    "content_summary": "Công dụng: \nGiúp mượt lông \nXuất xứ:  \nMỹ \nGiá: \n400000 \n \n \nThức ăn cho mèo 5 \nMô tả sản phẩm: \nThành phần: Thức ăn dành cho chó con SmartHeart đáp ứng được nhu cầu dinh dưỡng cho chú chó con của bạn bằng cách sử dụng những thành phần có chất lượng ...",
+    "content_length": 447,
+    "created_at": "2026-06-03T14:44:44.908124+00:00",
+    "updated_at": "2026-06-03T14:45:29.341472+00:00",
+    "file_path": "unknown_source",
+    "track_id": "insert_20260603_144444_08e51a3e",
+    "metadata": {
+      "processing_start_time": 1780497884,
+      "processing_end_time": 1780497929
+    }
+  },
+  "doc-9ca0a6643633f081bb3cef7a75be5932": {
+    "status": "processed",
+    "chunks_count": 1,
+    "chunks_list": [
+      "chunk-9ca0a6643633f081bb3cef7a75be5932"
+    ],
+    "content_summary": "Xuất xứ:  \nNga \nGiá: \n500000 \n \n \nThức ăn cho mèo 6 \nMô tả sản phẩm: \nThành phần: Thức ăn dành cho chó con SmartHeart đáp ứng được nhu cầu dinh dưỡng cho chú chó con của bạn bằng cách sử dụng những thành phần có chất lượng tốt \nnhất, có bổ sung Sữa, ...",
+    "content_length": 420,
+    "created_at": "2026-06-03T14:45:29.937889+00:00",
+    "updated_at": "2026-06-03T14:46:33.731155+00:00",
+    "file_path": "unknown_source",
+    "track_id": "insert_20260603_144529_2b86b1fa",
+    "metadata": {
+      "processing_start_time": 1780497929,
+      "processing_end_time": 1780497993
+    }
+  },
+  "doc-bd17fc630138761b2f35c0019641efbd": {
+    "status": "processed",
+    "chunks_count": 1,
+    "chunks_list": [
+      "chunk-bd17fc630138761b2f35c0019641efbd"
+    ],
+    "content_summary": "Giúp hạn chế rụng lông \nXuất xứ:  \nThái Lan \nGiá: \n600000 \n \n \nThức ăn cho mèo 7 \nMô tả sản phẩm: \nThành phần: Thức ăn dành cho chó con SmartHeart đáp ứng được nhu cầu dinh dưỡng cho chú chó con của bạn bằng cách sử dụng những thành phần có chất lượn...",
+    "content_length": 438,
+    "created_at": "2026-06-03T14:46:34.368997+00:00",
+    "updated_at": "2026-06-03T14:48:06.769542+00:00",
+    "file_path": "unknown_source",
+    "track_id": "insert_20260603_144634_7ee15b8d",
+    "metadata": {
+      "processing_start_time": 1780497994,
+      "processing_end_time": 1780498086
+    }
+  },
+  "doc-762fe4dfd385522aa1f5f7ffc79560e4": {
+    "status": "processed",
+    "chunks_count": 1,
+    "chunks_list": [
+      "chunk-762fe4dfd385522aa1f5f7ffc79560e4"
+    ],
+    "content_summary": "Công dụng: \nGiúp giảm mỡ \nXuất xứ:  \nThái Lan\nGiá: \n700000 \n \n \nThức ăn cho mèo 8 \nMô tả sản phẩm: \nThành phần: Thức ăn dành cho chó con SmartHeart đáp ứng được nhu cầu dinh dưỡng cho chú chó con của bạn bằng cách sử dụng những thành phần có chất lượ...",
+    "content_length": 417,
+    "created_at": "2026-06-03T14:48:07.364653+00:00",
+    "updated_at": "2026-06-03T14:48:48.810210+00:00",
+    "file_path": "unknown_source",
+    "track_id": "insert_20260603_144807_cd6ac3bb",
+    "metadata": {
+      "processing_start_time": 1780498087,
+      "processing_end_time": 1780498128
     }
   }
 }

@@ -12,9 +12,11 @@ rag = None
 SALES_PROMPT = (
     "Bạn là một nhân viên bán hàng chuyên nghiệp, luôn lịch sự, niềm nở và xưng hô 'dạ', 'em' với khách hàng.\n"
     "QUY TẮC CỐT LÕI:\n"
-    "1) Chỉ sử dụng thông tin được cung cấp trong tài liệu (Context) để trả lời khách hàng.\n"
-    "2) Nếu câu hỏi của khách hàng nằm ngoài phạm vi tài liệu hoặc tài liệu không có thông tin rõ ràng, "
-    "bạn BẮT BUỘC phải trả lời nguyên văn câu này: 'Dạ để em hỏi lại sếp'. Không được tự ý bịa đặt hoặc dùng kiến thức bên ngoài."
+    "1) Hãy đọc thật kỹ dữ liệu được cung cấp (Context) để tìm sản phẩm phù hợp với nhu cầu của khách. "
+    "Nếu khách hỏi về công dụng (ví dụ: tăng sức đề kháng, mượt lông...), hãy đối chiếu với mục 'Công dụng' của từng sản phẩm để trả lời.\n"
+    "2) Chỉ trả lời dựa trên thông tin có trong tài liệu. Tuyệt đối không tự bịa đặt sản phẩm không có sẵn.\n"
+    "3) Nếu và chỉ nếu câu hỏi hoàn toàn không liên quan đến các sản phẩm thú cưng (chó, mèo) có trong tài liệu, "
+    "hoặc sau khi đã tìm kỹ mà không thấy bất kỳ thông tin nào liên quan, bạn mới trả lời: 'Dạ để em hỏi lại sếp'."
 )
 
 @asynccontextmanager
@@ -70,7 +72,7 @@ async def chat(
         # Truy vấn với hệ thống Prompt ép luật của bạn
         response = await rag.aquery(
             user_message,                     # Tham số 1: query
-            QueryParam(mode=user_mode),       # Tham số 2: param
+            param=QueryParam(mode=user_mode),       # Tham số 2: param
             system_prompt=SALES_PROMPT        # Tham số 3: system_prompt
         )
         
