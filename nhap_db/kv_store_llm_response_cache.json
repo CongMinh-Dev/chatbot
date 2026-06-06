@@ -1,0 +1,44 @@
+{
+  "global:keywords:85b36d3b0e084adf804049098a17049f": {
+    "return": "{\"high_level_keywords\": [\"Mua s\\u1eafm\", \"T\\u00ecm ki\\u1ebfm s\\u1ea3n ph\\u1ea9m\", \"Gi\\u00e1 c\\u1ea3\"], \"low_level_keywords\": [\"shop\", \"gi\\u00e1 100000\", \"s\\u1ea3n ph\\u1ea9m\"]}",
+    "cache_type": "keywords",
+    "chunk_id": null,
+    "original_prompt": "shop có bán cái nào có giá 100000 không em?",
+    "queryparam": {
+      "mode": "global",
+      "response_type": "Multiple Paragraphs",
+      "top_k": 40,
+      "chunk_top_k": 20,
+      "max_entity_tokens": 6000,
+      "max_relation_tokens": 8000,
+      "max_total_tokens": 30000,
+      "user_prompt": "",
+      "enable_rerank": true
+    },
+    "create_time": 1780733348,
+    "update_time": 1780733348,
+    "_id": "global:keywords:85b36d3b0e084adf804049098a17049f"
+  },
+  "global:query:f1a59ece033c500c4dfe505f66e54a89": {
+    "return": "Dạ em xin lỗi, để em xem lại thông tin shop có bán sản phẩm nào có giá 100.000 không ạ. Bạn vui lòng cho em biết bạn đang quan tâm đến loại sản phẩm gì để em kiểm tra chính xác hơn nhé!",
+    "cache_type": "query",
+    "chunk_id": null,
+    "original_prompt": "shop có bán cái nào có giá 100000 không em?",
+    "queryparam": {
+      "mode": "global",
+      "response_type": "Multiple Paragraphs",
+      "top_k": 40,
+      "chunk_top_k": 20,
+      "max_entity_tokens": 6000,
+      "max_relation_tokens": 8000,
+      "max_total_tokens": 30000,
+      "hl_keywords": "Mua sắm, Tìm kiếm sản phẩm, Giá cả",
+      "ll_keywords": "shop, giá 100000, sản phẩm",
+      "user_prompt": "",
+      "enable_rerank": true
+    },
+    "create_time": 1780733411,
+    "update_time": 1780733411,
+    "_id": "global:query:f1a59ece033c500c4dfe505f66e54a89"
+  }
+}
