@@ -1,0 +1,11 @@
+
+services:
+  chatbot:
+    build: .
+    container_name: rag_chatbot
+    ports:
+      - "8003:8000"
+    volumes:
+      - ./data:/app/data         # Mount dữ liệu thô để ingest
+      - ./faiss_index:/app/faiss_index # Giữ lại index sau khi restart
+    restart: always

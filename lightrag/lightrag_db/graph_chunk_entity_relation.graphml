@@ -1,0 +1,1060 @@
+<?xml version='1.0' encoding='utf-8'?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd"><key id="d13" for="edge" attr.name="truncate" attr.type="string"/>
+<key id="d12" for="edge" attr.name="created_at" attr.type="long"/>
+<key id="d11" for="edge" attr.name="file_path" attr.type="string"/>
+<key id="d10" for="edge" attr.name="source_id" attr.type="string"/>
+<key id="d9" for="edge" attr.name="keywords" attr.type="string"/>
+<key id="d8" for="edge" attr.name="description" attr.type="string"/>
+<key id="d7" for="edge" attr.name="weight" attr.type="double"/>
+<key id="d6" for="node" attr.name="truncate" attr.type="string"/>
+<key id="d5" for="node" attr.name="created_at" attr.type="long"/>
+<key id="d4" for="node" attr.name="file_path" attr.type="string"/>
+<key id="d3" for="node" attr.name="source_id" attr.type="string"/>
+<key id="d2" for="node" attr.name="description" attr.type="string"/>
+<key id="d1" for="node" attr.name="entity_type" attr.type="string"/>
+<key id="d0" for="node" attr.name="entity_id" attr.type="string"/>
+<graph edgedefault="undirected"><node id="Sup Thưởng Cá Ngừ Và Ức Gà">
+  <data key="d0">Sup Thưởng Cá Ngừ Và Ức Gà</data>
+  <data key="d1">content</data>
+  <data key="d2">Súp thưởng dạng tuýp lỏng vị cá ngừ và ức gà thanh mát, hộp 20 thanh. Dùng để khen thưởng, bổ sung nước và kích thích vị giác cho mèo biếng ăn.</data>
+  <data key="d3">chunk-e0ec842f9bf95dca3b0e347cabc5bc06</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1780737436</data>
+  <data key="d6"></data>
+</node>
+<node id="Pate Whiskas Lon">
+  <data key="d0">Pate Whiskas Lon</data>
+  <data key="d1">content</data>
+  <data key="d2">Pate đóng lon lớn 400g vị cá thu và cá mòi tươi nguyên chất. Bổ sung chất béo tốt và khoáng chất giúp mèo tăng cân đều đặn, khỏe mạnh.</data>
+  <data key="d3">chunk-e0ec842f9bf95dca3b0e347cabc5bc06</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1780737436</data>
+  <data key="d6"></data>
+</node>
+<node id="Pate Nekko Gold">
+  <data key="d0">Pate Nekko Gold</data>
+  <data key="d1">content</data>
+  <data key="d2">Pate cao cấp dạng jelly (thạch) làm từ thịt cá ngừ thịt trắng thượng hạng. Bổ sung Vitamin E và Prebiotic giúp mượt lông và nuôi dưỡng tế bào da.</data>
+  <data key="d3">chunk-e0ec842f9bf95dca3b0e347cabc5bc06</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1780737436</data>
+  <data key="d6"></data>
+</node>
+<node id="Cát Vệ Sinh Maneki Neko">
+  <data key="d0">Cát Vệ Sinh Maneki Neko</data>
+  <data key="d1">artifact</data>
+  <data key="d2">Cát vệ sinh hương cà phê, thấm hút chất lỏng siêu nhanh, vón cục cứng và khử mùi hôi hiệu quả. Quy cách đóng gói bao 5 lít.</data>
+  <data key="d3">chunk-e0ec842f9bf95dca3b0e347cabc5bc06</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1780737436</data>
+  <data key="d6"></data>
+</node>
+<node id="Cát Đậu Nành Cature Tofu">
+  <data key="d0">Cát Đậu Nành Cature Tofu</data>
+  <data key="d1">artifact</data>
+  <data key="d2">Cát hữu cơ làm hoàn toàn từ bã đậu nành tự nhiên, không bụi 99%, an toàn tuyệt đối cho hệ hô hấp của mèo và thân thiện với môi trường.</data>
+  <data key="d3">chunk-e0ec842f9bf95dca3b0e347cabc5bc06</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1780737436</data>
+  <data key="d6"></data>
+</node>
+<node id="Cát Thủy Tinh Kit Cat">
+  <data key="d0">Cát Thủy Tinh Kit Cat</data>
+  <data key="d1">artifact</data>
+  <data key="d2">Cát vệ sinh làm bằng hạt silica trong suốt.</data>
+  <data key="d3">chunk-e0ec842f9bf95dca3b0e347cabc5bc06</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1780737436</data>
+  <data key="d6"></data>
+</node>
+<node id="Nhật Bản">
+  <data key="d0">Nhật Bản</data>
+  <data key="d1">location</data>
+  <data key="d2">Xuất xứ của Súp thưởng cho mèo Ciao Churu.&lt;SEP&gt;Xuất xứ của Súp thưởng cá ngừ và ức gà, Cát vệ sinh Maneki Neko.</data>
+  <data key="d3">chunk-e0ec842f9bf95dca3b0e347cabc5bc06&lt;SEP&gt;chunk-b98ede171ddbffad4be66baff78ae782</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1780737444</data>
+  <data key="d6"></data>
+</node>
+<node id="Thái Lan">
+  <data key="d0">Thái Lan</data>
+  <data key="d1">location</data>
+  <data key="d2">Xuất xứ của thức ăn khô cho mèo sản phẩm 1.&lt;SEP&gt;Xuất xứ của Me-O Salmon và Pate cho chó Pedigree Túi.&lt;SEP&gt;Xuất xứ của Pate Whiskas Lon và Pate Nekko Gold.</data>
+  <data key="d3">chunk-e0ec842f9bf95dca3b0e347cabc5bc06&lt;SEP&gt;chunk-87bf06529affec588d36abf8bef101ad&lt;SEP&gt;chunk-b98ede171ddbffad4be66baff78ae782</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1780737444</data>
+  <data key="d6"></data>
+</node>
+<node id="Trung Quốc">
+  <data key="d0">Trung Quốc</data>
+  <data key="d1">location</data>
+  <data key="d2">Xuất xứ của Cát đậu nành Cature Tofu.</data>
+  <data key="d3">chunk-e0ec842f9bf95dca3b0e347cabc5bc06&lt;SEP&gt;chunk-39f12f61bababb936d696d1f7532edec</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1780737444</data>
+  <data key="d6"></data>
+</node>
+<node id="Whiskas">
+  <data key="d0">Whiskas</data>
+  <data key="d1">organization</data>
+  <data key="d2">Whiskas là một thương hiệu sản phẩm dành cho mèo, nổi tiếng với các loại pate đóng lon lớn.</data>
+  <data key="d3">chunk-e0ec842f9bf95dca3b0e347cabc5bc06</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1780737444</data>
+  <data key="d6"></data>
+</node>
+<node id="Thức Ăn Cho Chó 4 Pedigree Adult">
+  <data key="d0">Thức Ăn Cho Chó 4 Pedigree Adult</data>
+  <data key="d1">artifact</data>
+  <data key="d2">Thức ăn hạt vị bò và rau củ, giàu vitamin, khoáng chất dồi dào cho chó lớn.</data>
+  <data key="d3">chunk-87bf06529affec588d36abf8bef101ad</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1780737444</data>
+  <data key="d6"></data>
+</node>
+<node id="Thức Ăn Cho Chó 5 Zenith Puppy">
+  <data key="d0">Thức Ăn Cho Chó 5 Zenith Puppy</data>
+  <data key="d1">artifact</data>
+  <data key="d2">Thức ăn hạt mềm cao cấp làm từ thịt cừu tươi và gạo lứt dành riêng cho chó con.</data>
+  <data key="d3">chunk-87bf06529affec588d36abf8bef101ad</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1780737444</data>
+  <data key="d6"></data>
+</node>
+<node id="Thức Ăn Khô Cho Mèo Sản Phẩm 1">
+  <data key="d0">Thức Ăn Khô Cho Mèo Sản Phẩm 1</data>
+  <data key="d1">artifact</data>
+  <data key="d2">Sản phẩm sử dụng những thành phần có chất lượng tốt nhất, bổ sung Sữa, Dầu cá, giàu DHA và Axit béo Omega-3, Lecithin, Colin.</data>
+  <data key="d3">chunk-87bf06529affec588d36abf8bef101ad</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1780737447</data>
+  <data key="d6"></data>
+</node>
+<node id="Thức Ăn Khô Cho Mèo Sản Phẩm 2">
+  <data key="d0">Thức Ăn Khô Cho Mèo Sản Phẩm 2</data>
+  <data key="d1">artifact</data>
+  <data key="d2">Sản phẩm sử dụng những thành phần có chất lượng tốt nhất, bổ sung Sữa, Dầu cá, giàu DHA và Axit béo Omega-3, Lecithin, Colin.</data>
+  <data key="d3">chunk-87bf06529affec588d36abf8bef101ad</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1780737449</data>
+  <data key="d6"></data>
+</node>
+<node id="Thức Ăn Cho Mèo 3 Minino Plus">
+  <data key="d0">Thức Ăn Cho Mèo 3 Minino Plus</data>
+  <data key="d1">artifact</data>
+  <data key="d2">Thức ăn hạt hương vị hải sản phù hợp cho mọi lứa tuổi của mèo.</data>
+  <data key="d3">chunk-87bf06529affec588d36abf8bef101ad</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1780737449</data>
+  <data key="d6"></data>
+</node>
+<node id="Thức Ăn Cho Mèo 4 Me-O Salmon">
+  <data key="d0">Thức Ăn Cho Mèo 4 Me-O Salmon</data>
+  <data key="d1">artifact</data>
+  <data key="d2">Thức ăn khô hương vị cá hồi.</data>
+  <data key="d3">chunk-87bf06529affec588d36abf8bef101ad</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1780737449</data>
+  <data key="d6"></data>
+</node>
+<node id="Mỹ">
+  <data key="d0">Mỹ</data>
+  <data key="d1">location</data>
+  <data key="d2">Xuất xứ của thức ăn cho chó Pedigree Adult.&lt;SEP&gt;NexGard Calcium có xuất xứ từ Mỹ.</data>
+  <data key="d3">chunk-87bf06529affec588d36abf8bef101ad&lt;SEP&gt;chunk-449c21590adb1384a8c243bab42ded52</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1780737449</data>
+  <data key="d6"></data>
+</node>
+<node id="Hàn Quốc">
+  <data key="d0">Hàn Quốc</data>
+  <data key="d1">location</data>
+  <data key="d2">Xuất xứ của thức ăn cho chó Zenith Puppy.&lt;SEP&gt;Xuất xứ của Catsrang Kitten.</data>
+  <data key="d3">chunk-87bf06529affec588d36abf8bef101ad&lt;SEP&gt;chunk-b98ede171ddbffad4be66baff78ae782</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1780737449</data>
+  <data key="d6"></data>
+</node>
+<node id="Bỉ">
+  <data key="d0">Bỉ</data>
+  <data key="d1">location</data>
+  <data key="d2">Xuất xứ của thức ăn khô cho mèo sản phẩm 2.</data>
+  <data key="d3">chunk-87bf06529affec588d36abf8bef101ad</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1780737449</data>
+  <data key="d6"></data>
+</node>
+<node id="Mexico">
+  <data key="d0">Mexico</data>
+  <data key="d1">location</data>
+  <data key="d2">Xuất xứ của thức ăn cho mèo Minino Plus.&lt;SEP&gt;Xuất xứ của thức ăn hạt hương vị hải sản.</data>
+  <data key="d3">chunk-87bf06529affec588d36abf8bef101ad&lt;SEP&gt;chunk-b98ede171ddbffad4be66baff78ae782</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1780737451</data>
+  <data key="d6"></data>
+</node>
+<node id="Thức Ăn Cho Chó 1 Pedigree Adult">
+  <data key="d0">Thức Ăn Cho Chó 1 Pedigree Adult</data>
+  <data key="d1">artifact</data>
+  <data key="d2">Thức ăn hạt vị bò và rau củ, giàu vitamin, khoáng chất dồi dào cho chó lớn.</data>
+  <data key="d3">chunk-87bf06529affec588d36abf8bef101ad</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1780737451</data>
+  <data key="d6"></data>
+</node>
+<node id="Thức Ăn Cho Mèo 2 Me-O Salmon">
+  <data key="d0">Thức Ăn Cho Mèo 2 Me-O Salmon</data>
+  <data key="d1">artifact</data>
+  <data key="d2">Thức ăn khô hương vị cá hồi.</data>
+  <data key="d3">chunk-87bf06529affec588d36abf8bef101ad</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1780737451</data>
+  <data key="d6"></data>
+</node>
+<node id="Nhà cây nhiều tầng bọc vải nỉ">
+  <data key="d0">Nhà cây nhiều tầng bọc vải nỉ</data>
+  <data key="d1">artifact</data>
+  <data key="d2">Nhà cây nhiều tầng bọc vải nỉ là một sản phẩm hỗ trợ thú cưng giải tỏa căng thẳng, tập thể dục và hạn chế cào phá đồ đạc trong nhà.</data>
+  <data key="d3">chunk-0abb0129adb180938767353fab8e8f66</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1780737464</data>
+  <data key="d6"></data>
+</node>
+<node id="Cột quấn dây thừng sisal">
+  <data key="d0">Cột quấn dây thừng sisal</data>
+  <data key="d1">equipment</data>
+  <data key="d2">Cột quấn dây thừng sisal là phần của nhà cây nhiều tầng giúp mèo leo trèo an toàn.</data>
+  <data key="d3">chunk-0abb0129adb180938767353fab8e8f66</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1780737464</data>
+  <data key="d6"></data>
+</node>
+<node id="Sản phẩm Bát ăn đôi inox chống lật">
+  <data key="d0">Sản phẩm Bát ăn đôi inox chống lật</data>
+  <data key="d1">artifact</data>
+  <data key="d2">Bát ăn đôi inox gồm hai lòng inox có thể tháo rời đặt trên đế nhựa có đệm cao su chống trượt để giữ cố định bát ăn không bị đổ khi chó mèo ăn.</data>
+  <data key="d3">chunk-0abb0129adb180938767353fab8e8f66</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1780737464</data>
+  <data key="d6"></data>
+</node>
+<node id="Thuốc nhỏ gáy trị rận Fronline Plus">
+  <data key="d0">Thuốc nhỏ gáy trị rận Fronline Plus</data>
+  <data key="d1">data</data>
+  <data key="d2">Thuốc nhỏ gáy gồm 3 ống dung dịch tiêu diệt tận gốc ve, rận, bọ chét và trứng ký sinh trùng trên cơ thể chó mèo trong vòng 24 giờ.</data>
+  <data key="d3">chunk-0abb0129adb180938767353fab8e8f66</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1780737464</data>
+  <data key="d6"></data>
+</node>
+<node id="Gel dinh dưỡng Virbac Megaderm">
+  <data key="d0">Gel dinh dưỡng Virbac Megaderm</data>
+  <data key="d1">data</data>
+  <data key="d2">Gel dinh dưỡng dạng gel chứa axit béo thiết yếu nhóm Omega 3 và Omega 6 tỉ lệ chuẩn, giúp trị viêm da, phục hồi các tế bào tổn thương và lông mượt mà.</data>
+  <data key="d3">chunk-0abb0129adb180938767353fab8e8f66</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1780737464</data>
+  <data key="d6"></data>
+</node>
+<node id="Viên canxi cho chó NexGard Calcium">
+  <data key="d0">Viên canxi cho chó NexGard Calcium</data>
+  <data key="d1">data</data>
+  <data key="d2">Viên nén bổ sung canxi và phốt pho với hương vị thịt bò dễ ăn giúp chống còi xương ở chó con, hỗ trợ phục hồi xương khớp và phát triển khung tai dựng đẹp.</data>
+  <data key="d3">chunk-0abb0129adb180938767353fab8e8f66</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1780737464</data>
+  <data key="d6"></data>
+</node>
+<node id="Men">
+  <data key="d0">Men</data>
+  <data key="d1">content</data>
+  <data key="d2">Men là một sản phẩm được đề cập nhưng không có mô tả chi tiết trong văn bản.</data>
+  <data key="d3">chunk-0abb0129adb180938767353fab8e8f66</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1780737465</data>
+  <data key="d6"></data>
+</node>
+<node id="Cruz's vision of control and order">
+  <data key="d0">Cruz's vision of control and order</data>
+  <data key="d1">concept</data>
+  <data key="d2">This concept refers to Cruz's restrictive and authoritative approach towards the dynamics among other characters.</data>
+  <data key="d3">chunk-0abb0129adb180938767353fab8e8f66</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1780737466</data>
+  <data key="d6"></data>
+</node>
+<node id="Thức ăn hạt hương vị hải sản">
+  <data key="d0">Thức ăn hạt hương vị hải sản</data>
+  <data key="d1">artifact</data>
+  <data key="d2">Thức ăn hạt hương vị hải sản phù hợp cho mọi lứa tuổi của mèo, giúp mắt sáng tinh anh và giảm nguy cơ mắc bệnh đường tiết niệu.</data>
+  <data key="d3">chunk-b98ede171ddbffad4be66baff78ae782</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1780737466</data>
+  <data key="d6"></data>
+</node>
+<node id="Me-O Salmon">
+  <data key="d0">Me-O Salmon</data>
+  <data key="d1">product</data>
+  <data key="d2">Thức ăn khô vị cá hồi thơm ngon, bổ sung nhiều taurine cho mèo trưởng thành, tăng cường hệ miễn dịch và giảm rụng lông rõ rệt.</data>
+  <data key="d3">chunk-b98ede171ddbffad4be66baff78ae782</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1780737466</data>
+  <data key="d6"></data>
+</node>
+<node id="Catsrang Kitten">
+  <data key="d0">Catsrang Kitten</data>
+  <data key="d1">product</data>
+  <data key="d2">Hạt khô size nhỏ dễ nhai dành riêng cho mèo con dưới 12 tháng tuổi, ngăn ngừa búi lông trong dạ dày và hỗ trợ phát triển khung xương.</data>
+  <data key="d3">chunk-b98ede171ddbffad4be66baff78ae782</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1780737466</data>
+  <data key="d6"></data>
+</node>
+<node id="Pate cho chó Pedigree Túi">
+  <data key="d0">Pate cho chó Pedigree Túi</data>
+  <data key="d1">product</data>
+  <data key="d2">Pate dạng sốt vị thịt bò nấu sốt cô đặc, đóng gói túi tiện lợi 130g, cung cấp độ ẩm dồi dào và bổ sung nước ngăn ngừa sỏi thận ở chó.</data>
+  <data key="d3">chunk-b98ede171ddbffad4be66baff78ae782</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1780737467</data>
+  <data key="d6"></data>
+</node>
+<node id="Súp thưởng cho mèo Ciao Churu">
+  <data key="d0">Súp thưởng cho mèo Ciao Churu</data>
+  <data key="d1">product</data>
+  <data key="d2">Súp thưởng dạng tuýp lỏng vị cá ngừ và ức gà thanh mát, hộp 20 thanh, dùng để khen thưởng, bổ sung nước và kích thích vị giác cho mèo biếng ăn.</data>
+  <data key="d3">chunk-b98ede171ddbffad4be66baff78ae782</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1780737468</data>
+  <data key="d6"></data>
+</node>
+<node id="Pate cho mèo Whiskas Lon">
+  <data key="d0">Pate cho mèo Whiskas Lon</data>
+  <data key="d1">product</data>
+  <data key="d2">Pate đóng lon dành cho mèo, bổ sung taurine và các dưỡng chất khác.</data>
+  <data key="d3">chunk-b98ede171ddbffad4be66baff78ae782</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1780737468</data>
+  <data key="d6"></data>
+</node>
+<node id="Thức ăn cho chó con SmartHeart">
+  <data key="d0">Thức ăn cho chó con SmartHeart</data>
+  <data key="d1">artifact</data>
+  <data key="d2">SmartHeart là thức ăn hạt khô dành cho chó con.&gt;</data>
+  <data key="d3">chunk-76fde9da35d22151aabd962ade45518c</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1780737468</data>
+  <data key="d6"></data>
+</node>
+<node id="Đậu nành tự nhiên">
+  <data key="d0">Đậu nành tự nhiên</data>
+  <data key="d1">artifact</data>
+  <data key="d2">Đậu nành tự nhiên có thể xả trực tiếp vào bồn cầu.</data>
+  <data key="d3">chunk-39f12f61bababb936d696d1f7532edec</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1780737469</data>
+  <data key="d6"></data>
+</node>
+<node id="Cát thủy tinh Kit Cat">
+  <data key="d0">Cát thủy tinh Kit Cat</data>
+  <data key="d1">artifact</data>
+  <data key="d2">Cát làm từ hạt silica trong suốt, không bám chân mèo và hút ẩm cực mạnh.</data>
+  <data key="d3">chunk-39f12f61bababb936d696d1f7532edec</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1780737469</data>
+  <data key="d6"></data>
+</node>
+<node id="Vòng cổ chuông cho chó mèo">
+  <data key="d0">Vòng cổ chuông cho chó mèo</data>
+  <data key="d1">artifact</data>
+  <data key="d2">Vòng cổ vải dạ có đính chuông đồng nhỏ giúp định vị thú cưng và tạo điểm nhấn thời trang.</data>
+  <data key="d3">chunk-39f12f61bababb936d696d1f7532edec</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1780737469</data>
+  <data key="d6"></data>
+</node>
+<node id="Sữa tắm Joyce &amp; Dolls Rose">
+  <data key="d0">Sữa tắm Joyce &amp; Dolls Rose</data>
+  <data key="d1">artifact</data>
+  <data key="d2">Sữa tắm đậm đặc hương hoa hồng dành cho chó và mèo, có công dụng khử mùi hôi da lông và diệt khuẩn bề mặt.</data>
+  <data key="d3">chunk-39f12f61bababb936d696d1f7532edec</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1780737470</data>
+  <data key="d6"></data>
+</node>
+<node id="Nhà cây Cào móng Cho mèo (Cat Tree)">
+  <data key="d0">Nhà cây Cào móng Cho mèo (Cat Tree)</data>
+  <data key="d1">artifact</data>
+  <data key="d2">Nhà cây nhiều tầng bọc vải nỉ êm ái kết hợp cột quấn dây thừng sisal chắc chắn giúp giải tỏa căng thẳng cho mèo.</data>
+  <data key="d3">chunk-39f12f61bababb936d696d1f7532edec</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1780737470</data>
+  <data key="d6"></data>
+</node>
+<node id="Bát ăn đôi inox chống lật">
+  <data key="d0">Bát ăn đôi inox chống lật</data>
+  <data key="d1">artifact</data>
+  <data key="d2">Mô tả không đầy đủ, nhưng bát ăn được làm từ inox và có khả năng chống đổ khi thú cưng di chuyển.</data>
+  <data key="d3">chunk-39f12f61bababb936d696d1f7532edec</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1780737471</data>
+  <data key="d6"></data>
+</node>
+<node id="NexGard Calcium">
+  <data key="d0">NexGard Calcium</data>
+  <data key="d1">artifact</data>
+  <data key="d2">Viên canxi và phốt pho cho chó, có hương vị thịt bò dễ ăn như bánh thưởng.</data>
+  <data key="d3">chunk-449c21590adb1384a8c243bab42ded52</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1780737471</data>
+  <data key="d6"></data>
+</node>
+<node id="Bioline">
+  <data key="d0">Bioline</data>
+  <data key="d1">artifact</data>
+  <data key="d2">Men tiêu hóa dạng bột hòa tan chứa lợi khuẩn đường ruột có ích để điều trị các vấn đề về tiêu chảy, phân lỏng và đầy hơi.</data>
+  <data key="d3">chunk-449c21590adb1384a8c243bab42ded52</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1780737471</data>
+  <data key="d6"></data>
+</node>
+<node id="PetShop">
+  <data key="d0">PetShop</data>
+  <data key="d1">organization</data>
+  <data key="d2">PetShop là một tổ chức cung cấp dịch vụ tư vấn và vận chuyển sản phẩm dành cho thú cưng.</data>
+  <data key="d3">chunk-449c21590adb1384a8c243bab42ded52&lt;SEP&gt;chunk-76fde9da35d22151aabd962ade45518c</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1780737471</data>
+  <data key="d6"></data>
+</node>
+<node id="Đức">
+  <data key="d0">Đức</data>
+  <data key="d1">location</data>
+  <data key="d2">Bioline có xuất xứ từ Đức.</data>
+  <data key="d3">chunk-449c21590adb1384a8c243bab42ded52</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1780737472</data>
+  <data key="d6"></data>
+</node>
+<node id="Chó mèo">
+  <data key="d0">Chó mèo</data>
+  <data key="d3">chunk-0abb0129adb180938767353fab8e8f66</data>
+  <data key="d2">Bát ăn đôi inox giúp giữ cố định bát ăn không bị đổ khi chó mèo ăn.</data>
+  <data key="d1">UNKNOWN</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1780737483</data>
+  <data key="d6"></data>
+</node>
+<node id="Chó con">
+  <data key="d0">Chó con</data>
+  <data key="d3">chunk-0abb0129adb180938767353fab8e8f66</data>
+  <data key="d2">Viên canxi giúp chống còi xương ở chó con và hỗ trợ phát triển khung tai dựng đẹp.</data>
+  <data key="d1">UNKNOWN</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1780737483</data>
+  <data key="d6"></data>
+</node>
+<node id="Sản phẩm y tế và thực phẩm chức năng">
+  <data key="d0">Sản phẩm y tế và thực phẩm chức năng</data>
+  <data key="d3">chunk-0abb0129adb180938767353fab8e8f66</data>
+  <data key="d2">Men là một phần của danh sách sản phẩm nhưng không có thông tin chi tiết cụ thể.</data>
+  <data key="d1">UNKNOWN</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1780737483</data>
+  <data key="d6"></data>
+</node>
+<node id="Alex">
+  <data key="d0">Alex</data>
+  <data key="d3">chunk-0abb0129adb180938767353fab8e8f66</data>
+  <data key="d2">Alex observes Cruz's vision of control and notes a subtle transformation in Taylor's attitude toward this vision.</data>
+  <data key="d1">UNKNOWN</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1780737484</data>
+  <data key="d6"></data>
+</node>
+<node id="Cruz">
+  <data key="d0">Cruz</data>
+  <data key="d3">chunk-0abb0129adb180938767353fab8e8f66</data>
+  <data key="d2">Alex observes Cruz's vision of control and notes a subtle transformation in Taylor's attitude toward this vision.</data>
+  <data key="d1">UNKNOWN</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1780737486</data>
+  <data key="d6"></data>
+</node>
+<node id="Thức ăn hạt">
+  <data key="d0">Thức ăn hạt</data>
+  <data key="d3">chunk-76fde9da35d22151aabd962ade45518c</data>
+  <data key="d2">PetShop cung cấp thức ăn hạt cho chó và mèo.&gt;</data>
+  <data key="d1">UNKNOWN</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1780737490</data>
+  <data key="d6"></data>
+</node>
+<node id="Chó">
+  <data key="d0">Chó</data>
+  <data key="d3">chunk-76fde9da35d22151aabd962ade45518c</data>
+  <data key="d2">Thức ăn hạt được sử dụng cho chó.&gt;</data>
+  <data key="d1">UNKNOWN</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1780737491</data>
+  <data key="d6"></data>
+</node>
+<node id="Pate ướt">
+  <data key="d0">Pate ướt</data>
+  <data key="d3">chunk-76fde9da35d22151aabd962ade45518c</data>
+  <data key="d2">PetShop bán pate ướt cho chó và mèo.&gt;</data>
+  <data key="d1">UNKNOWN</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1780737491</data>
+  <data key="d6"></data>
+</node>
+<node id="Mèo">
+  <data key="d0">Mèo</data>
+  <data key="d3">chunk-76fde9da35d22151aabd962ade45518c</data>
+  <data key="d2">Thức ăn hạt cũng dành cho mèo.&gt;</data>
+  <data key="d1">UNKNOWN</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1780737497</data>
+  <data key="d6"></data>
+</node>
+<node id="Cát vệ sinh">
+  <data key="d0">Cát vệ sinh</data>
+  <data key="d3">chunk-76fde9da35d22151aabd962ade45518c</data>
+  <data key="d2">PetShop cung cấp cát vệ sinh dành cho thú cưng.&gt;</data>
+  <data key="d1">UNKNOWN</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1780737497</data>
+  <data key="d6"></data>
+</node>
+<node id="Pedigree Adult">
+  <data key="d0">Pedigree Adult</data>
+  <data key="d3">chunk-76fde9da35d22151aabd962ade45518c</data>
+  <data key="d2">Thức ăn hạt Pedigree Adult dành cho chó lớn.&gt;</data>
+  <data key="d1">UNKNOWN</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1780737499</data>
+  <data key="d6"></data>
+</node>
+<node id="Phụ kiện">
+  <data key="d0">Phụ kiện</data>
+  <data key="d3">chunk-76fde9da35d22151aabd962ade45518c</data>
+  <data key="d2">PetShop bán các phụ kiện cho chó và mèo.&gt;</data>
+  <data key="d1">UNKNOWN</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1780737499</data>
+  <data key="d6"></data>
+</node>
+<node id="Thực phẩm chức năng cao cấp">
+  <data key="d0">Thực phẩm chức năng cao cấp</data>
+  <data key="d3">chunk-76fde9da35d22151aabd962ade45518c</data>
+  <data key="d2">PetShop cung cấp thực phẩm chức năng cao cấp nhập khẩu chính hãng.&gt;</data>
+  <data key="d1">UNKNOWN</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1780737501</data>
+  <data key="d6"></data>
+</node>
+<node id="Singapore">
+  <data key="d0">Singapore</data>
+  <data key="d3">chunk-39f12f61bababb936d696d1f7532edec</data>
+  <data key="d2">Cát thủy tinh Kit Cat có xuất xứ từ Singapore.</data>
+  <data key="d1">UNKNOWN</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1780737502</data>
+  <data key="d6"></data>
+</node>
+<node id="Việt Nam">
+  <data key="d0">Việt Nam</data>
+  <data key="d3">chunk-39f12f61bababb936d696d1f7532edec</data>
+  <data key="d2">Vòng cổ chuông cho chó mèo được sản xuất tại Việt Nam.</data>
+  <data key="d1">UNKNOWN</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1780737503</data>
+  <data key="d6"></data>
+</node>
+<node id="Thức ăn cho chó 1">
+  <data key="d0">Thức ăn cho chó 1</data>
+  <data key="d3">chunk-76fde9da35d22151aabd962ade45518c</data>
+  <data key="d2">PetShop bán thức ăn cho chó con loại 1.&gt;</data>
+  <data key="d1">UNKNOWN</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1780737503</data>
+  <data key="d6"></data>
+</node>
+<node id="#|&gt;Trung Quốc">
+  <data key="d0">#|&gt;Trung Quốc</data>
+  <data key="d3">chunk-39f12f61bababb936d696d1f7532edec</data>
+  <data key="d2">Bát ăn đôi inox chống lật được sản xuất tại Trung Quốc.</data>
+  <data key="d1">UNKNOWN</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1780737505</data>
+  <data key="d6"></data>
+</node>
+<node id="Royal Canin Club Pro">
+  <data key="d0">Royal Canin Club Pro</data>
+  <data key="d3">chunk-76fde9da35d22151aabd962ade45518c</data>
+  <data key="d2">PetShop bán thức ăn hạt khô cao cấp Royal Canin Club Pro cho chó trưởng thành.&gt;</data>
+  <data key="d1">UNKNOWN</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1780737505</data>
+  <data key="d6"></data>
+</node>
+<node id="Zenith Puppy">
+  <data key="d0">Zenith Puppy</data>
+  <data key="d3">chunk-76fde9da35d22151aabd962ade45518c</data>
+  <data key="d2">PetShop bán thức ăn Zenith Puppy cho chó con.&gt;</data>
+  <data key="d1">UNKNOWN</data>
+  <data key="d4">unknown_source</data>
+  <data key="d5">1780737509</data>
+  <data key="d6"></data>
+</node>
+<edge source="Sup Thưởng Cá Ngừ Và Ức Gà" target="Nhật Bản">
+  <data key="d7">1.0</data>
+  <data key="d8">Súp thưởng cá ngừ và ức gà được sản xuất tại Nhật Bản.</data>
+  <data key="d9">sản xuất,xuất xứ</data>
+  <data key="d10">chunk-e0ec842f9bf95dca3b0e347cabc5bc06</data>
+  <data key="d11">unknown_source</data>
+  <data key="d12">1780737477</data>
+  <data key="d13"></data>
+</edge>
+<edge source="Pate Whiskas Lon" target="Thái Lan">
+  <data key="d7">1.0</data>
+  <data key="d8">Pate Whiskas Lon được sản xuất tại Thái Lan.</data>
+  <data key="d9">sản xuất,xuất xứ</data>
+  <data key="d10">chunk-e0ec842f9bf95dca3b0e347cabc5bc06</data>
+  <data key="d11">unknown_source</data>
+  <data key="d12">1780737477</data>
+  <data key="d13"></data>
+</edge>
+<edge source="Pate Whiskas Lon" target="Whiskas">
+  <data key="d7">1.0</data>
+  <data key="d8">Pate Whiskas Lon được sản xuất bởi thương hiệu Whiskas.</data>
+  <data key="d9">sản xuất,thương hiệu</data>
+  <data key="d10">chunk-e0ec842f9bf95dca3b0e347cabc5bc06</data>
+  <data key="d11">unknown_source</data>
+  <data key="d12">1780737479</data>
+  <data key="d13"></data>
+</edge>
+<edge source="Pate Nekko Gold" target="Thái Lan">
+  <data key="d7">1.0</data>
+  <data key="d8">Pate Nekko Gold được sản xuất tại Thái Lan.</data>
+  <data key="d9">sản xuất,xuất xứ</data>
+  <data key="d10">chunk-e0ec842f9bf95dca3b0e347cabc5bc06</data>
+  <data key="d11">unknown_source</data>
+  <data key="d12">1780737479</data>
+  <data key="d13"></data>
+</edge>
+<edge source="Cát Vệ Sinh Maneki Neko" target="Nhật Bản">
+  <data key="d7">1.0</data>
+  <data key="d8">Cát vệ sinh Maneki Neko được sản xuất tại Nhật Bản.</data>
+  <data key="d9">sản xuất,xuất xứ</data>
+  <data key="d10">chunk-e0ec842f9bf95dca3b0e347cabc5bc06</data>
+  <data key="d11">unknown_source</data>
+  <data key="d12">1780737479</data>
+  <data key="d13"></data>
+</edge>
+<edge source="Cát Đậu Nành Cature Tofu" target="Trung Quốc">
+  <data key="d7">1.0</data>
+  <data key="d8">Cát đậu nành Cature Tofu được sản xuất tại Trung Quốc.</data>
+  <data key="d9">sản xuất,xuất xứ</data>
+  <data key="d10">chunk-e0ec842f9bf95dca3b0e347cabc5bc06</data>
+  <data key="d11">unknown_source</data>
+  <data key="d12">1780737477</data>
+  <data key="d13"></data>
+</edge>
+<edge source="Nhật Bản" target="Súp thưởng cho mèo Ciao Churu">
+  <data key="d7">1.0</data>
+  <data key="d8">Súp thưởng cho mèo Ciao Churu được sản xuất ở Nhật Bản.</data>
+  <data key="d9">xuất xứ,địa điểm sản xuất</data>
+  <data key="d10">chunk-b98ede171ddbffad4be66baff78ae782</data>
+  <data key="d11">unknown_source</data>
+  <data key="d12">1780737487</data>
+  <data key="d13"></data>
+</edge>
+<edge source="Thái Lan" target="Thức Ăn Khô Cho Mèo Sản Phẩm 1">
+  <data key="d7">1.0</data>
+  <data key="d8">Thức ăn khô cho mèo sản phẩm 1 được sản xuất tại Thái Lan.</data>
+  <data key="d9">sản phẩm,xuất xứ</data>
+  <data key="d10">chunk-87bf06529affec588d36abf8bef101ad</data>
+  <data key="d11">unknown_source</data>
+  <data key="d12">1780737481</data>
+  <data key="d13"></data>
+</edge>
+<edge source="Thái Lan" target="Me-O Salmon">
+  <data key="d7">1.0</data>
+  <data key="d8">Me-O Salmon được sản xuất ở Thái Lan.</data>
+  <data key="d9">xuất xứ,địa điểm sản xuất</data>
+  <data key="d10">chunk-b98ede171ddbffad4be66baff78ae782</data>
+  <data key="d11">unknown_source</data>
+  <data key="d12">1780737486</data>
+  <data key="d13"></data>
+</edge>
+<edge source="Thái Lan" target="Pate cho chó Pedigree Túi">
+  <data key="d7">1.0</data>
+  <data key="d8">Pate cho chó Pedigree Túi được sản xuất ở Thái Lan.</data>
+  <data key="d9">xuất xứ,địa điểm sản xuất</data>
+  <data key="d10">chunk-b98ede171ddbffad4be66baff78ae782</data>
+  <data key="d11">unknown_source</data>
+  <data key="d12">1780737487</data>
+  <data key="d13"></data>
+</edge>
+<edge source="Trung Quốc" target="Đậu nành tự nhiên">
+  <data key="d7">1.0</data>
+  <data key="d8">Đậu nành tự nhiên nhập khẩu từ Trung Quốc.</data>
+  <data key="d9">nguyên liệu nhập khẩu,xuất xứ</data>
+  <data key="d10">chunk-39f12f61bababb936d696d1f7532edec</data>
+  <data key="d11">unknown_source</data>
+  <data key="d12">1780737502</data>
+  <data key="d13"></data>
+</edge>
+<edge source="Trung Quốc" target="Sữa tắm Joyce &amp; Dolls Rose">
+  <data key="d7">1.0</data>
+  <data key="d8">Sữa tắm Joyce &amp; Dolls Rose có xuất xứ từ Trung Quốc.</data>
+  <data key="d9">sản phẩm,xuất xứ</data>
+  <data key="d10">chunk-39f12f61bababb936d696d1f7532edec</data>
+  <data key="d11">unknown_source</data>
+  <data key="d12">1780737503</data>
+  <data key="d13"></data>
+</edge>
+<edge source="Trung Quốc" target="Bát ăn đôi inox chống lật">
+  <data key="d7">1.0</data>
+  <data key="d8">Xuất xứ của bát ăn đôi inox chống lật chưa được cung cấp đầy đủ trong thông tin sản phẩm.</data>
+  <data key="d9">không xác định,xuất xứ</data>
+  <data key="d10">chunk-39f12f61bababb936d696d1f7532edec</data>
+  <data key="d11">unknown_source</data>
+  <data key="d12">1780737504</data>
+  <data key="d13"></data>
+</edge>
+<edge source="Thức Ăn Cho Chó 4 Pedigree Adult" target="Mỹ">
+  <data key="d7">1.0</data>
+  <data key="d8">Thức ăn cho chó Pedigree Adult được sản xuất tại Mỹ.</data>
+  <data key="d9">sản phẩm,xuất xứ</data>
+  <data key="d10">chunk-87bf06529affec588d36abf8bef101ad</data>
+  <data key="d11">unknown_source</data>
+  <data key="d12">1780737479</data>
+  <data key="d13"></data>
+</edge>
+<edge source="Thức Ăn Cho Chó 5 Zenith Puppy" target="Hàn Quốc">
+  <data key="d7">1.0</data>
+  <data key="d8">Thức ăn cho chó Zenith Puppy được sản xuất tại Hàn Quốc.</data>
+  <data key="d9">sản phẩm,xuất xứ</data>
+  <data key="d10">chunk-87bf06529affec588d36abf8bef101ad</data>
+  <data key="d11">unknown_source</data>
+  <data key="d12">1780737479</data>
+  <data key="d13"></data>
+</edge>
+<edge source="Thức Ăn Khô Cho Mèo Sản Phẩm 2" target="Bỉ">
+  <data key="d7">1.0</data>
+  <data key="d8">Thức ăn khô cho mèo sản phẩm 2 được sản xuất tại Bỉ.</data>
+  <data key="d9">sản phẩm,xuất xứ</data>
+  <data key="d10">chunk-87bf06529affec588d36abf8bef101ad</data>
+  <data key="d11">unknown_source</data>
+  <data key="d12">1780737481</data>
+  <data key="d13"></data>
+</edge>
+<edge source="Thức Ăn Cho Mèo 3 Minino Plus" target="Mexico">
+  <data key="d7">1.0</data>
+  <data key="d8">Thức ăn cho mèo Minino Plus được sản xuất tại Mexico.</data>
+  <data key="d9">sản phẩm,xuất xứ</data>
+  <data key="d10">chunk-87bf06529affec588d36abf8bef101ad</data>
+  <data key="d11">unknown_source</data>
+  <data key="d12">1780737481</data>
+  <data key="d13"></data>
+</edge>
+<edge source="Mỹ" target="Thức Ăn Cho Chó 1 Pedigree Adult">
+  <data key="d7">1.0</data>
+  <data key="d8">Thức ăn cho chó Pedigree Adult được sản xuất tại Mỹ.</data>
+  <data key="d9">sản phẩm,xuất xứ</data>
+  <data key="d10">chunk-87bf06529affec588d36abf8bef101ad</data>
+  <data key="d11">unknown_source</data>
+  <data key="d12">1780737481</data>
+  <data key="d13"></data>
+</edge>
+<edge source="Mỹ" target="PetShop">
+  <data key="d7">1.0</data>
+  <data key="d8">PetShop phân phối sản phẩm NexGard Calcium từ Mỹ.</data>
+  <data key="d9">distribution,product origin</data>
+  <data key="d10">chunk-449c21590adb1384a8c243bab42ded52</data>
+  <data key="d11">unknown_source</data>
+  <data key="d12">1780737511</data>
+  <data key="d13"></data>
+</edge>
+<edge source="Hàn Quốc" target="Catsrang Kitten">
+  <data key="d7">1.0</data>
+  <data key="d8">Catsrang Kitten được sản xuất ở Hàn Quốc.</data>
+  <data key="d9">xuất xứ,địa điểm sản xuất</data>
+  <data key="d10">chunk-b98ede171ddbffad4be66baff78ae782</data>
+  <data key="d11">unknown_source</data>
+  <data key="d12">1780737486</data>
+  <data key="d13"></data>
+</edge>
+<edge source="Hàn Quốc" target="Me-O Salmon">
+  <data key="d7">1.0</data>
+  <data key="d8">Me-O Salmon được sản xuất ở Hàn Quốc (sửa lại từ Thái Lan).</data>
+  <data key="d9">xuất xứ,địa điểm sản xuất</data>
+  <data key="d10">chunk-b98ede171ddbffad4be66baff78ae782</data>
+  <data key="d11">unknown_source</data>
+  <data key="d12">1780737488</data>
+  <data key="d13"></data>
+</edge>
+<edge source="Mexico" target="Thức Ăn Cho Mèo 2 Me-O Salmon">
+  <data key="d7">1.0</data>
+  <data key="d8">Thức ăn cho mèo Me-O Salmon được sản xuất tại Mexico.</data>
+  <data key="d9">sản phẩm,xuất xứ</data>
+  <data key="d10">chunk-87bf06529affec588d36abf8bef101ad</data>
+  <data key="d11">unknown_source</data>
+  <data key="d12">1780737483</data>
+  <data key="d13"></data>
+</edge>
+<edge source="Mexico" target="Thức ăn hạt hương vị hải sản">
+  <data key="d7">1.0</data>
+  <data key="d8">Thức ăn hạt hương vị hải sản được sản xuất ở Mexico.</data>
+  <data key="d9">xuất xứ,địa điểm sản xuất</data>
+  <data key="d10">chunk-b98ede171ddbffad4be66baff78ae782</data>
+  <data key="d11">unknown_source</data>
+  <data key="d12">1780737485</data>
+  <data key="d13"></data>
+</edge>
+<edge source="Nhà cây nhiều tầng bọc vải nỉ" target="Cột quấn dây thừng sisal">
+  <data key="d7">1.0</data>
+  <data key="d8">Nhà cây nhiều tầng bọc vải nỉ sử dụng cột quấn dây thừng sisal chắc chắn.</data>
+  <data key="d9">kết hợp sản phẩm,phần cấu tạo</data>
+  <data key="d10">chunk-0abb0129adb180938767353fab8e8f66</data>
+  <data key="d11">unknown_source</data>
+  <data key="d12">1780737481</data>
+  <data key="d13"></data>
+</edge>
+<edge source="Sản phẩm Bát ăn đôi inox chống lật" target="Chó mèo">
+  <data key="d7">1.0</data>
+  <data key="d8">Bát ăn đôi inox giúp giữ cố định bát ăn không bị đổ khi chó mèo ăn.</data>
+  <data key="d9">công dụng,hỗ trợ vật nuôi</data>
+  <data key="d10">chunk-0abb0129adb180938767353fab8e8f66</data>
+  <data key="d11">unknown_source</data>
+  <data key="d12">1780737484</data>
+  <data key="d13"></data>
+</edge>
+<edge source="Thuốc nhỏ gáy trị rận Fronline Plus" target="Chó mèo">
+  <data key="d7">1.0</data>
+  <data key="d8">Thuốc nhỏ gáy giúp tiêu diệt ve, rận, bọ chét và trứng ký sinh trên cơ thể chó mèo.</data>
+  <data key="d9">chăm sóc sức khỏe,tiêu diệt ký sinh trùng</data>
+  <data key="d10">chunk-0abb0129adb180938767353fab8e8f66</data>
+  <data key="d11">unknown_source</data>
+  <data key="d12">1780737486</data>
+  <data key="d13"></data>
+</edge>
+<edge source="Gel dinh dưỡng Virbac Megaderm" target="Chó mèo">
+  <data key="d7">1.0</data>
+  <data key="d8">Gel dinh dưỡng giúp trị viêm da, phục hồi các tế bào tổn thương và làm cho lông chó mèo bóng mượt.</data>
+  <data key="d9">chăm sóc da lông,phục hồi tế bào</data>
+  <data key="d10">chunk-0abb0129adb180938767353fab8e8f66</data>
+  <data key="d11">unknown_source</data>
+  <data key="d12">1780737488</data>
+  <data key="d13"></data>
+</edge>
+<edge source="Viên canxi cho chó NexGard Calcium" target="Chó con">
+  <data key="d7">1.0</data>
+  <data key="d8">Viên canxi giúp chống còi xương ở chó con và hỗ trợ phát triển khung tai dựng đẹp.</data>
+  <data key="d9">chăm sóc xương khớp,phát triển khung tai</data>
+  <data key="d10">chunk-0abb0129adb180938767353fab8e8f66</data>
+  <data key="d11">unknown_source</data>
+  <data key="d12">1780737484</data>
+  <data key="d13"></data>
+</edge>
+<edge source="Men" target="Sản phẩm y tế và thực phẩm chức năng">
+  <data key="d7">1.0</data>
+  <data key="d8">Men là một phần của danh sách sản phẩm nhưng không có thông tin chi tiết cụ thể.</data>
+  <data key="d9">nối kết sản phẩm</data>
+  <data key="d10">chunk-0abb0129adb180938767353fab8e8f66</data>
+  <data key="d11">unknown_source</data>
+  <data key="d12">1780737484</data>
+  <data key="d13"></data>
+</edge>
+<edge source="Thức ăn cho chó con SmartHeart" target="Chó">
+  <data key="d7">1.0</data>
+  <data key="d8">Thức ăn cho chó con SmartHeart dành riêng cho chó con.&gt;</data>
+  <data key="d9">người tiêu dùng,sản phẩm</data>
+  <data key="d10">chunk-76fde9da35d22151aabd962ade45518c</data>
+  <data key="d11">unknown_source</data>
+  <data key="d12">1780737497</data>
+  <data key="d13"></data>
+</edge>
+<edge source="Cát thủy tinh Kit Cat" target="Singapore">
+  <data key="d7">1.0</data>
+  <data key="d8">Cát thủy tinh Kit Cat có xuất xứ từ Singapore.</data>
+  <data key="d9">sản phẩm,xuất xứ</data>
+  <data key="d10">chunk-39f12f61bababb936d696d1f7532edec</data>
+  <data key="d11">unknown_source</data>
+  <data key="d12">1780737503</data>
+  <data key="d13"></data>
+</edge>
+<edge source="Vòng cổ chuông cho chó mèo" target="Việt Nam">
+  <data key="d7">1.0</data>
+  <data key="d8">Vòng cổ chuông cho chó mèo được sản xuất tại Việt Nam.</data>
+  <data key="d9">sản phẩm,xuất xứ</data>
+  <data key="d10">chunk-39f12f61bababb936d696d1f7532edec</data>
+  <data key="d11">unknown_source</data>
+  <data key="d12">1780737504</data>
+  <data key="d13"></data>
+</edge>
+<edge source="Nhà cây Cào móng Cho mèo (Cat Tree)" target="Việt Nam">
+  <data key="d7">1.0</data>
+  <data key="d8">Nhà cây cào móng cho mèo được sản xuất tại Việt Nam.</data>
+  <data key="d9">sản phẩm,xuất xứ</data>
+  <data key="d10">chunk-39f12f61bababb936d696d1f7532edec</data>
+  <data key="d11">unknown_source</data>
+  <data key="d12">1780737506</data>
+  <data key="d13"></data>
+</edge>
+<edge source="Bát ăn đôi inox chống lật" target="#|&gt;Trung Quốc">
+  <data key="d7">1.0</data>
+  <data key="d8">Bát ăn đôi inox chống lật được sản xuất tại Trung Quốc.</data>
+  <data key="d9">sản phẩm,xuất xứ</data>
+  <data key="d10">chunk-39f12f61bababb936d696d1f7532edec</data>
+  <data key="d11">unknown_source</data>
+  <data key="d12">1780737507</data>
+  <data key="d13"></data>
+</edge>
+<edge source="NexGard Calcium" target="PetShop">
+  <data key="d7">1.0</data>
+  <data key="d8">PetShop cung cấp hướng dẫn sử dụng và hỗ trợ tư vấn về NexGard Calcium.</data>
+  <data key="d9">customer support,product distribution</data>
+  <data key="d10">chunk-449c21590adb1384a8c243bab42ded52</data>
+  <data key="d11">unknown_source</data>
+  <data key="d12">1780737510</data>
+  <data key="d13"></data>
+</edge>
+<edge source="Bioline" target="PetShop">
+  <data key="d7">1.0</data>
+  <data key="d8">PetShop cung cấp dịch vụ tư vấn và hỗ trợ vận chuyển cho sản phẩm Bioline.</data>
+  <data key="d9">customer support,product distribution</data>
+  <data key="d10">chunk-449c21590adb1384a8c243bab42ded52</data>
+  <data key="d11">unknown_source</data>
+  <data key="d12">1780737511</data>
+  <data key="d13"></data>
+</edge>
+<edge source="PetShop" target="Thức ăn hạt">
+  <data key="d7">1.0</data>
+  <data key="d8">PetShop cung cấp thức ăn hạt cho chó và mèo.&gt;</data>
+  <data key="d9">cung cấp,sản phẩm</data>
+  <data key="d10">chunk-76fde9da35d22151aabd962ade45518c</data>
+  <data key="d11">unknown_source</data>
+  <data key="d12">1780737491</data>
+  <data key="d13"></data>
+</edge>
+<edge source="PetShop" target="Pate ướt">
+  <data key="d7">1.0</data>
+  <data key="d8">PetShop bán pate ướt cho chó và mèo.&gt;</data>
+  <data key="d9">cung cấp,sản phẩm</data>
+  <data key="d10">chunk-76fde9da35d22151aabd962ade45518c</data>
+  <data key="d11">unknown_source</data>
+  <data key="d12">1780737497</data>
+  <data key="d13"></data>
+</edge>
+<edge source="PetShop" target="Cát vệ sinh">
+  <data key="d7">1.0</data>
+  <data key="d8">PetShop cung cấp cát vệ sinh dành cho thú cưng.&gt;</data>
+  <data key="d9">cung cấp,sản phẩm</data>
+  <data key="d10">chunk-76fde9da35d22151aabd962ade45518c</data>
+  <data key="d11">unknown_source</data>
+  <data key="d12">1780737498</data>
+  <data key="d13"></data>
+</edge>
+<edge source="PetShop" target="Phụ kiện">
+  <data key="d7">1.0</data>
+  <data key="d8">PetShop bán các phụ kiện cho chó và mèo.&gt;</data>
+  <data key="d9">cung cấp,sản phẩm</data>
+  <data key="d10">chunk-76fde9da35d22151aabd962ade45518c</data>
+  <data key="d11">unknown_source</data>
+  <data key="d12">1780737500</data>
+  <data key="d13"></data>
+</edge>
+<edge source="PetShop" target="Thực phẩm chức năng cao cấp">
+  <data key="d7">1.0</data>
+  <data key="d8">PetShop cung cấp thực phẩm chức năng cao cấp nhập khẩu chính hãng.&gt;</data>
+  <data key="d9">cung cấp,sản phẩm</data>
+  <data key="d10">chunk-76fde9da35d22151aabd962ade45518c</data>
+  <data key="d11">unknown_source</data>
+  <data key="d12">1780737502</data>
+  <data key="d13"></data>
+</edge>
+<edge source="PetShop" target="Thức ăn cho chó 1">
+  <data key="d7">1.0</data>
+  <data key="d8">PetShop bán thức ăn cho chó con loại 1.&gt;</data>
+  <data key="d9">cung cấp,sản phẩm</data>
+  <data key="d10">chunk-76fde9da35d22151aabd962ade45518c</data>
+  <data key="d11">unknown_source</data>
+  <data key="d12">1780737504</data>
+  <data key="d13"></data>
+</edge>
+<edge source="PetShop" target="Royal Canin Club Pro">
+  <data key="d7">1.0</data>
+  <data key="d8">PetShop bán thức ăn hạt khô cao cấp Royal Canin Club Pro cho chó trưởng thành.&gt;</data>
+  <data key="d9">cung cấp,sản phẩm</data>
+  <data key="d10">chunk-76fde9da35d22151aabd962ade45518c</data>
+  <data key="d11">unknown_source</data>
+  <data key="d12">1780737507</data>
+  <data key="d13"></data>
+</edge>
+<edge source="PetShop" target="Zenith Puppy">
+  <data key="d7">1.0</data>
+  <data key="d8">PetShop bán thức ăn Zenith Puppy cho chó con.&gt;</data>
+  <data key="d9">cung cấp,sản phẩm</data>
+  <data key="d10">chunk-76fde9da35d22151aabd962ade45518c</data>
+  <data key="d11">unknown_source</data>
+  <data key="d12">1780737509</data>
+  <data key="d13"></data>
+</edge>
+<edge source="PetShop" target="Đức">
+  <data key="d7">1.0</data>
+  <data key="d8">PetShop phân phối sản phẩm Bioline từ Đức.</data>
+  <data key="d9">distribution,product origin</data>
+  <data key="d10">chunk-449c21590adb1384a8c243bab42ded52</data>
+  <data key="d11">unknown_source</data>
+  <data key="d12">1780737512</data>
+  <data key="d13"></data>
+</edge>
+<edge source="Alex" target="Cruz">
+  <data key="d7">1.0</data>
+  <data key="d8">Alex observes Cruz's vision of control and notes a subtle transformation in Taylor's attitude toward this vision.</data>
+  <data key="d9">observation,rebellion</data>
+  <data key="d10">chunk-0abb0129adb180938767353fab8e8f66</data>
+  <data key="d11">unknown_source</data>
+  <data key="d12">1780737488</data>
+  <data key="d13"></data>
+</edge>
+<edge source="Thức ăn hạt" target="Chó">
+  <data key="d7">1.0</data>
+  <data key="d8">Thức ăn hạt được sử dụng cho chó.&gt;</data>
+  <data key="d9">người tiêu dùng,sản phẩm</data>
+  <data key="d10">chunk-76fde9da35d22151aabd962ade45518c</data>
+  <data key="d11">unknown_source</data>
+  <data key="d12">1780737497</data>
+  <data key="d13"></data>
+</edge>
+<edge source="Thức ăn hạt" target="Mèo">
+  <data key="d7">1.0</data>
+  <data key="d8">Thức ăn hạt cũng dành cho mèo.&gt;</data>
+  <data key="d9">người tiêu dùng,sản phẩm</data>
+  <data key="d10">chunk-76fde9da35d22151aabd962ade45518c</data>
+  <data key="d11">unknown_source</data>
+  <data key="d12">1780737498</data>
+  <data key="d13"></data>
+</edge>
+<edge source="Chó" target="Pedigree Adult">
+  <data key="d7">1.0</data>
+  <data key="d8">Thức ăn hạt Pedigree Adult dành cho chó lớn.&gt;</data>
+  <data key="d9">người tiêu dùng,sản phẩm</data>
+  <data key="d10">chunk-76fde9da35d22151aabd962ade45518c</data>
+  <data key="d11">unknown_source</data>
+  <data key="d12">1780737500</data>
+  <data key="d13"></data>
+</edge>
+<edge source="Pate ướt" target="Mèo">
+  <data key="d7">1.0</data>
+  <data key="d8">Pate ướt được sử dụng cho mèo.&gt;</data>
+  <data key="d9">người tiêu dùng,sản phẩm</data>
+  <data key="d10">chunk-76fde9da35d22151aabd962ade45518c</data>
+  <data key="d11">unknown_source</data>
+  <data key="d12">1780737501</data>
+  <data key="d13"></data>
+</edge>
+</graph></graphml>

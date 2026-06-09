@@ -1,89 +1,73 @@
-# -*- coding: utf-8 -*-
 import time
-from fastapi import FastAPI, HTTPException, Body
-from lightrag import LightRAG, QueryParam
-from lightrag.llm.ollama import ollama_model_complete, ollama_embed
+from fastapi import FastAPI, Body
+from langchain_community.vectorstores import FAISS
+from langchain_ollama import OllamaEmbeddings, ChatOllama
+from langchain_core.prompts import ChatPromptTemplate
+from langchain_core.output_parsers import StrOutputParser
+from langchain_core.runnables import RunnablePassthrough
 from contextlib import asynccontextmanager
 
-WORKING_DIR = "./lightrag_db"
-rag = None
-
-# Định nghĩa Prompt đóng vai cho LightRAG
+# Định nghĩa Prompt bán hàng
 SALES_PROMPT = (
     "Bạn là một nhân viên bán hàng chuyên nghiệp, luôn lịch sự, niềm nở và xưng hô 'dạ', 'em' với khách hàng.\n"
     "QUY TẮC CỐT LÕI:\n"
-    "1) Hãy đọc thật kỹ dữ liệu được cung cấp (Context) để tìm sản phẩm phù hợp với nhu cầu của khách. "
-    "Nếu khách hỏi về công dụng (ví dụ: tăng sức đề kháng, mượt lông...), hãy đối chiếu với mục 'Công dụng' của từng sản phẩm để trả lời.\n"
-    "2) Chỉ trả lời dựa trên thông tin có trong tài liệu. Tuyệt đối không tự bịa đặt sản phẩm không có sẵn.\n"
-    "3) Nếu và chỉ nếu câu hỏi hoàn toàn không liên quan đến các sản phẩm thú cưng (chó, mèo) có trong tài liệu, "
-    "hoặc sau khi đã tìm kỹ mà không thấy bất kỳ thông tin nào liên quan, bạn mới trả lời: 'Dạ để em hỏi lại sếp'."
+    "1) Chỉ trả lời dựa trên thông tin có trong tài liệu.\n"
+    "2) Khi khách hàng hỏi về danh sách sản phẩm theo tiêu chí (giá, công dụng, xuất xứ...), "
+    "hãy liệt kê ĐẦY ĐỦ tất cả các sản phẩm tìm thấy trong tài liệu thỏa mãn điều kiện đó. "
+    "Tuyệt đối không được bỏ sót hoặc chỉ nêu một sản phẩm.\n"
+    "3) Nếu không tìm thấy bất kỳ sản phẩm nào thỏa mãn điều kiện của khách hàng, "
+    "bạn bắt buộc phải trả lời đúng nguyên văn câu: 'Dạ để em hỏi lại sếp'.\n"
+    "4) Không được tự suy luận, không giải thích quá trình tìm kiếm, chỉ tập trung trả lời trực tiếp vào yêu cầu của khách.\n"
+    "5) Khi tìm thấy NHIỀU sản phẩm cùng thỏa mãn tiêu chí khách hỏi (ví dụ: cùng giúp mượt lông), "
+    "hãy liệt kê tất cả tên các sản phẩm đó và mô tả ngắn gọn điểm khác biệt (ví dụ: loại thức ăn hạt, loại gel, hay loại pate) "
+    "để khách hàng dễ dàng lựa chọn. Tuyệt đối không được trả lời chung chung hoặc chỉ chọn 1 sản phẩm."
 )
+
+vectorstore = None
+rag_chain = None
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    global rag
-    rag = LightRAG(
-        working_dir=WORKING_DIR,
-        llm_model_func=ollama_model_complete,
-        llm_model_name="gemma4-local:latest",
-        embedding_func=ollama_embed, 
-        addon_params={
-            "language": "Vietnamese",
-            "entity_relationship_graph_type": "default"
-        }
+    global vectorstore, rag_chain
+    # Load embedding model
+    embeddings = OllamaEmbeddings(model="bge-m3:latest")
+    vectorstore = FAISS.load_local("faiss_index", embeddings, allow_dangerous_deserialization=True)
+    
+    retriever = vectorstore.as_retriever(search_kwargs={"k": 1})
+    
+    # Sử dụng Gemma4
+    llm = ChatOllama(model="gemma4-local:latest", temperature=0)
+    
+    # Kết hợp Prompt vào template
+    template = (SALES_PROMPT + "\n\nContext: {context}\n\nQuestion: {question}")
+    prompt = ChatPromptTemplate.from_template(template)
+    
+    rag_chain = (
+        {"context": retriever, "question": RunnablePassthrough()}
+        | prompt
+        | llm
+        | StrOutputParser()
     )
-    
-    print("Đang khởi tạo các kho lưu trữ dữ liệu (Storages)...")
-    await rag.initialize_storages()
-    print("Khởi tạo Storages thành công!")
-    
     yield
-    
-    if rag:
-        print("Đang đóng các kho lưu trữ dữ liệu...")
-        await rag.finalize_storages()
-        print("Đã đóng Storages an toàn!")
 
 app = FastAPI(lifespan=lifespan)
 
 @app.post("/api/chat")
 async def chat(
-    request: dict = Body(
-        ..., 
-        example={
-            "message": "Giá bán sầu riêng loại 1 là bao nhiêu em?",
-            "mode": "naive"  # Hãy dùng thử 'naive' để test tốc độ trước nha bạn
-        }
-    )
+    request: dict = Body(..., example={"message": "Sản phẩm nào giúp mượt lông?"})
 ):
-    if not rag:
-        raise HTTPException(status_code=500, detail="LightRAG chưa được khởi tạo.")
-        
     user_message = request.get("message")
-    user_mode = request.get("mode", "naive")  # Mặc định để naive cho nhanh
     
-    if not user_message:
-        raise HTTPException(status_code=400, detail="Thiếu trường 'message' trong request body.")
-        
-    try:
-        # Bắt đầu bấm giờ
-        start_time = time.time()
-        
-        # Truy vấn với hệ thống Prompt ép luật của bạn
-        response = await rag.aquery(
-            user_message,                     # Tham số 1: query
-            param=QueryParam(mode=user_mode),       # Tham số 2: param
-            system_prompt=SALES_PROMPT        # Tham số 3: system_prompt
-        )
-        
-        # Tính thời gian chạy
-        execution_time = time.time() - start_time
-        
-        return {
-            "answer": response,
-            "execution_time_seconds": round(execution_time, 2)
-        }
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Lỗi hệ thống: {str(e)}")
+    # Đo thời gian bắt đầu
+    start_time = time.perf_counter()
     
-print("vào kiểm tra:-------------------------------http://localhost:8000/docs")
+    # Thực hiện RAG chain
+    response = rag_chain.invoke(user_message)
+    
+    # Đo thời gian kết thúc
+    end_time = time.perf_counter()
+    
+    return {
+        "answer": response,
+        "processing_time_seconds": round(end_time - start_time, 4)
+    }

@@ -3,12 +3,15 @@ langchain-community
 langchain-openai
 langchain-core
 faiss-cpu
+
+# load file docx
 unstructured
-pypdf
+unstructured[docx]
+docx2txt
+
 langchain-chroma
 langchain-ollama
 langchain
-lightrag-hku
 tqdm
 
 # tạo api

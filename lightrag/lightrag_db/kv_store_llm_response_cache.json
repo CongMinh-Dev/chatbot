@@ -1,0 +1,64 @@
+{
+  "local:keywords:c9adaf83834e0f2ae445058b192f64b6": {
+    "return": "{\"high_level_keywords\": [\"S\\u1ee9c kh\\u1ecfe th\\u00fa c\\u01b0ng\", \"T\\u0103ng c\\u01b0\\u1eddng mi\\u1ec5n d\\u1ecbch\", \"Dinh d\\u01b0\\u1ee1ng cho ch\\u00f3\"], \"low_level_keywords\": [\"Ch\\u00f3\", \"S\\u1ea3n ph\\u1ea9m t\\u0103ng s\\u1ee9c \\u0111\\u1ec1 kh\\u00e1ng\", \"Th\\u1ef1c ph\\u1ea9m b\\u1ed5 sung ch\\u00f3\", \"H\\u1ec7 mi\\u1ec5n d\\u1ecbch\"]}",
+    "cache_type": "keywords",
+    "chunk_id": null,
+    "original_prompt": "có sản phẩm nào tăng sức đề kháng cho chó không?",
+    "queryparam": {
+      "mode": "local",
+      "response_type": "Multiple Paragraphs",
+      "top_k": 3,
+      "chunk_top_k": 20,
+      "max_entity_tokens": 6000,
+      "max_relation_tokens": 8000,
+      "max_total_tokens": 30000,
+      "user_prompt": "",
+      "enable_rerank": false
+    },
+    "create_time": 1780738761,
+    "update_time": 1780738761,
+    "_id": "local:keywords:c9adaf83834e0f2ae445058b192f64b6"
+  },
+  "local:query:facf6a2af16ea26eb3fb7c2cee00d48f": {
+    "return": "Dạ em xin lỗi ạ, hiện tại để tư vấn chính xác sản phẩm nào phù hợp nhất với bé chó nhà mình, em cần tra cứu lại danh mục các sản phẩm bổ sung sức khỏe của cửa hàng ạ.\n\nDạ anh/chị có thể chờ em một chút xíu để em kiểm tra giúp mình nhé! 🙏",
+    "cache_type": "query",
+    "chunk_id": null,
+    "original_prompt": "có sản phẩm nào tăng sức đề kháng cho chó không?",
+    "queryparam": {
+      "mode": "local",
+      "response_type": "Multiple Paragraphs",
+      "top_k": 3,
+      "chunk_top_k": 20,
+      "max_entity_tokens": 6000,
+      "max_relation_tokens": 8000,
+      "max_total_tokens": 30000,
+      "hl_keywords": "Sức khỏe thú cưng, Tăng cường miễn dịch, Dinh dưỡng cho chó",
+      "ll_keywords": "Chó, Sản phẩm tăng sức đề kháng, Thực phẩm bổ sung chó, Hệ miễn dịch",
+      "user_prompt": "",
+      "enable_rerank": false
+    },
+    "create_time": 1780738793,
+    "update_time": 1780738793,
+    "_id": "local:query:facf6a2af16ea26eb3fb7c2cee00d48f"
+  },
+  "naive:query:aa7f0db85328adc14ef1760bebf419c0": {
+    "return": "Dạ em hiểu là mình đang quan tâm đến việc tăng sức đề kháng cho bé cún ạ. 😊\n\nĐể em tư vấn chính xác nhất và đưa ra sản phẩm phù hợp với giống chó, độ tuổi của bé cũng như các thương hiệu hiện tại bên em nhập về, bạn vui lòng xem giúp em **danh mục sản phẩm (Context)** mà mình đang có nhé ạ.\n\nKhi em nhận được danh sách rồi, em sẽ kiểm tra ngay cho mình những dòng thực phẩm/bổ sung nào hỗ trợ tăng đề kháng cho chó ạ! 🥰",
+    "cache_type": "query",
+    "chunk_id": null,
+    "original_prompt": "có sản phẩm nào tăng sức đề kháng cho chó không?",
+    "queryparam": {
+      "mode": "naive",
+      "response_type": "Multiple Paragraphs",
+      "top_k": 3,
+      "chunk_top_k": 20,
+      "max_entity_tokens": 6000,
+      "max_relation_tokens": 8000,
+      "max_total_tokens": 30000,
+      "user_prompt": "",
+      "enable_rerank": false
+    },
+    "create_time": 1780738817,
+    "update_time": 1780738817,
+    "_id": "naive:query:aa7f0db85328adc14ef1760bebf419c0"
+  }
+}
