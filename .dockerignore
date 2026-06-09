@@ -1,4 +1,29 @@
-Plaintext
-tmp
+# Các thư mục hệ thống và Git
 .git
 .github
+.vscode
+.idea
+
+# Các file môi trường (KHÔNG ĐƯỢC ĐẨY LÊN IMAGE)
+.env
+.env.local
+
+# Các thư viện ảo (Python venv)
+.venv
+venv
+env
+
+# Các file log và file tạm
+*.log
+*.tmp
+__pycache__
+*.pyc
+
+# Các thư mục dữ liệu (nếu bạn không muốn copy dữ liệu cũ từ máy local vào)
+data/
+faiss_index/
+Models/
+
+# Các file build/dist nếu có
+dist/
+build/
