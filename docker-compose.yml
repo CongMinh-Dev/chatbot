@@ -1,4 +1,3 @@
-
 services:
   chatbot:
     build: .
@@ -6,6 +5,9 @@ services:
     ports:
       - "8003:8000"
     volumes:
-      - ./data:/app/data         # Mount dữ liệu thô để ingest
-      - ./faiss_index:/app/faiss_index # Giữ lại index sau khi restart
+      - ./data:/app/data
+      - ./faiss_index:/app/faiss_index
+    # Dùng lệnh này để giữ container luôn chạy ngay cả khi server lỗi, giúp bạn vào bash
+    tty: true 
+    stdin_open: true
     restart: always
