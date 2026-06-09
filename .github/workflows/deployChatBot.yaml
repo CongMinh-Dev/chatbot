@@ -17,7 +17,7 @@ jobs:
           rm -rf /root/chatbot_root/chatbot
           
           # 3. Copy source code vừa checkout từ github vào thư mục production
-          cp -r . /root/chatbot_root/
+          cp -r . /root/chatbot_root/chatbot
           
           # 4. Di chuyển vào thư mục và chạy docker-compose
           cd /root/chatbot_root/chatbot
