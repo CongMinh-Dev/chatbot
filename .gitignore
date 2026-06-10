@@ -1,7 +1,7 @@
 # Bỏ qua các file cấu hình môi trường và thư viện
-node_modules/
-dist/
-build/
+node_modules
+dist
+build
 .env
 
 # --- CẤU HÌNH CHO .VENV ---
