@@ -12,9 +12,16 @@ jobs:
       
       - name: Deploy to Server
         run: |
+          # 2. Xóa hết nội dung cũ trong thư mục production (nếu cần sạch) 
+          # hoặc bạn có thể bỏ qua dòng này nếu muốn giữ file cũ
+          rm -rf /root/chatbot_root/chatbot
+          
+          # 3. Copy source code vừa checkout từ github vào thư mục production
+          cp -r . /root/chatbot_root/chatbot
+          
+          # 4. Di chuyển vào thư mục và chạy docker-compose
           cd /root/chatbot_root/chatbot
-          # Dùng git pull để nhận code mới nhất thay vì xóa và copy lại
-          git pull origin main
-          # Dừng và khởi động lại
+          
+          # 5. Dừng và khởi động lại container
           docker compose down
           docker compose up -d --build
