@@ -12,7 +12,7 @@ tqdm
 torch --index-url https://download.pytorch.org/whl/cpu
 torchvision --index-url https://download.pytorch.org/whl/cpu
 --extra-index-url https://pypi.org/simple
-faiss-cpu
+faiss-cpu==1.6.5
 
 # Xử lý file
 unstructured
