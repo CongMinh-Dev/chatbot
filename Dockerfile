@@ -1,5 +1,5 @@
 # 1. Chọn hệ điều hành cơ bản
-FROM python:3.10-slim
+FROM python:3.10
 
 # 2. CÀI CÔNG CỤ HỆ THỐNG (Dùng apt-get - Không dùng requirements.txt ở đây)
 RUN apt-get update && apt-get install -y tini && rm -rf /var/lib/apt/lists/*
