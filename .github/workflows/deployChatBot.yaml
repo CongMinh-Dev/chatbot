@@ -22,8 +22,6 @@ jobs:
           # 4. Di chuyển vào thư mục và chạy docker-compose
           cd /root/chatbot_root/chatbot
           
-          # 5. Dừng và khởi động lại container
-          docker rmi -f chatbot-chatbot:latest
-          docker rm -f rag_chatbot
+          # 5. Dừng và khởi động lại container có --build là nó tự biết xóa thư viện cũ
           docker compose down
           docker compose up -d --build
