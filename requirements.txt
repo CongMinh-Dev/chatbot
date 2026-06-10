@@ -1,19 +1,23 @@
-langchain-text-splitters
+# Thư viện core
+langchain
+langchain-core
 langchain-community
 langchain-openai
-langchain-core
+langchain-ollama
+langchain-text-splitters
+langchain-chroma
+tqdm
+
+# Thư viện AI (Cần thiết cho FAISS và Langchain)
+torch --index-url https://download.pytorch.org/whl/cpu
+torchvision --index-url https://download.pytorch.org/whl/cpu
 faiss-cpu
 
-# load file docx
+# Xử lý file
 unstructured
 unstructured[docx]
 docx2txt
 
-langchain-chroma
-langchain-ollama
-langchain
-tqdm
-
-# tạo api
-fastapi 
+# API
+fastapi
 uvicorn

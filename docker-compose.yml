@@ -11,3 +11,5 @@ services:
     tty: true 
     stdin_open: true
     restart: always
+    environment:
+      - MKL_SERVICE_FORCE_INTEL=1
