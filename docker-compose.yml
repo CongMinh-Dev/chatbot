@@ -13,3 +13,7 @@ services:
     restart: always
     environment:
       - MKL_SERVICE_FORCE_INTEL=1
+      # Thêm dòng này để ngăn faiss dùng các tập lệnh CPU đặc thù
+      - FAISS_NO_AVX2=1 
+      # Dòng này giúp ổn định hơn
+      - OPENBLAS_NUM_THREADS=1
