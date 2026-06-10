@@ -23,5 +23,7 @@ jobs:
           cd /root/chatbot_root/chatbot
           
           # 5. Dừng và khởi động lại container
+          docker rmi -f chatbot-chatbot:latest
+          docker rm -f rag_chatbot
           docker compose down
           docker compose up -d --build
