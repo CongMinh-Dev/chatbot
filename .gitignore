@@ -6,10 +6,6 @@ build/
 
 # --- CẤU HÌNH CHO .VENV ---
 .venv/*
-!.venv/Lib/
-.venv/Lib/*
-!.venv/Lib/site-packages/
-.venv/Lib/site-packages/*
 !.venv/Lib/site-packages/lightrag/
 # ---------------------------
 
