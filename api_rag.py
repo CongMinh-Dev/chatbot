@@ -1,16 +1,26 @@
 import time
 import os
+import asyncio
 from dotenv import load_dotenv
-from fastapi import FastAPI, Body
+from fastapi import FastAPI, Body, Depends
 from contextlib import asynccontextmanager
 
 from langchain_chroma import Chroma
 from langchain_openai import ChatOpenAI
-# Thay đổi: Import OllamaEmbeddings thay vì OpenAIEmbeddings
 from langchain_ollama import OllamaEmbeddings
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.runnables import RunnablePassthrough
+
+# --- CẤU HÌNH SEMAPHORE (Hàng đợi xử lý) ---
+# Chỉ cho phép tối đa 3 request/1 worker(lõi cpu) xử lý đồng thời, các request khác sẽ đợi
+MAX_CONCURRENT_REQUESTS = 3
+request_semaphore = asyncio.Semaphore(MAX_CONCURRENT_REQUESTS)
+
+async def check_concurrency():
+    """Dependency kiểm tra số lượng request, nếu đầy sẽ tự đưa vào hàng đợi."""
+    async with request_semaphore:
+        yield
 
 # Load các biến môi trường
 load_dotenv()
@@ -33,8 +43,11 @@ rag_chain = None
 async def lifespan(app: FastAPI):
     global vectorstore, rag_chain
 
-    # 1. Sử dụng OllamaEmbeddings để đồng bộ với nap_data.py
-    embeddings = OllamaEmbeddings(model="bge-m3:latest", base_url="http://192.168.1.100:11434")
+    # 1. Sử dụng OllamaEmbeddings (Đảm bảo base_url đúng IP LXC của bạn)
+    embeddings = OllamaEmbeddings(
+        model="bge-m3:latest", 
+        base_url="http://192.168.1.100:11434" # đây là IP LXC thực tế của tôi
+    )
 
     # 2. Kết nối với ChromaDB
     vectorstore = Chroma(
@@ -46,13 +59,12 @@ async def lifespan(app: FastAPI):
         search_kwargs={"k": 3}
     )
 
-    # 3. LLM vẫn dùng NVIDIA NIM (meta/llama-3.1-8b-instruct)
-    # Trong hàm lifespan của api_rag.py
+    # 3. Khởi tạo LLM NVIDIA (Gemma-4)
     llm = ChatOpenAI(
-        model="google/gemma-4-31b-it", # Thay tên model ở đây
+        model="google/gemma-4-31b-it",
         base_url="https://integrate.api.nvidia.com/v1",
         api_key=NVIDIA_API_KEY,
-        temperature=0.0, # Theo cấu hình mẫu bạn đưa
+        temperature=0.0,
         model_kwargs={
             "extra_body": {
                 "max_tokens": 16384,
@@ -62,6 +74,7 @@ async def lifespan(app: FastAPI):
         }
     )
 
+    # 4. Tạo chain RAG
     template = (
         SALES_PROMPT
         + "\n\nContext:\n{context}\n\nQuestion:\n{question}"
@@ -81,7 +94,8 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(lifespan=lifespan)
 
-@app.post("/api/chat")
+# --- ENDPOINT CHAT (Áp dụng cơ chế hàng đợi) ---
+@app.post("/api/chat", dependencies=[Depends(check_concurrency)])
 async def chat(request: dict = Body(...)):
     user_message = request.get("message")
     
@@ -89,7 +103,10 @@ async def chat(request: dict = Body(...)):
         return {"error": "Vui lòng cung cấp nội dung tin nhắn."}
 
     start_time = time.perf_counter()
+    
+    # Thực hiện tác vụ RAG
     response = rag_chain.invoke(user_message)
+    
     end_time = time.perf_counter()
 
     return {

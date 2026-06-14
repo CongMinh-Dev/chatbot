@@ -12,4 +12,4 @@ RUN pip install --no-cache-dir -r requirements.txt
 # 4. COPY CODE VÀ CHẠY
 COPY . .
 ENTRYPOINT ["/usr/bin/tini", "--"]
-CMD ["uvicorn", "api_rag:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["uvicorn", "api_rag:app", "--host", "0.0.0.0", "--port", "8000", "--workers", "2"]
