@@ -46,7 +46,7 @@ def ingest_data():
     
     # Cấu hình Embedding sử dụng Ollama với bge-m3
     print("Đang khởi tạo OllamaEmbeddings (bge-m3)...")
-    embeddings = OllamaEmbeddings(model="bge-m3:latest")
+    embeddings = OllamaEmbeddings(model="bge-m3:latest", base_url="http://192.168.1.100:11434")
     
     # Khởi tạo và lưu vào ChromaDB
     print("Đang tạo vector store và lưu vào ./chroma_db...")

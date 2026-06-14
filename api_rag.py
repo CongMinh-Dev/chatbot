@@ -34,7 +34,7 @@ async def lifespan(app: FastAPI):
     global vectorstore, rag_chain
 
     # 1. Sử dụng OllamaEmbeddings để đồng bộ với nap_data.py
-    embeddings = OllamaEmbeddings(model="bge-m3:latest")
+    embeddings = OllamaEmbeddings(model="bge-m3:latest", base_url="http://192.168.1.100:11434")
 
     # 2. Kết nối với ChromaDB
     vectorstore = Chroma(
