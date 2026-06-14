@@ -1,9 +1,8 @@
-import os
 from langchain_community.document_loaders import PyPDFLoader, Docx2txtLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
-from langchain_chroma import Chroma
-# Thay đổi: Import OllamaEmbeddings thay vì OpenAIEmbeddings
+from langchain_community.vectorstores import FAISS
 from langchain_ollama import OllamaEmbeddings
+import os
 
 def ingest_data():
     documents = []
@@ -29,9 +28,17 @@ def ingest_data():
         print("Không tìm thấy file hợp lệ.")
         return
 
+    # MARKDOWN_SEPARATORS là thứ tự tiêu chí để chia: độ ưu tiên là từ trên xuống nên chia theo tiêu đề, chia theo đoạn code,....
     MARKDOWN_SEPARATORS = [
-        "\n#{1,6} ", "```\n", "\n\\*\\*\\*+\n", "\n---+\n", 
-        "\n___+\n", "\n\n", "\n", " ", "",
+        "\n#{1,6} ",
+        "```\n",
+        "\n\\*\\*\\*+\n",
+        "\n---+\n",
+        "\n___+\n",
+        "\n\n",
+        "\n",
+        " ",
+        "",
     ]
 
     text_splitter = RecursiveCharacterTextSplitter(
@@ -43,20 +50,10 @@ def ingest_data():
     )
     
     splits = text_splitter.split_documents(documents)
-    
-    # Cấu hình Embedding sử dụng Ollama với bge-m3
-    print("Đang khởi tạo OllamaEmbeddings (bge-m3)...")
     embeddings = OllamaEmbeddings(model="bge-m3:latest")
-    
-    # Khởi tạo và lưu vào ChromaDB
-    print("Đang tạo vector store và lưu vào ./chroma_db...")
-    vectorstore = Chroma.from_documents(
-        documents=splits, 
-        embedding=embeddings,
-        persist_directory="./chroma_db"
-    )
-    
-    print("Đã lưu chỉ mục vector vào ChromaDB thành công!")
+    vectorstore = FAISS.from_documents(splits, embeddings)
+    vectorstore.save_local("faiss_index")
+    print("Đã lưu chỉ mục vector thành công!")
 
 if __name__ == '__main__':
     ingest_data()
