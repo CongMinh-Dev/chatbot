@@ -6,14 +6,9 @@ services:
       - "8003:8000"
     volumes:
       - ./data:/app/data
-      - ./faiss_index:/app/faiss_index
-    # Dùng lệnh này để giữ container luôn chạy ngay cả khi server lỗi, giúp bạn vào bash
+      - ./chroma_db:/app/chroma_db  # Thay đổi từ faiss_index sang chroma_db
     tty: true 
     stdin_open: true
     restart: always
     environment:
-      - MKL_SERVICE_FORCE_INTEL=1
-      # Thêm dòng này để ngăn faiss dùng các tập lệnh CPU đặc thù
-      - FAISS_NO_AVX2=1 
-      # Dòng này giúp ổn định hơn
-      - OPENBLAS_NUM_THREADS=1
+      - NVIDIA_API_KEY=${NVIDIA_API_KEY} # Thêm biến này để CI/CD truyền key vào

@@ -11,6 +11,9 @@ jobs:
       - uses: actions/checkout@v3
       
       - name: Deploy to Server
+        env:
+            # Đảm bảo bạn đã lưu NVIDIA_API_KEY trong GitHub Settings > Secrets
+            NVIDIA_API_KEY: ${{ secrets.NVIDIA_API_KEY }}
         run: |
           # 2. Xóa hết nội dung cũ trong thư mục production (nếu cần sạch) 
           # hoặc bạn có thể bỏ qua dòng này nếu muốn giữ file cũ
@@ -21,6 +24,9 @@ jobs:
           
           # 4. Di chuyển vào thư mục và chạy docker-compose
           cd /root/chatbot_root/chatbot
+          
+          # Tạo file .env tạm thời trên server để docker-compose đọc
+          echo "NVIDIA_API_KEY=$NVIDIA_API_KEY" > .env
           
           # 5. Dừng và khởi động lại container có --build là nó tự biết xóa thư viện cũ
           docker compose down

@@ -4,6 +4,7 @@ langchain-community
 langchain-openai
 langchain-text-splitters
 langchain-chroma
+langchain-ollama
 
 chromadb
 
