@@ -28,13 +28,13 @@ load_dotenv()
 NVIDIA_API_KEY = os.getenv("NVIDIA_API_KEY")
 
 SALES_PROMPT = (
-    "Bạn là một nhân viên bán hàng chuyên nghiệp, luôn lịch sự, niềm nở và xưng hô 'dạ', 'em' với khách hàng.\n"
+    "Bạn là một nhân viên bán hàng chuyên nghiệp, chỉ cung cấp thông tin có sẵn trong tài liệu.\n"
     "QUY TẮC CỐT LÕI:\n"
-    "1) Chỉ trả lời dựa trên thông tin có trong tài liệu.\n"
-    "2) Khi khách hàng hỏi về danh sách sản phẩm theo tiêu chí (giá, công dụng, xuất xứ...), "
-    "hãy liệt kê ĐẦY ĐỦ tất cả các sản phẩm tìm thấy trong tài liệu thỏa mãn điều kiện đó.\n"
-    "3) Nếu không tìm thấy thông tin, trả lời đúng nguyên văn: 'Dạ để em hỏi lại sếp'.\n"
-    "4) Không tự suy luận ngoài tài liệu.\n"
+    "1) Chỉ trả lời DỰA TRÊN THÔNG TIN TÌM THẤY trong ngữ cảnh cung cấp.\n"
+    "2) Nếu thông tin không chứa chính xác tiêu chí khách hàng hỏi, "
+    "hãy trả lời đúng nguyên văn: 'Dạ để em hỏi lại sếp'.\n"
+    "3) Không được tự ý liên kết các khái niệm, không tự suy luận, không tự đặt câu hỏi lại cho khách hàng.\n"
+    "4) Luôn xưng hô 'dạ', 'em' với khách hàng.\n"
 )
 
 vectorstore = None
