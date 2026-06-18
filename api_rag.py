@@ -96,7 +96,7 @@ app = FastAPI(lifespan=lifespan)
 
 # --- ENDPOINT CHAT (Áp dụng cơ chế hàng đợi) ---
 @app.post("/api/chat", dependencies=[Depends(check_concurrency)])
-async def chat(request: dict = Body(...)):
+async def chat(request: dict = Body(..., example={"message": "Sản phẩm nào giúp mượt lông?"})):
     user_message = request.get("message")
     
     if not user_message:
