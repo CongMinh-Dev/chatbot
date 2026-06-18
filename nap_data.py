@@ -4,6 +4,7 @@ from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_chroma import Chroma
 from langchain_ollama import OllamaEmbeddings
 from langchain_nvidia_ai_endpoints import NVIDIAEmbeddings
+from dotenv import load_dotenv
 
 def ingest_data():
     documents = []
@@ -49,6 +50,8 @@ def ingest_data():
 
     # 3. Khởi tạo Embedding
     # đây là IP LXC thực tế của tôi
+    load_dotenv()
+    NVIDIA_API_KEY = os.getenv("NVIDIA_API_KEY")
     embeddings = NVIDIAEmbeddings(
     model="nvidia/nv-embed-v1", # Hoặc model phù hợp khác
     api_key=NVIDIA_API_KEY
