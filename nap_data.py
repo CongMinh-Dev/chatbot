@@ -3,6 +3,7 @@ from langchain_community.document_loaders import PyPDFLoader, Docx2txtLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_chroma import Chroma
 from langchain_ollama import OllamaEmbeddings
+from langchain_nvidia_ai_endpoints import NVIDIAEmbeddings
 
 def ingest_data():
     documents = []
@@ -48,9 +49,9 @@ def ingest_data():
 
     # 3. Khởi tạo Embedding
     # đây là IP LXC thực tế của tôi
-    embeddings = OllamaEmbeddings(
-        model="bge-m3:latest", 
-        base_url="http://192.168.1.100:11434"
+    embeddings = NVIDIAEmbeddings(
+    model="nvidia/nv-embed-v1", # Hoặc model phù hợp khác
+    api_key=NVIDIA_API_KEY
     )
     
     # 4. Khởi tạo VectorStore và lưu thủ công từng đoạn để tránh treo

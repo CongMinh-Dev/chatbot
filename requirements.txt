@@ -5,6 +5,7 @@ langchain-openai
 langchain-text-splitters
 langchain-chroma
 langchain-ollama
+langchain_nvidia_ai_endpoints
 
 chromadb
 

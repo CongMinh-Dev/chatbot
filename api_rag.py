@@ -8,6 +8,7 @@ from contextlib import asynccontextmanager
 from langchain_chroma import Chroma
 from langchain_openai import ChatOpenAI
 from langchain_ollama import OllamaEmbeddings
+from langchain_nvidia_ai_endpoints import NVIDIAEmbeddings
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.runnables import RunnablePassthrough
@@ -44,9 +45,9 @@ async def lifespan(app: FastAPI):
     global vectorstore, rag_chain
 
     # 1. Sử dụng OllamaEmbeddings (Đảm bảo base_url đúng IP LXC của bạn)
-    embeddings = OllamaEmbeddings(
-        model="bge-m3:latest", 
-        base_url="http://192.168.1.100:11434" # đây là IP LXC thực tế của tôi
+    embeddings = NVIDIAEmbeddings(
+    model="nvidia/nv-embed-v1", # Hoặc model phù hợp khác
+    api_key=NVIDIA_API_KEY
     )
 
     # 2. Kết nối với ChromaDB
@@ -69,7 +70,7 @@ async def lifespan(app: FastAPI):
             "extra_body": {
                 "max_tokens": 16384,
                 "top_p": 0.95,
-                "chat_template_kwargs": {"enable_thinking": True}
+                "chat_template_kwargs": {"enable_thinking": False}
             }
         }
     )
@@ -96,7 +97,7 @@ app = FastAPI(lifespan=lifespan)
 
 # --- ENDPOINT CHAT (Áp dụng cơ chế hàng đợi) ---
 @app.post("/api/chat", dependencies=[Depends(check_concurrency)])
-async def chat(request: dict = Body(..., example={"message": "Sản phẩm nào giúp mượt lông?"})):
+async def chat(request: dict = Body(..., example={"message": "Sản phẩm nào giúp tăng sức đề kháng?"})):
     user_message = request.get("message")
     if not user_message:
         return {"error": "Vui lòng cung cấp nội dung tin nhắn."}
