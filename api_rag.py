@@ -83,7 +83,7 @@ async def lifespan(app: FastAPI):
 
     rag_chain = (
         {
-            "context": retriever,
+            "context": lambda x: retriever.invoke(x), # Ép dùng nguyên văn
             "question": RunnablePassthrough()
         }
         | prompt
@@ -98,18 +98,28 @@ app = FastAPI(lifespan=lifespan)
 @app.post("/api/chat", dependencies=[Depends(check_concurrency)])
 async def chat(request: dict = Body(..., example={"message": "Sản phẩm nào giúp mượt lông?"})):
     user_message = request.get("message")
-    
     if not user_message:
         return {"error": "Vui lòng cung cấp nội dung tin nhắn."}
 
+    # Đo thời gian từng bước
     start_time = time.perf_counter()
     
-    # Thực hiện tác vụ RAG
-    response = rag_chain.invoke(user_message)
+    # 1. Bước lấy context (Retrieval)
+    t0 = time.perf_counter()
+    retriever = vectorstore.as_retriever(search_kwargs={"k": 3})
+    context = retriever.invoke(user_message)
+    t1 = time.perf_counter()
     
-    end_time = time.perf_counter()
+    # 2. Bước tạo phản hồi (Generation)
+    response = rag_chain.invoke(user_message)
+    print(f"Model response: {response}")
+    t2 = time.perf_counter()
 
     return {
         "answer": response,
-        "processing_time_seconds": round(end_time - start_time, 4)
+        "timing": {
+            "retrieval_seconds": round(t1 - t0, 4),
+            "generation_seconds": round(t2 - t1, 4),
+            "total_seconds": round(t2 - start_time, 4)
+        }
     }
