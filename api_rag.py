@@ -3,6 +3,7 @@ import os
 import asyncio
 from dotenv import load_dotenv
 from fastapi import FastAPI, Body, Depends
+from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 
 from langchain_chroma import Chroma
@@ -95,6 +96,13 @@ async def lifespan(app: FastAPI):
     yield
 
 app = FastAPI(lifespan=lifespan)
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["https://minhshop.minh2309.io.vn"], 
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # --- ENDPOINT CHAT (Áp dụng cơ chế hàng đợi) ---
 @app.post("/api/chat", dependencies=[Depends(check_concurrency)])
