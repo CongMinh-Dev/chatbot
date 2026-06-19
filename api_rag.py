@@ -106,27 +106,89 @@ app.add_middleware(
 
 # --- ENDPOINT CHAT (Áp dụng cơ chế hàng đợi) ---
 @app.post("/api/chat", dependencies=[Depends(check_concurrency)])
-async def chat(request: dict = Body(..., example={"message": "Sản phẩm nào giúp tăng sức đề kháng?"})):
-    user_message = request.get("message")
-    if not user_message:
-        return {"error": "Vui lòng cung cấp nội dung tin nhắn."}
+async def chat(request: dict = Body(...)):
 
-    # Đo thời gian từng bước
+    messages = request.get("messages", [])
+
+    if not messages:
+        return {
+            "error": "Không có messages."
+        }
+
+    # =========================
+    # GIỚI HẠN 20 MESSAGES
+    # =========================
+
+    messages = messages[-20:]
+
+    # =========================
+    # LẤY CÂU HỎI CUỐI
+    # =========================
+
+    latest_question = messages[-1]["content"]
+
+    # =========================
+    # RETRIEVER
+    # =========================
+
     start_time = time.perf_counter()
-    
-    # 1. Bước lấy context (Retrieval)
+
     t0 = time.perf_counter()
-    retriever = vectorstore.as_retriever(search_kwargs={"k": 3})
-    context = retriever.invoke(user_message)
+
+    retriever = vectorstore.as_retriever(
+        search_kwargs={"k": 3}
+    )
+
+    docs = retriever.invoke(latest_question)
+
     t1 = time.perf_counter()
-    
-    # 2. Bước tạo phản hồi (Generation)
-    response = rag_chain.invoke(user_message)
-    print(f"Model response: {response}")
+
+    # =========================
+    # BUILD CONTEXT
+    # =========================
+
+    context_text = "\n\n".join(
+        [doc.page_content for doc in docs]
+    )
+
+    # =========================
+    # INJECT CONTEXT
+    # =========================
+
+    messages[-1]["content"] = f"""
+Thông tin tài liệu:
+
+{context_text}
+
+Câu hỏi khách hàng:
+{latest_question}
+"""
+
+    # =========================
+    # SYSTEM PROMPT
+    # =========================
+
+    final_messages = [
+        {
+            "role": "system",
+            "content": SALES_PROMPT
+        }
+    ] + messages
+
+    # =========================
+    # GENERATE
+    # =========================
+
+    response = llm.invoke(final_messages)
+
+    answer = response.content
+
     t2 = time.perf_counter()
 
+    print(f"Model response: {answer}")
+
     return {
-        "answer": response,
+        "answer": answer,
         "timing": {
             "retrieval_seconds": round(t1 - t0, 4),
             "generation_seconds": round(t2 - t1, 4),
