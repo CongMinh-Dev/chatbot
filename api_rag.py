@@ -19,6 +19,9 @@ from langchain_core.runnables import RunnablePassthrough
 MAX_CONCURRENT_REQUESTS = 3
 request_semaphore = asyncio.Semaphore(MAX_CONCURRENT_REQUESTS)
 
+vectorstore = None
+llm = None
+
 async def check_concurrency():
     """Dependency kiểm tra số lượng request, nếu đầy sẽ tự đưa vào hàng đợi."""
     async with request_semaphore:
@@ -38,12 +41,10 @@ SALES_PROMPT = (
     "4) Luôn xưng hô 'dạ', 'em' với khách hàng.\n"
 )
 
-vectorstore = None
-rag_chain = None
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    global vectorstore, rag_chain
+    global vectorstore, llm
 
     # 1. Sử dụng OllamaEmbeddings (Đảm bảo base_url đúng IP LXC của bạn)
     embeddings = NVIDIAEmbeddings(
@@ -57,9 +58,7 @@ async def lifespan(app: FastAPI):
         embedding_function=embeddings
     )
 
-    retriever = vectorstore.as_retriever(
-        search_kwargs={"k": 3}
-    )
+    
 
     # 3. Khởi tạo LLM NVIDIA (Gemma-4)
     llm = ChatOpenAI(
@@ -77,22 +76,6 @@ async def lifespan(app: FastAPI):
         }
     )
 
-    # 4. Tạo chain RAG
-    template = (
-        SALES_PROMPT
-        + "\n\nContext:\n{context}\n\nQuestion:\n{question}"
-    )
-    prompt = ChatPromptTemplate.from_template(template)
-
-    rag_chain = (
-        {
-            "context": lambda x: retriever.invoke(x), # Ép dùng nguyên văn
-            "question": RunnablePassthrough()
-        }
-        | prompt
-        | llm
-        | StrOutputParser()
-    )
     yield
 
 app = FastAPI(lifespan=lifespan)
@@ -160,25 +143,33 @@ async def chat(request: dict = Body(...)):
     # INJECT CONTEXT
     # =========================
 
-    messages[-1]["content"] = f"""
-Thông tin tài liệu:
+    request_messages = messages.copy()
 
-{context_text}
+    request_messages[-1]["content"] = f"""
+    Thông tin tài liệu:
 
-Câu hỏi khách hàng:
-{latest_question}
-"""
+    {context_text}
+
+    Lịch sử hội thoại:
+
+    {history_text}
+
+    Câu hỏi khách hàng:
+
+    {latest_question}
+    """
+
 
     # =========================
     # SYSTEM PROMPT
     # =========================
 
     final_messages = [
-        {
-            "role": "system",
-            "content": SALES_PROMPT
-        }
-    ] + messages
+    {
+        "role": "system",
+        "content": SALES_PROMPT
+    }
+    ] + request_messages
 
     # =========================
     # GENERATE
