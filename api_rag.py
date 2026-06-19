@@ -115,17 +115,22 @@ async def chat(request: dict = Body(...)):
             "error": "Không có messages."
         }
 
-    # =========================
-    # GIỚI HẠN 20 MESSAGES
-    # =========================
-
-    messages = messages[-20:]
-
-    # =========================
-    # LẤY CÂU HỎI CUỐI
-    # =========================
-
+    history_text = "\n".join([
+    f"{m['role']}: {m['content']}"
+    for m in messages[:-1]
+    ])
     latest_question = messages[-1]["content"]
+    rag_query = f"""
+    Lịch sử hội thoại:
+
+    {history_text}
+
+    Câu hỏi hiện tại:
+
+    {latest_question}
+    """
+
+    
 
     # =========================
     # RETRIEVER
@@ -139,7 +144,7 @@ async def chat(request: dict = Body(...)):
         search_kwargs={"k": 3}
     )
 
-    docs = retriever.invoke(latest_question)
+    docs = retriever.invoke(rag_query)
 
     t1 = time.perf_counter()
 
