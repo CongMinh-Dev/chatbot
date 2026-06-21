@@ -54,21 +54,37 @@ Câu hỏi khách hàng:
 {question}
 """
 
-REWRITE_PROMPT = """
-Dựa vào lịch sử hội thoại, hãy viết lại câu hỏi cuối cùng
-thành một câu hỏi độc lập, đầy đủ ngữ cảnh.
+rewrite_prompt = ChatPromptTemplate.from_messages([
+    (
+        "system",
+        """
+Bạn là bộ chuyển đổi câu hỏi.
 
-Chỉ trả về câu hỏi đã viết lại.
-Không giải thích.
-
+Nhiệm vụ:
+- Dựa vào lịch sử hội thoại.
+- Viết lại câu hỏi cuối thành câu hỏi độc lập.
+- KHÔNG trả lời câu hỏi.
+- KHÔNG giải thích.
+- Chỉ trả về đúng 1 câu hỏi.
+"""
+    ),
+    (
+        "human",
+        """
 Lịch sử:
-
 {history}
 
-Câu hỏi cuối:
-
+Câu hỏi:
 {question}
 """
+    )
+])
+
+rewrite_chain = (
+    rewrite_prompt
+    | llm
+    | StrOutputParser()
+)
 
 def format_docs(docs):
     return "\n\n".join(
@@ -176,7 +192,11 @@ async def chat(request: dict = Body(...)):
         rewrite_messages
     )
 
-    standalone_question = rewrite_response.content.strip()
+    # standalone_question = rewrite_chain.invoke({
+    # "history": history_text,
+    # "question": latest_question
+    # })
+    standalone_question 
     # debug
     print("\n====================")
     print("LATEST QUESTION:")
