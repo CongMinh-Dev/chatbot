@@ -13,6 +13,7 @@ from langchain_nvidia_ai_endpoints import NVIDIAEmbeddings
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.runnables import RunnablePassthrough
+from langchain_core.runnables import RunnableLambda
 
 # --- CẤU HÌNH SEMAPHORE (Hàng đợi xử lý) ---
 # Chỉ cho phép tối đa 3 request/1 worker(lõi cpu) xử lý đồng thời, các request khác sẽ đợi
@@ -21,6 +22,8 @@ request_semaphore = asyncio.Semaphore(MAX_CONCURRENT_REQUESTS)
 
 vectorstore = None
 llm = None
+retriever = None
+rag_chain = None
 
 async def check_concurrency():
     """Dependency kiểm tra số lượng request, nếu đầy sẽ tự đưa vào hàng đợi."""
@@ -30,16 +33,27 @@ async def check_concurrency():
 # Load các biến môi trường
 load_dotenv()
 NVIDIA_API_KEY = os.getenv("NVIDIA_API_KEY")
+SALES_PROMPT = """
+Bạn là một nhân viên bán hàng chuyên nghiệp.
 
-SALES_PROMPT = (
-    "Bạn là một nhân viên bán hàng chuyên nghiệp, chỉ cung cấp thông tin có sẵn trong tài liệu.\n"
-    "QUY TẮC CỐT LÕI:\n"
-    "1) Chỉ trả lời DỰA TRÊN THÔNG TIN TÌM THẤY trong ngữ cảnh cung cấp.\n"
-    "2) Nếu thông tin không chứa chính xác tiêu chí khách hàng hỏi, "
-    "hãy trả lời đúng nguyên văn: 'Dạ để em hỏi lại sếp'.\n"
-    "3) Không được tự ý liên kết các khái niệm, không tự suy luận, không tự đặt câu hỏi lại cho khách hàng.\n"
-    "4) Luôn xưng hô 'dạ', 'em' với khách hàng.\n"
-)
+QUY TẮC CỐT LÕI:
+
+1. Chỉ được trả lời dựa trên thông tin trong tài liệu.
+2. Nếu tài liệu không chứa câu trả lời thì trả lời đúng:
+'Dạ để em hỏi lại sếp'
+3. Không được suy luận.
+4. Không được sử dụng kiến thức bên ngoài.
+5. Luôn xưng hô dạ, em.
+
+Thông tin tài liệu:
+
+{context}
+
+Câu hỏi khách hàng:
+
+{question}
+"""
+
 REWRITE_PROMPT = """
 Dựa vào lịch sử hội thoại, hãy viết lại câu hỏi cuối cùng
 thành một câu hỏi độc lập, đầy đủ ngữ cảnh.
@@ -56,10 +70,16 @@ Câu hỏi cuối:
 {question}
 """
 
+def format_docs(docs):
+    return "\n\n".join(
+        doc.page_content
+        for doc in docs
+    )
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    global vectorstore, llm
+    global vectorstore, llm, rag_chain, retriever
 
     # 1. Sử dụng OllamaEmbeddings (Đảm bảo base_url đúng IP LXC của bạn)
     embeddings = NVIDIAEmbeddings(
@@ -72,6 +92,12 @@ async def lifespan(app: FastAPI):
         persist_directory="./chroma_db",
         embedding_function=embeddings
     )
+    retriever = vectorstore.as_retriever(
+    search_type="similarity_score_threshold",
+    search_kwargs={
+        "k": 5,
+        "score_threshold": 0.2
+    })
 
     
 
@@ -89,6 +115,16 @@ async def lifespan(app: FastAPI):
                 "presence_penalty": 0.00
             }
         }
+    )
+    prompt = ChatPromptTemplate.from_template(SALES_PROMPT)
+    rag_chain = (
+    {
+        "context": retriever | RunnableLambda(format_docs),
+        "question": RunnablePassthrough()
+    }
+    | prompt
+    | llm
+    | StrOutputParser()
     )
 
     yield
@@ -121,7 +157,6 @@ async def chat(request: dict = Body(...)):
     latest_question = messages[-1]["content"]
 
     
-
     # =========================
     # RETRIEVER
     # =========================
@@ -148,63 +183,17 @@ async def chat(request: dict = Body(...)):
 
     print("Standalone Question:")
     print(standalone_question)
-
-    retriever = vectorstore.as_retriever(
-        search_kwargs={"k": 3}
-    )
-
+    # debug
     docs = retriever.invoke(standalone_question)
 
+    print("\n=== RETRIEVED DOCS ===")
+    for i, doc in enumerate(docs):
+        print(f"\nDOC {i+1}")
+        print(doc.page_content[:500])
+    # end debug
+
     t1 = time.perf_counter()
-
-    # =========================
-    # BUILD CONTEXT
-    # =========================
-
-    context_text = "\n\n".join(
-        [doc.page_content for doc in docs]
-    )
-
-    # =========================
-    # INJECT CONTEXT
-    # =========================
-
-    request_messages = messages.copy()
-
-    request_messages[-1]["content"] = f"""
-    Thông tin tài liệu:
-
-    {context_text}
-
-    Lịch sử hội thoại:
-
-    {history_text}
-
-    Câu hỏi khách hàng:
-
-    {latest_question}
-    """
-
-
-    # =========================
-    # SYSTEM PROMPT
-    # =========================
-
-    final_messages = [
-    {
-        "role": "system",
-        "content": SALES_PROMPT
-    }
-    ] + request_messages
-
-    # =========================
-    # GENERATE
-    # =========================
-
-    response = llm.invoke(final_messages)
-
-    answer = response.content
-
+    answer = rag_chain.invoke(standalone_question)
     t2 = time.perf_counter()
 
     print(f"Model response: {answer}")
