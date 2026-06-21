@@ -196,7 +196,7 @@ async def chat(request: dict = Body(...)):
     # "history": history_text,
     # "question": latest_question
     # })
-    standalone_question 
+    standalone_question = latest_question
     # debug
     print("\n====================")
     print("LATEST QUESTION:")
