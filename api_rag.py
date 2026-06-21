@@ -192,11 +192,11 @@ async def chat(request: dict = Body(...)):
         rewrite_messages
     )
 
-    # standalone_question = rewrite_chain.invoke({
-    # "history": history_text,
-    # "question": latest_question
-    # })
-    standalone_question = latest_question
+    standalone_question = rewrite_chain.invoke({
+    "history": history_text,
+    "question": latest_question
+    })
+    
     # debug
     print("\n====================")
     print("LATEST QUESTION:")
