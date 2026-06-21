@@ -177,12 +177,15 @@ async def chat(request: dict = Body(...)):
     )
 
     standalone_question = rewrite_response.content.strip()
-
-    print("Standalone Question:")
-    print(standalone_question)
     # debug
-    docs = retriever.invoke(standalone_question)
+    print("\n====================")
+    print("LATEST QUESTION:")
+    print(latest_question)
+    print("\nSTANDALONE QUESTION:")
+    print(standalone_question)
+    print("====================\n")
 
+    docs = retriever.invoke(standalone_question)
     print("\n=== RETRIEVED DOCS ===")
     for i, doc in enumerate(docs):
         print(f"\nDOC {i+1}")
