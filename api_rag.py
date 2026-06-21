@@ -40,6 +40,21 @@ SALES_PROMPT = (
     "3) Không được tự ý liên kết các khái niệm, không tự suy luận, không tự đặt câu hỏi lại cho khách hàng.\n"
     "4) Luôn xưng hô 'dạ', 'em' với khách hàng.\n"
 )
+REWRITE_PROMPT = """
+Dựa vào lịch sử hội thoại, hãy viết lại câu hỏi cuối cùng
+thành một câu hỏi độc lập, đầy đủ ngữ cảnh.
+
+Chỉ trả về câu hỏi đã viết lại.
+Không giải thích.
+
+Lịch sử:
+
+{history}
+
+Câu hỏi cuối:
+
+{question}
+"""
 
 
 @asynccontextmanager
@@ -102,16 +117,8 @@ async def chat(request: dict = Body(...)):
     f"{m['role']}: {m['content']}"
     for m in messages[:-1]
     ])
+
     latest_question = messages[-1]["content"]
-    rag_query = f"""
-    Lịch sử hội thoại:
-
-    {history_text}
-
-    Câu hỏi hiện tại:
-
-    {latest_question}
-    """
 
     
 
@@ -123,11 +130,30 @@ async def chat(request: dict = Body(...)):
 
     t0 = time.perf_counter()
 
+    rewrite_messages = [
+    {
+        "role": "system",
+        "content": REWRITE_PROMPT.format(
+            history=history_text,
+            question=latest_question
+        )
+    }
+    ]
+
+    rewrite_response = llm.invoke(
+        rewrite_messages
+    )
+
+    standalone_question = rewrite_response.content.strip()
+
+    print("Standalone Question:")
+    print(standalone_question)
+
     retriever = vectorstore.as_retriever(
         search_kwargs={"k": 3}
     )
 
-    docs = retriever.invoke(rag_query)
+    docs = retriever.invoke(standalone_question)
 
     t1 = time.perf_counter()
 
