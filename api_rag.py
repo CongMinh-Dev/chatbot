@@ -24,6 +24,7 @@ vectorstore = None
 llm = None
 retriever = None
 rag_chain = None
+rewrite_chain = None
 
 async def check_concurrency():
     """Dependency kiểm tra số lượng request, nếu đầy sẽ tự đưa vào hàng đợi."""
@@ -58,33 +59,29 @@ rewrite_prompt = ChatPromptTemplate.from_messages([
     (
         "system",
         """
-Bạn là bộ chuyển đổi câu hỏi.
+        Bạn là bộ chuyển đổi câu hỏi.
 
-Nhiệm vụ:
-- Dựa vào lịch sử hội thoại.
-- Viết lại câu hỏi cuối thành câu hỏi độc lập.
-- KHÔNG trả lời câu hỏi.
-- KHÔNG giải thích.
-- Chỉ trả về đúng 1 câu hỏi.
-"""
+        Nhiệm vụ:
+        - Dựa vào lịch sử hội thoại.
+        - Viết lại câu hỏi cuối thành câu hỏi độc lập.
+        - KHÔNG trả lời câu hỏi.
+        - KHÔNG giải thích.
+        - Chỉ trả về đúng 1 câu hỏi.
+        """
     ),
     (
         "human",
         """
-Lịch sử:
-{history}
+        Lịch sử:
+        {history}
 
-Câu hỏi:
-{question}
-"""
+        Câu hỏi:
+        {question}
+        """
     )
 ])
 
-rewrite_chain = (
-    rewrite_prompt
-    | llm
-    | StrOutputParser()
-)
+
 
 def format_docs(docs):
     return "\n\n".join(
@@ -95,12 +92,12 @@ def format_docs(docs):
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    global vectorstore, llm, rag_chain, retriever
+    global vectorstore, llm, rag_chain, retriever, rewrite_chain
 
     # 1. Sử dụng OllamaEmbeddings (Đảm bảo base_url đúng IP LXC của bạn)
     embeddings = NVIDIAEmbeddings(
-    model="nvidia/nv-embed-v1", # Hoặc model phù hợp khác
-    api_key=NVIDIA_API_KEY
+        model="nvidia/nv-embed-v1", # Hoặc model phù hợp khác
+        api_key=NVIDIA_API_KEY
     )
 
     # 2. Kết nối với ChromaDB
@@ -131,13 +128,18 @@ async def lifespan(app: FastAPI):
     )
     prompt = ChatPromptTemplate.from_template(SALES_PROMPT)
     rag_chain = (
-    {
-        "context": retriever | RunnableLambda(format_docs),
-        "question": RunnablePassthrough()
-    }
-    | prompt
-    | llm
-    | StrOutputParser()
+        {
+            "context": retriever | RunnableLambda(format_docs),
+            "question": RunnablePassthrough()
+        }
+        | prompt
+        | llm
+        | StrOutputParser()
+    )
+    rewrite_chain = (
+        rewrite_prompt
+        | llm
+        | StrOutputParser()
     )
 
     yield
@@ -154,18 +156,16 @@ app.add_middleware(
 # --- ENDPOINT CHAT (Áp dụng cơ chế hàng đợi) ---
 @app.post("/api/chat", dependencies=[Depends(check_concurrency)])
 async def chat(request: dict = Body(...)):
-
     messages = request.get("messages", [])
-
     if not messages:
         return {
             "error": "Không có messages."
         }
 
     history_text = "\n".join([
-    f"{m['role']}: {m['content']}"
-    for m in messages[:-1]
-    ])
+        f"{m['role']}: {m['content']}"
+        for m in messages[:-1]
+        ])
 
     latest_question = messages[-1]["content"]
 
@@ -178,24 +178,15 @@ async def chat(request: dict = Body(...)):
 
     t0 = time.perf_counter()
 
-    rewrite_messages = [
-    {
-        "role": "system",
-        "content": REWRITE_PROMPT.format(
-            history=history_text,
-            question=latest_question
-        )
-    }
-    ]
+    if not history_text.strip():
+        standalone_question = latest_question
+    else:
+        standalone_question = rewrite_chain.invoke({
+            "history": history_text,
+            "question": latest_question
+        })
 
-    rewrite_response = llm.invoke(
-        rewrite_messages
-    )
-
-    standalone_question = rewrite_chain.invoke({
-    "history": history_text,
-    "question": latest_question
-    })
+   
     
     # debug
     print("\n====================")
