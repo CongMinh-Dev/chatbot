@@ -111,14 +111,14 @@ async def lifespan(app: FastAPI):
 
     # 3. Khởi tạo LLM NVIDIA (Gemma-4)
     llm = ChatOpenAI(
-        model="google/gemma-3n-e4b-it", # Đổi model
+        model="google/gemma-3n-e2b-it",
         base_url="https://integrate.api.nvidia.com/v1",
         api_key=NVIDIA_API_KEY,
-        temperature=0.0, 
+        temperature=0.20,
         model_kwargs={
             "extra_body": {
-                "max_tokens": 512, # Theo cấu hình yêu cầu
-                "top_p": 0.70,     # Theo cấu hình yêu cầu
+                "max_tokens": 512,
+                "top_p": 0.70,
                 "frequency_penalty": 0.00,
                 "presence_penalty": 0.00
             }
@@ -230,7 +230,10 @@ async def chat(request: dict = Body(...)):
     # end debug
 
     t1 = time.perf_counter()
+    print("Before invoke")
     answer = rag_chain.invoke(standalone_question)
+    # answer = llm.invoke("Xin chào")
+    print("After invoke")
     t2 = time.perf_counter()
 
     print(f"Model response: {answer}")
