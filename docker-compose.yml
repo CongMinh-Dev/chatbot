@@ -10,5 +10,5 @@ services:
     tty: true 
     stdin_open: true
     restart: always
-    environment:
-      - NVIDIA_API_KEY=${NVIDIA_API_KEY} # Thêm biến này để CI/CD truyền key vào
+    env_file:
+      - .env

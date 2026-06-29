@@ -215,12 +215,12 @@ async def chat(request: dict = Body(...)):
    
     
     # debug
-    print("\n====================")
+    print("\n===================================================================")
     print("LATEST QUESTION:")
     print(latest_question)
     print("\nSTANDALONE QUESTION:")
     print(standalone_question)
-    print("====================\n")
+    print("=====================================================================\n")
 
     docs = retriever.invoke(standalone_question)
     print("\n=== RETRIEVED DOCS ===")
