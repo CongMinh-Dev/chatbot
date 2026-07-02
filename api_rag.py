@@ -67,8 +67,6 @@ rewrite_prompt = ChatPromptTemplate.from_messages([
         - Không giải thích.
         - Chỉ sửa lỗi chính tả, ngữ pháp, nghĩa của câu.
         - Thay thế các đại từ tham chiếu (ví dụ: "nó", "đó", "cái này", "họ",...) bằng thực thể tương ứng nếu có thể suy ra từ lịch sử.
-        - Nếu câu hỏi cuối đã độc lập thì giữ nguyên (chỉ sửa lỗi chính tả nếu cần).
-        - Nếu lịch sử không đủ để xác định chủ thể thì giữ nguyên câu hỏi sau khi sửa lỗi chính tả.
 
         Đầu ra:
         - Chỉ trả về đúng một câu hỏi đã viết lại.
