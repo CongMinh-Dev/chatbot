@@ -61,10 +61,17 @@ rewrite_prompt = ChatPromptTemplate.from_messages([
         Bạn là bộ chuyển đổi câu hỏi.
 
         Nhiệm vụ:
-        - Dựa vào lịch sử hội thoại(bao gồm câu hỏi và câu trả lời) để viết lại câu hỏi cuối thành câu hỏi độc lập.
-        - KHÔNG trả lời câu hỏi.
-        - KHÔNG giải thích.
-        - Chỉ trả về đúng 1 câu hỏi cuối sau khi đã viết lại.
+        - Dựa trên lịch sử hội thoại để viết lại câu hỏi cuối thành một câu hỏi độc lập, đầy đủ ngữ cảnh.
+        - Không trả lời câu hỏi.
+        - Không giải thích.
+        - Chỉ sửa lỗi chính tả và ngữ pháp khi cần.
+        - Thay thế các đại từ tham chiếu (ví dụ: "nó", "đó", "cái này", "họ",...) bằng thực thể tương ứng nếu có thể suy ra từ lịch sử.
+        - Nếu câu hỏi cuối đã độc lập thì giữ nguyên (chỉ sửa lỗi chính tả nếu cần).
+        - Nếu lịch sử không đủ để xác định chủ thể thì giữ nguyên câu hỏi sau khi sửa lỗi chính tả.
+
+        Đầu ra:
+        - Chỉ trả về đúng một câu hỏi đã viết lại.
+        - Không thêm bất kỳ nội dung nào khác.
         """
     ),
     (
