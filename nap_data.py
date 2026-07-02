@@ -33,13 +33,22 @@ def ingest_data():
 
     # 2. Định nghĩa separators giữ nguyên như yêu cầu
     MARKDOWN_SEPARATORS = [
-        "\n#{1,6} ", "```\n", "\n\\*\\*\\*+\n", "\n---+\n", 
-        "\n___+\n", "\n\n", "\n", " ", "",
+        "\n# ",          # Header 1 (Ưu tiên nhất)
+        "\n## ",         # Header 2
+        "\n### ",        # Header 3
+        "```\n", 
+        "\n\\*\\*\\*+\n", 
+        "\n---+\n", 
+        "\n___+\n", 
+        "\n\n", 
+        "\n", 
+        " ", 
+        "",
     ]
 
     text_splitter = RecursiveCharacterTextSplitter(
         chunk_size=500,
-        chunk_overlap=100,
+        chunk_overlap=200,
         add_start_index=True,
         strip_whitespace=True,
         separators=MARKDOWN_SEPARATORS
