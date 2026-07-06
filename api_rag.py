@@ -34,6 +34,7 @@ async def check_concurrency():
 # Load các biến môi trường
 load_dotenv()
 NVIDIA_API_KEY = os.getenv("NVIDIA_API_KEY")
+GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
 SALES_PROMPT = """
 Bạn là một nhân viên bán hàng chuyên nghiệp.
 
