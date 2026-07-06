@@ -231,6 +231,7 @@ async def chat(request: dict = Body(...)):
     t2 = time.perf_counter()
 
     print(f"Model response: {answer}")
+    print(f"generation seconds: {round(t2 - t1, 4)}")
 
     return {
         "answer": answer,
