@@ -131,20 +131,6 @@ async def lifespan(app: FastAPI):
         }
     )
 
-    # llmVietLaiCauHoi = ChatOpenAI(
-    #     model="google/gemma-3n-e4b-it", # Đổi model
-    #     base_url="https://integrate.api.nvidia.com/v1",
-    #     api_key=NVIDIA_API_KEY,
-    #     temperature=0.20, 
-    #     model_kwargs={
-    #         "extra_body": {
-    #             "max_tokens": 512, # Theo cấu hình yêu cầu
-    #             "top_p": 0.70,     # Theo cấu hình yêu cầu
-    #             "frequency_penalty": 0.00,
-    #             "presence_penalty": 0.00
-    #         }
-    #     }
-    # )
     llmVietLaiCauHoi = ChatOpenAI(
         model="qwen/qwen3.5-122b-a10b", # Đổi model
         base_url="https://integrate.api.nvidia.com/v1",
@@ -207,18 +193,12 @@ async def chat(request: dict = Body(...)):
     # =========================
 
     start_time = time.perf_counter()
-
     t0 = time.perf_counter()
 
-    if not history_text.strip():
-        standalone_question = latest_question
-    else:
-        standalone_question = rewrite_chain.invoke({
-            "history": history_text,
-            "question": latest_question
-        })
-
-   
+    standalone_question = rewrite_chain.invoke({
+        "history": history_text,
+        "question": latest_question
+    })
     
     # debug
     print("\n===================================================================")
