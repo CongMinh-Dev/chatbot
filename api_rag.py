@@ -164,7 +164,7 @@ async def lifespan(app: FastAPI):
     )
     rewrite_chain = (
         rewrite_prompt
-        | llmVietLaiCauHoi
+        | llm
         | StrOutputParser()
     )
 
