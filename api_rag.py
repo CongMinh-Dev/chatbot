@@ -195,18 +195,13 @@ async def chat(request: dict = Body(...)):
 
     latest_question = messages[-1]["content"]
 
-    
-    # =========================
-    # RETRIEVER
-    # =========================
-
+    # viết lại câu hỏi
     start_time = time.perf_counter()
-    t0 = time.perf_counter()
-
     standalone_question = rewrite_chain.invoke({
         "history": history_text,
         "question": latest_question
     })
+    t0_1 = time.perf_counter()
     
     # debug
     print("\n===================================================================")
@@ -216,6 +211,8 @@ async def chat(request: dict = Body(...)):
     print(standalone_question)
     print("=====================================================================\n")
 
+    # RETRIEVER
+    t0_2 = time.perf_counter()
     docs = retriever.invoke(standalone_question)
     print("\n=== RETRIEVED DOCS ===")
     for i, doc in enumerate(docs):
@@ -231,12 +228,13 @@ async def chat(request: dict = Body(...)):
     t2 = time.perf_counter()
 
     print(f"Model response: {answer}")
+    print(f"viết lại câu hỏi seconds: {round(t0_1 - start_time, 4)}")
     print(f"generation seconds: {round(t2 - t1, 4)}")
 
     return {
         "answer": answer,
         "timing": {
-            "retrieval_seconds": round(t1 - t0, 4),
+            "retrieval_seconds": round(t1 - t0_2, 4),
             "generation_seconds": round(t2 - t1, 4),
             "total_seconds": round(t2 - start_time, 4)
         }
