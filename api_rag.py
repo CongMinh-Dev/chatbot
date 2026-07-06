@@ -21,7 +21,6 @@ MAX_CONCURRENT_REQUESTS = 3
 request_semaphore = asyncio.Semaphore(MAX_CONCURRENT_REQUESTS)
 
 vectorstore = None
-llm = None
 retriever = None
 rag_chain = None
 rewrite_chain = None
@@ -96,7 +95,7 @@ def format_docs(docs):
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    global vectorstore, llm, rag_chain, retriever, rewrite_chain
+    global vectorstore, rag_chain, retriever, rewrite_chain
 
     # 1. Sử dụng OllamaEmbeddings (Đảm bảo base_url đúng IP LXC của bạn)
     embeddings = NVIDIAEmbeddings(
@@ -116,17 +115,29 @@ async def lifespan(app: FastAPI):
     
 
     # 3. Khởi tạo LLM NVIDIA (Gemma-4)
+    # llm = ChatOpenAI(
+    #     model="google/gemma-3n-e2b-it",
+    #     base_url="https://integrate.api.nvidia.com/v1",
+    #     api_key=NVIDIA_API_KEY,
+    #     temperature=0.20,
+    #     model_kwargs={
+    #         "extra_body": {
+    #             "max_tokens": 512,
+    #             "top_p": 0.70,
+    #             "frequency_penalty": 0.00,
+    #             "presence_penalty": 0.00
+    #         }
+    #     }
+    # )
     llm = ChatOpenAI(
-        model="google/gemma-3n-e2b-it",
+        model="deepseek-ai/deepseek-v4-flash",
         base_url="https://integrate.api.nvidia.com/v1",
         api_key=NVIDIA_API_KEY,
-        temperature=0.20,
+        temperature=0,
         model_kwargs={
             "extra_body": {
-                "max_tokens": 512,
-                "top_p": 0.70,
-                "frequency_penalty": 0.00,
-                "presence_penalty": 0.00
+                "max_tokens": 16384,
+                "top_p": 0.95
             }
         }
     )
