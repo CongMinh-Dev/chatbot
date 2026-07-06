@@ -8,6 +8,7 @@ from contextlib import asynccontextmanager
 
 from langchain_chroma import Chroma
 from langchain_openai import ChatOpenAI
+from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_ollama import OllamaEmbeddings
 from langchain_nvidia_ai_endpoints import NVIDIAEmbeddings
 from langchain_core.prompts import ChatPromptTemplate
@@ -116,33 +117,25 @@ async def lifespan(app: FastAPI):
 
     # 3. Khởi tạo LLM NVIDIA (Gemma-4)
     # llm = ChatOpenAI(
-    #     model="google/gemma-3n-e2b-it",
+    #     model="deepseek-ai/deepseek-v4-flash",
     #     base_url="https://integrate.api.nvidia.com/v1",
     #     api_key=NVIDIA_API_KEY,
-    #     temperature=0.20,
+    #     temperature=0,
     #     model_kwargs={
+    #         "max_tokens": 16384,
+    #         "top_p": 0.95,
     #         "extra_body": {
-    #             "max_tokens": 512,
-    #             "top_p": 0.70,
-    #             "frequency_penalty": 0.00,
-    #             "presence_penalty": 0.00
+    #             "chat_template_kwargs": {
+    #                 "thinking": False
+    #             }
     #         }
     #     }
     # )
-    llm = ChatOpenAI(
-        model="deepseek-ai/deepseek-v4-flash",
-        base_url="https://integrate.api.nvidia.com/v1",
-        api_key=NVIDIA_API_KEY,
-        temperature=0,
-        model_kwargs={
-            "max_tokens": 16384,
-            "top_p": 0.95,
-            "extra_body": {
-                "chat_template_kwargs": {
-                    "thinking": False
-                }
-            }
-        }
+    llm = ChatGoogleGenerativeAI(
+        model="gemini-2.5-flash-lite",
+        google_api_key=GOOGLE_API_KEY,
+        temperature=0.2,
+        max_output_tokens=512,
     )
 
     llmVietLaiCauHoi = ChatOpenAI(

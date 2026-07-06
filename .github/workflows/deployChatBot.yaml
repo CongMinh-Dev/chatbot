@@ -27,6 +27,7 @@ jobs:
           
           # Tạo file .env tạm thời trên server để docker-compose đọc
           echo "NVIDIA_API_KEY=$NVIDIA_API_KEY" >> .env
+          echo "GOOGLE_API_KEY=$GOOGLE_API_KEY" >> .env
           
           # 5. Dừng và khởi động lại container có --build là nó tự biết xóa thư viện cũ
           docker compose down

@@ -2,6 +2,7 @@ langchain
 langchain-core
 langchain-community
 langchain-openai
+langchain-google-genai
 langchain-text-splitters
 langchain-chroma
 langchain-ollama
