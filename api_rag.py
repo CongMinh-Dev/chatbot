@@ -135,9 +135,12 @@ async def lifespan(app: FastAPI):
         api_key=NVIDIA_API_KEY,
         temperature=0,
         model_kwargs={
+            "max_tokens": 16384,
+            "top_p": 0.95,
             "extra_body": {
-                "max_tokens": 16384,
-                "top_p": 0.95
+                "chat_template_kwargs": {
+                    "thinking": False
+                }
             }
         }
     )
