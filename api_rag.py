@@ -139,18 +139,25 @@ async def lifespan(app: FastAPI):
         max_output_tokens=512,
     )
 
-    llmVietLaiCauHoi = ChatOpenAI(
-        model="qwen/qwen3.5-122b-a10b", # Đổi model
-        base_url="https://integrate.api.nvidia.com/v1",
-        api_key=NVIDIA_API_KEY,
-        temperature=0.60, # Theo cấu hình yêu cầu
-        model_kwargs={
-            "extra_body": {
-                "max_tokens": 16384, # Theo cấu hình yêu cầu
-                "top_p": 0.95,     # Theo cấu hình yêu cầu
-            }
-        }
+    llmVietLaiCauHoi = ChatGoogleGenerativeAI(
+        model="gemini-2.5-flash-lite",
+        google_api_key=GOOGLE_API_KEY,
+        temperature=1,
+        max_output_tokens=512,
     )
+
+    # llmVietLaiCauHoi = ChatOpenAI(
+    #     model="qwen/qwen3.5-122b-a10b", # Đổi model
+    #     base_url="https://integrate.api.nvidia.com/v1",
+    #     api_key=NVIDIA_API_KEY,
+    #     temperature=0.60, # Theo cấu hình yêu cầu
+    #     model_kwargs={
+    #         "extra_body": {
+    #             "max_tokens": 16384, # Theo cấu hình yêu cầu
+    #             "top_p": 0.95,     # Theo cấu hình yêu cầu
+    #         }
+    #     }
+    # )
 
     prompt = ChatPromptTemplate.from_template(SALES_PROMPT)
     rag_chain = (
@@ -164,7 +171,7 @@ async def lifespan(app: FastAPI):
     )
     rewrite_chain = (
         rewrite_prompt
-        | llm
+        | llmVietLaiCauHoi
         | StrOutputParser()
     )
 
