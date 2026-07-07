@@ -241,10 +241,9 @@ async def chat(request: dict = Body(...)):
 
     t1 = time.perf_counter()
     print("Before invoke===")
-    print(type(embeddings))
-    print(id(embeddings))
-    print(id(vectorstore))
-    print(id(retriever))
+    print("Global embeddings:", id(embeddings))
+    print("Retriever embeddings:", id(retriever.vectorstore._embedding_function))
+    print("Same object:", embeddings is retriever.vectorstore._embedding_function)
     answer = rag_chain.invoke(standalone_question)
     # answer = llm.invoke("Xin chào")
     print("After invoke")
