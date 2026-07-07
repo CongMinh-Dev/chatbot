@@ -8,7 +8,7 @@ from contextlib import asynccontextmanager
 
 from langchain_chroma import Chroma
 from langchain_openai import ChatOpenAI
-from langchain_google_genai import ChatGoogleGenerativeAI
+from langchain_google_genai import ChatGoogleGenerativeAI, GoogleGenerativeAIEmbeddings
 from langchain_ollama import OllamaEmbeddings
 from langchain_nvidia_ai_endpoints import NVIDIAEmbeddings
 from langchain_core.prompts import ChatPromptTemplate
@@ -100,10 +100,15 @@ async def lifespan(app: FastAPI):
     global vectorstore, rag_chain, retriever, rewrite_chain
 
     # 1. Sử dụng OllamaEmbeddings (Đảm bảo base_url đúng IP LXC của bạn)
-    embeddings = NVIDIAEmbeddings(
-        model="nvidia/nv-embed-v1", # Hoặc model phù hợp khác
-        api_key=NVIDIA_API_KEY
+    # embeddings = NVIDIAEmbeddings(
+    #     model="nvidia/nv-embed-v1", 
+    #     api_key=NVIDIA_API_KEY
+    # )
+    embeddings = GoogleGenerativeAIEmbeddings(
+        model="models/gemini-embedding-001",
+        google_api_key=GOOGLE_API_KEY,
     )
+
 
     # 2. Kết nối với ChromaDB
     vectorstore = Chroma(
@@ -111,7 +116,7 @@ async def lifespan(app: FastAPI):
         embedding_function=embeddings
     )
     retriever = vectorstore.as_retriever(
-        search_kwargs={"k": 3}
+        search_kwargs={"k": 2}
     )
 
     
