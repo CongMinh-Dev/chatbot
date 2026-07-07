@@ -172,6 +172,7 @@ async def lifespan(app: FastAPI):
         | llm
         | StrOutputParser()
     )
+    print(f'rag chain: {rag_chain}')
     rewrite_chain = (
         rewrite_prompt
         | llmVietLaiCauHoi
@@ -239,7 +240,11 @@ async def chat(request: dict = Body(...)):
     # end debug
 
     t1 = time.perf_counter()
-    print("Before invoke")
+    print("Before invoke===")
+    print(type(embeddings))
+    print(id(embeddings))
+    print(id(vectorstore))
+    print(id(retriever))
     answer = rag_chain.invoke(standalone_question)
     # answer = llm.invoke("Xin chào")
     print("After invoke")
