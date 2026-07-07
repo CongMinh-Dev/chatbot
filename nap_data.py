@@ -64,14 +64,14 @@ def ingest_data():
     load_dotenv()
     NVIDIA_API_KEY = os.getenv("NVIDIA_API_KEY")
     GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
-    # embeddings = NVIDIAEmbeddings(
-    # model="nvidia/nv-embed-v1", # Hoặc model phù hợp khác
-    # api_key=NVIDIA_API_KEY
-    # )
-    embeddings = GoogleGenerativeAIEmbeddings(
-        model="models/gemini-embedding-001",
-        google_api_key=GOOGLE_API_KEY,
+    embeddings = NVIDIAEmbeddings(
+        model="nvidia/nv-embed-v1", # Hoặc model phù hợp khác
+        api_key=NVIDIA_API_KEY
     )
+    # embeddings = GoogleGenerativeAIEmbeddings(
+    #     model="models/gemini-embedding-001",
+    #     google_api_key=GOOGLE_API_KEY,
+    # )
     
     # 4. Khởi tạo VectorStore và lưu thủ công từng đoạn để tránh treo
     vectorstore = Chroma(persist_directory="./chroma_db", embedding_function=embeddings)
