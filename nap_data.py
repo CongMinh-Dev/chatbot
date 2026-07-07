@@ -74,6 +74,7 @@ def ingest_data():
     embeddings = GoogleGenerativeAIEmbeddings(
         model="models/gemini-embedding-001",
         google_api_key=GOOGLE_API_KEY,
+        task_type="RETRIEVAL_DOCUMENT"
     )
     # embeddings = OpenAIEmbeddings(
     #     model="text-embedding-3-small",

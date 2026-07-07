@@ -109,6 +109,7 @@ async def lifespan(app: FastAPI):
     embeddings = GoogleGenerativeAIEmbeddings(
         model="models/gemini-embedding-001",
         google_api_key=GOOGLE_API_KEY,
+        task_type="RETRIEVAL_QUERY"
     )
 
     # 2. Kết nối với ChromaDB
