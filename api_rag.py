@@ -224,10 +224,13 @@ async def chat(request: dict = Body(...)):
     # RETRIEVER
     t0_2 = time.perf_counter()
     print(type(standalone_question))
+    print(isinstance(standalone_question, str))
+    print(type(str(standalone_question)))
     print(repr(standalone_question))
     vec = embeddings.embed_query("Xin chào")
     print(len(vec))
-    docs = retriever.invoke(standalone_question)
+    # docs = retriever.invoke(standalone_question)
+    docs = retriever.invoke("Có những sản phẩm nào thế?")
 
     print("\n=== RETRIEVED DOCS ===")
     for i, doc in enumerate(docs):
