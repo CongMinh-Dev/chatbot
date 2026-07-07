@@ -173,7 +173,6 @@ async def lifespan(app: FastAPI):
         | llm
         | StrOutputParser()
     )
-    print(f'rag chain: {rag_chain}')
     rewrite_chain = (
         rewrite_prompt
         | llmVietLaiCauHoi
@@ -231,8 +230,7 @@ async def chat(request: dict = Body(...)):
     print(repr(standalone_question))
     vec = embeddings.embed_query("Xin chào")
     print(len(vec))
-    # docs = retriever.invoke(standalone_question)
-    docs = retriever.invoke("Có những sản phẩm nào thế?")
+    docs = retriever.invoke(standalone_question)
 
     print("\n=== RETRIEVED DOCS ===")
     for i, doc in enumerate(docs):
