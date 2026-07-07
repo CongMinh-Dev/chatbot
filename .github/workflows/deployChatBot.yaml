@@ -30,7 +30,14 @@ jobs:
           echo "NVIDIA_API_KEY=$NVIDIA_API_KEY" >> .env
           echo "GOOGLE_API_KEY=$GOOGLE_API_KEY" >> .env
 
-          
-          # 5. Dừng và khởi động lại container có --build là nó tự biết xóa thư viện cũ
+          # xóa container, volum, mạng liên quan.
           docker compose down
-          docker compose up -d --build
+
+          # có --build là nó tự biết xóa thư viện cũ, image có tồn tại nó vẫn biết cập nhật. bật build kit
+          DOCKER_BUILDKIT=1 docker compose up -d --build
+
+          # xóa image rác
+          docker image prune -f
+          
+          # DOCKER_BUILDKIT tự biết xóa các build cache không cần thiết, build cần cần thì giữ lại để nếu file thư viện thay đổi thì cài nó nhanh
+          docker builder prune -f
