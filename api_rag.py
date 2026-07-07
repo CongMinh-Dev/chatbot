@@ -66,7 +66,7 @@ rewrite_prompt = ChatPromptTemplate.from_messages([
         - Dựa trên lịch sử hội thoại để viết lại câu hỏi cuối thành một câu hỏi độc lập, đầy đủ ngữ cảnh.
         - Không trả lời câu hỏi.
         - Không giải thích.
-        - Chỉ sửa lỗi chính tả, ngữ pháp, nghĩa của câu.
+        - Chỉ sửa lỗi chính tả, sửa ngữ pháp, sửa nghĩa của câu. sửa sao cho phù hợp.
         - Thay thế các đại từ tham chiếu (ví dụ: "nó", "đó", "cái này", "họ",...) bằng thực thể tương ứng nếu có thể suy ra từ lịch sử.
 
         Đầu ra:
@@ -133,14 +133,14 @@ async def lifespan(app: FastAPI):
     #     }
     # )
     llm = ChatGoogleGenerativeAI(
-        model="gemini-3.1-flash-lite",
+        model="gemini-2.5-flash-lite",
         google_api_key=GOOGLE_API_KEY,
         temperature=0.2,
         max_output_tokens=512,
     )
 
     llmVietLaiCauHoi = ChatGoogleGenerativeAI(
-        model="gemini-3.1-flash-lite",
+        model="gemini-2.5-flash-lite",
         google_api_key=GOOGLE_API_KEY,
         temperature=1,
         max_output_tokens=512,
