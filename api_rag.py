@@ -116,7 +116,7 @@ async def lifespan(app: FastAPI):
         embedding_function=embeddings
     )
     retriever = vectorstore.as_retriever(
-        search_kwargs={"k": 2}
+        search_kwargs={"k": 3}
     )
 
     # 3. Khởi tạo LLM NVIDIA (Gemma-4)
