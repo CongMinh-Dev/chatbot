@@ -25,6 +25,7 @@ vectorstore = None
 retriever = None
 rag_chain = None
 rewrite_chain = None
+embeddings = None
 
 async def check_concurrency():
     """Dependency kiểm tra số lượng request, nếu đầy sẽ tự đưa vào hàng đợi."""
@@ -97,7 +98,7 @@ def format_docs(docs):
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    global vectorstore, rag_chain, retriever, rewrite_chain
+    global vectorstore, rag_chain, retriever, rewrite_chain, embeddings
 
     # 1. Sử dụng OllamaEmbeddings (Đảm bảo base_url đúng IP LXC của bạn)
     # embeddings = NVIDIAEmbeddings(
@@ -227,6 +228,7 @@ async def chat(request: dict = Body(...)):
     vec = embeddings.embed_query("Xin chào")
     print(len(vec))
     docs = retriever.invoke(standalone_question)
+
     print("\n=== RETRIEVED DOCS ===")
     for i, doc in enumerate(docs):
         print(f"\nDOC {i+1}")
