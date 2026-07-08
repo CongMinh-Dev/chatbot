@@ -146,8 +146,8 @@ def call_woocommerce_api_advanced(filters: dict):
                 for p in raw_products:
                     simplified_products.append({
                         "name": p.get("name", "Sản phẩm không tên"),
-                        "price": p.get("price", "0"),
-                        "permalink": p.get("permalink", "#")
+                        "price": p.get("price", "0")
+                        # "permalink": p.get("permalink", "#")
                     })
             print(f'woo trả về thành công: {simplified_products}')
             return simplified_products
