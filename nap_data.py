@@ -67,15 +67,15 @@ def ingest_data():
     GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
     OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
     
-    # embeddings = NVIDIAEmbeddings(
-    #     model="nvidia/nv-embed-v1", # Hoặc model phù hợp khác
-    #     api_key=NVIDIA_API_KEY
-    # )
-    embeddings = GoogleGenerativeAIEmbeddings(
-        model="models/gemini-embedding-001",
-        google_api_key=GOOGLE_API_KEY,
-        task_type="RETRIEVAL_DOCUMENT"
+    embeddings = NVIDIAEmbeddings(
+        model="nvidia/nv-embed-v1", # Hoặc model phù hợp khác
+        api_key=NVIDIA_API_KEY
     )
+    # embeddings = GoogleGenerativeAIEmbeddings(
+    #     model="models/gemini-embedding-001",
+    #     google_api_key=GOOGLE_API_KEY,
+    #     task_type="RETRIEVAL_DOCUMENT"
+    # )
     # embeddings = OpenAIEmbeddings(
     #     model="text-embedding-3-small",
     #     api_key=OPENAI_API_KEY

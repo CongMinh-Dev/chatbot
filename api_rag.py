@@ -102,14 +102,14 @@ async def lifespan(app: FastAPI):
     global vectorstore, rag_chain, retriever, rewrite_chain, embeddings
 
     # 1. Sử dụng OllamaEmbeddings (Đảm bảo base_url đúng IP LXC của bạn)
-    # embeddings = NVIDIAEmbeddings(
-    #     model="nvidia/nv-embed-v1", 
-    #     api_key=NVIDIA_API_KEY
-    # )
-    embeddings = GoogleGenerativeAIEmbeddings(
-        model="models/gemini-embedding-001",
-        google_api_key=GOOGLE_API_KEY
+    embeddings = NVIDIAEmbeddings(
+        model="nvidia/nv-embed-v1", 
+        api_key=NVIDIA_API_KEY
     )
+    # embeddings = GoogleGenerativeAIEmbeddings(
+    #     model="models/gemini-embedding-001",
+    #     google_api_key=GOOGLE_API_KEY
+    # )
 
     # 2. Kết nối với ChromaDB
     vectorstore = Chroma(
