@@ -141,7 +141,6 @@ def call_woocommerce_api_advanced(filters: dict):
         response = requests.get(WOO_URL, params=params, auth=(CONSUMER_KEY, CONSUMER_SECRET), timeout=5)
         if response.status_code == 200:
             raw_products = response.json()
-            # Chuẩn hóa dữ liệu trả về để luôn là một list hợp lệ cho vòng lặp for
             simplified_products = []
             if isinstance(raw_products, list):
                 for p in raw_products:
@@ -150,12 +149,14 @@ def call_woocommerce_api_advanced(filters: dict):
                         "price": p.get("price", "0"),
                         "permalink": p.get("permalink", "#")
                     })
-                print(f'woo trả về: {simplified_products}')
+            print(f'woo trả về thành công: {simplified_products}')
             return simplified_products
+        else:
+            print(f"[API ERROR] Chi tiết lỗi từ WordPress: {response.text}")
         
     except Exception as e:
         print(f"Lỗi kết nối WooCommerce API: {e}")
-        return []
+    return []
 
 
 @asynccontextmanager
