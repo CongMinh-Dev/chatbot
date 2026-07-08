@@ -120,22 +120,8 @@ async def lifespan(app: FastAPI):
         search_kwargs={"k": 3}
     )
 
-    # 3. Khởi tạo LLM NVIDIA (Gemma-4)
-    # llm = ChatOpenAI(
-    #     model="deepseek-ai/deepseek-v4-flash",
-    #     base_url="https://integrate.api.nvidia.com/v1",
-    #     api_key=NVIDIA_API_KEY,
-    #     temperature=0,
-    #     model_kwargs={
-    #         "max_tokens": 16384,
-    #         "top_p": 0.95,
-    #         "extra_body": {
-    #             "chat_template_kwargs": {
-    #                 "thinking": False
-    #             }
-    #         }
-    #     }
-    # )
+    # 3. Khởi tạo LLM
+    
     llm = ChatGoogleGenerativeAI(
         model="gemini-3.1-flash-lite",
         google_api_key=GOOGLE_API_KEY,
@@ -224,12 +210,7 @@ async def chat(request: dict = Body(...)):
 
     # RETRIEVER
     t0_2 = time.perf_counter()
-    print(type(standalone_question))
-    print(isinstance(standalone_question, str))
-    print(type(str(standalone_question)))
-    print(repr(standalone_question))
-    vec = embeddings.embed_query("Xin chào")
-    print(len(vec))
+    
     docs = retriever.invoke(standalone_question)
 
     print("\n=== RETRIEVED DOCS ===")
@@ -240,11 +221,7 @@ async def chat(request: dict = Body(...)):
 
     t1 = time.perf_counter()
     print("Before invoke===")
-    print("Global embeddings:", id(embeddings))
-    print("Retriever embeddings:", id(retriever.vectorstore._embedding_function))
-    print("Same object:", embeddings is retriever.vectorstore._embedding_function)
     answer = rag_chain.invoke(standalone_question)
-    # answer = llm.invoke("Xin chào")
     print("After invoke")
     t2 = time.perf_counter()
 
