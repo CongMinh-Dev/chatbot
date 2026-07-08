@@ -15,6 +15,8 @@ jobs:
             # Đảm bảo bạn đã lưu NVIDIA_API_KEY trong GitHub Settings > Secrets
             NVIDIA_API_KEY: ${{ secrets.NVIDIA_API_KEY }}
             GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
+            CONSUMER_KEY_ENV: ${{ secrets.CONSUMER_KEY_ENV }}
+            CONSUMER_SECRET_ENV: ${{ secrets.CONSUMER_SECRET_ENV }}
         run: |
           # 2. Xóa hết nội dung cũ trong thư mục production (nếu cần sạch) 
           # hoặc bạn có thể bỏ qua dòng này nếu muốn giữ file cũ
@@ -29,6 +31,9 @@ jobs:
           # Tạo file .env tạm thời trên server để docker-compose đọc
           echo "NVIDIA_API_KEY=$NVIDIA_API_KEY" >> .env
           echo "GOOGLE_API_KEY=$GOOGLE_API_KEY" >> .env
+          echo "CONSUMER_KEY_ENV=$CONSUMER_KEY_ENV" >> .env
+          echo "CONSUMER_SECRET_ENV=$CONSUMER_SECRET_ENV" >> .env
+
 
           # xóa container, volum, mạng liên quan.
           docker compose down
