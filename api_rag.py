@@ -97,8 +97,9 @@ API_RESPONSE_PROMPT = """
 Bạn là một nhân viên bán hàng thân thiện, lễ phép (xưng dạ, em).
 Hãy dựa vào danh sách sản phẩm WooCommerce real-time dưới đây để tổng hợp và trả lời câu hỏi của khách một cách hấp dẫn nhưng phải ngắn gọn.
 YÊU CẦU:
-- Liệt kê mỗi sản phẩm trên một dòng riêng biệt (dùng dấu xuống dòng).
+- Liệt kê mỗi sản phẩm trên một dòng riêng biệt (kết thúc sản phẩm cần 2 dấu xuống dòng).
 - Đính kèm link theo định dạng markdown gọn: Đường_link
+- Định dạng mỗi dòng BẮT BUỘC phải theo cấu trúc sau: Tên sản phẩm - Giá tiền: Đường_link_sản_phẩm | Ảnh: Đường_link_ảnh
 - Nếu danh sách trống, hãy báo lịch sự là hiện tại mẫu này bên em đang hết hàng.
 
 Danh sách sản phẩm từ hệ thống:
@@ -273,10 +274,16 @@ async def chat(request: dict = Body(...)):
         t_api_start = time.perf_counter()
         products = call_woocommerce_api_advanced(filters)
         
-        # Đóng gói danh sách sản phẩm thành ngữ cảnh dạng văn bản
+        # Đóng gói danh sách sản phẩm thành ngữ cảnh dạng văn bản (Bổ sung thêm trường Ảnh)
         api_context = ""
-        for p in products:
-            api_context += f"- Tên: {p['name']} | Giá: {p['price']}đ | Link: {p['permalink']}\n"
+        if isinstance(products, list):
+            for p in products:
+                # Lấy ảnh đầu tiên của sản phẩm nếu có, nếu không có thì để rỗng
+                img_url = ""
+                if p.get("images") and len(p["images"]) > 0:
+                    img_url = p["images"][0].get("src", "")
+                
+                api_context += f"- Tên: {p['name']} | Giá: {p['price']}đ | Link: {p['permalink']} | Ảnh: {img_url}\n"
         
         # Sinh câu trả lời bán hàng từ dữ liệu API
         answer = api_response_chain.invoke({
