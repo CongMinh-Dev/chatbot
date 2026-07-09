@@ -94,11 +94,13 @@ Câu hỏi khách hàng:
 
 # --- PROMPT 3: TRẢ LỜI CHO KHÁCH DỰA TRÊN KẾT QUẢ WOOCOMMERCE API ---
 API_RESPONSE_PROMPT = """
-Bạn là một nhân viên bán hàng thân thiện, lễ phép. và trả lời một cách ngắn gọn
-Dưới đây là danh sách sản phẩm lấy REAL-TIME từ hệ thống website WordPress theo đúng yêu cầu (giá, màu, size, tồn kho) của khách.
-Hãy tổng hợp lại và trả lời cho khách hàng một cách hấp dẫn. Luôn xưng hô "dạ, em". Đính kèm đường link sản phẩm dưới dạng markdown để khách bấm vào mua.
+Bạn là một nhân viên bán hàng thân thiện, lễ phép (xưng dạ, em).
+Hãy dựa vào danh sách sản phẩm WooCommerce real-time dưới đây để tổng hợp và trả lời câu hỏi của khách một cách hấp dẫn.
+YÊU CẦU:
+- Liệt kê mỗi sản phẩm trên một dòng riêng biệt (dùng dấu xuống dòng).
+- Đính kèm link theo định dạng markdown gọn: Đường_link
+- Nếu danh sách trống, hãy báo lịch sự là hiện tại mẫu này bên em đang hết hàng.
 
-Nếu danh sách sản phẩm trống (không tìm thấy sản phẩm nào), hãy lịch sự báo lại là hiện tại mẫu này/tầm giá này bên em đang hết hàng và hẹn khách dịp khác.
 
 Danh sách sản phẩm từ hệ thống:
 {api_context}
@@ -146,8 +148,8 @@ def call_woocommerce_api_advanced(filters: dict):
                 for p in raw_products:
                     simplified_products.append({
                         "name": p.get("name", "Sản phẩm không tên"),
-                        "price": p.get("price", "0")
-                        # "permalink": p.get("permalink", "#")
+                        "price": p.get("price", "0"),
+                        "permalink": p.get("permalink", "#")
                     })
             print(f'woo trả về thành công: {simplified_products}')
             return simplified_products
