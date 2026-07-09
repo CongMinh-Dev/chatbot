@@ -94,13 +94,17 @@ Câu hỏi khách hàng:
 
 # --- PROMPT 3: TRẢ LỜI CHO KHÁCH DỰA TRÊN KẾT QUẢ WOOCOMMERCE API ---
 API_RESPONSE_PROMPT = """
-Bạn là một nhân viên bán hàng thân thiện, lễ phép (xưng dạ, em).
+Bạn là một nhân viên bán hàng thân thiện, lễ phép (luôn xưng dạ, em).
 Hãy dựa vào danh sách sản phẩm WooCommerce real-time dưới đây để tổng hợp và trả lời câu hỏi của khách một cách hấp dẫn nhưng phải ngắn gọn.
 
 YÊU CẦU ĐỊNH DẠNG (BẮT BUỘC):
 - Liệt kê mỗi sản phẩm trên một dòng riêng biệt (dùng dấu xuống dòng \n).
-- Cấu trúc mỗi dòng sản phẩm PHẢI ghi chính xác như sau (tuyệt đối không dùng dấu ngoặc vuông):
-Tên sản phẩm - Giá tiền: Đường_link_sản_phẩm | Ảnh: Đường_link_ảnh
+- Cấu trúc mỗi dòng sản phẩm PHẢI ghi chính xác theo thứ tự sau (tuyệt đối không dùng dấu ngoặc vuông):
+Tên sản phẩm - (Danh sách biến thể) - Giá tiền: Đường_link_sản_phẩm | Ảnh: Đường_link_ảnh
+
+Ví dụ:
+Quần Jogger Nỉ - (Màu: Đen, Xám | Size: M, L) - 189.000đ: https://link... | Ảnh: https://link_anh...
+
 - Nếu sản phẩm nào hệ thống đưa qua không có ảnh, hãy bỏ phần " | Ảnh: Đường_link_ảnh" đi.
 - Nếu danh sách trống, hãy báo lịch sự là hiện tại mẫu này bên em đang hết hàng.
 
@@ -164,13 +168,27 @@ def call_woocommerce_api_advanced(filters: dict):
             simplified_products = []
             if isinstance(raw_products, list):
                 for p in raw_products:
-                    # Bẫy kiểm tra kỹ hơn bằng Code Python trước khi trả về cho AI:
-                    # Nếu AI yêu cầu màu "đỏ", nhưng sản phẩm trả về không chứa từ "đỏ" nào trong dữ liệu, ta có thể lọc bỏ tại đây.
+                    # Bóc tách các thuộc tính còn hàng (ví dụ: Màu sắc, Kích thước)
+                    variant_list = []
+                    if p.get("attributes"):
+                        for attr in p["attributes"]:
+                            # Chỉ lấy các thuộc tính dùng cho biến thể (visible hoặc variation = True)
+                            if attr.get("variation") is True or attr.get("visible") is True:
+                                name = attr.get("name", "")
+                                options = attr.get("options", [])
+                                if options:
+                                    # Ghép lại dạng: "Màu sắc: Đen, Trắng" hoặc "Size: M, L"
+                                    variant_list.append(f"{name}: {', '.join(options)}")
+                    
+                    # Gom các nhóm thuộc tính lại cách nhau bằng dấu phẩy hoặc gạch đứng
+                    variants_string = " | ".join(variant_list) if variant_list else "Không có biến thể"
+
                     simplified_products.append({
                         "name": p.get("name", "Sản phẩm không tên"),
                         "price": p.get("price", "0"),
                         "permalink": p.get("permalink", "#"),
-                        "images": p.get("images", [])
+                        "images": p.get("images", []),
+                        "variants": variants_string # <--- THÊM TRƯỜNG BIẾN THỂ ĐÃ XỬ LÝ
                     })
             print(f'woo trả về thành công: {simplified_products}')
             return simplified_products
@@ -298,13 +316,12 @@ async def chat(request: dict = Body(...)):
         api_context = ""
         if isinstance(products, list):
             for p in products:
-                # Tiến hành lấy URL ảnh đầu tiên trong mảng images của sản phẩm
                 img_url = ""
                 if p.get("images") and len(p["images"]) > 0:
                     img_url = p["images"][0].get("src", "")
                 
-                # Ghi nhận thông tin sản phẩm và đính kèm link ảnh ra context thô
-                api_context += f"- Tên: {p['name']} | Giá: {p['price']}đ | Link: {p['permalink']}"
+                # Cấu trúc gửi cho Gemini: Tên - Biến thể - Giá - Link - Ảnh
+                api_context += f"- Tên: {p['name']} | Biến thể: {p['variants']} | Giá: {p['price']}đ | Link: {p['permalink']}"
                 if img_url:
                     api_context += f" | Ảnh: {img_url}"
                 api_context += "\n"
