@@ -97,9 +97,9 @@ API_RESPONSE_PROMPT = """
 Bạn là một nhân viên bán hàng thân thiện, lễ phép (xưng dạ, em).
 Hãy dựa vào danh sách sản phẩm WooCommerce real-time dưới đây để tổng hợp và trả lời câu hỏi của khách một cách hấp dẫn nhưng phải ngắn gọn.
 YÊU CẦU:
-- Liệt kê mỗi sản phẩm trên một dòng riêng biệt (kết thúc sản phẩm cần 2 dấu xuống dòng).
+- Liệt kê mỗi sản phẩm trên một dòng riêng biệt (kết thúc sản phẩm cần 1 dấu xuống dòng).
 - Đính kèm link theo định dạng markdown gọn: Đường_link
-- Định dạng mỗi dòng BẮT BUỘC phải theo cấu trúc sau: Tên sản phẩm - Giá tiền: Đường_link_sản_phẩm | Ảnh: Đường_link_ảnh
+- Mỗi sản phẩm thêm Ảnh: Đường_link_ảnh
 - Nếu danh sách trống, hãy báo lịch sự là hiện tại mẫu này bên em đang hết hàng.
 
 Danh sách sản phẩm từ hệ thống:
@@ -116,7 +116,7 @@ def format_docs(docs):
 def call_woocommerce_api_advanced(filters: dict):
     """
     Hàm gọi trực tiếp vào website WordPress của khách hàng thông qua WooCommerce REST API.
-    Dựa trên các filter thu được để build URL Query chính xác.
+    Xử lý tìm kiếm thông minh kết hợp lọc thuộc tính động.
     """
     WOO_URL = "https://minhshop.minh2309.io.vn/wp-json/wc/v3/products"
     CONSUMER_KEY = CONSUMER_KEY_ENV
@@ -128,7 +128,7 @@ def call_woocommerce_api_advanced(filters: dict):
         "per_page": 5
     }
     
-    # Gắn thêm các bộ lọc động từ AI trích xuất ra
+    # 1. Bộ lọc số tiền và tồn kho
     if filters.get("max_price"):
         params["max_price"] = filters["max_price"]
     if filters.get("min_price"):
@@ -136,8 +136,24 @@ def call_woocommerce_api_advanced(filters: dict):
     if filters.get("stock_check") is True:
         params["stock_status"] = "instock"
         
-    # Lưu ý: Lọc theo thuộc tính (màu, size) hoặc danh mục (category) trong WooCommerce thực tế 
-    # sẽ cần map với ID của attribute hoặc slug. Đoạn này tùy hệ thống bạn tối ưu thêm.
+    # 2. Xử lý tên sản phẩm / danh mục (category) bằng lệnh search chính xác
+    if filters.get("category"):
+        params["search"] = filters["category"]
+
+    # 3. Ghi chú về Màu sắc & Size (Attributes nâng cao)
+    # Nếu hệ thống WordPress của bạn cài thêm các plugin bộ lọc như "Premmerce" hoặc "WOOF", 
+    # họ sẽ cấp các param dạng ?filter_color=đen hoặc ?filter_size=l. 
+    # Nếu không dùng plugin, ta bổ sung từ khóa màu/size thẳng vào lệnh search để bổ trợ tìm kiếm:
+    search_keywords = []
+    if filters.get("category"):
+        search_keywords.append(filters["category"])
+    if filters.get("color"):
+        search_keywords.append(filters["color"])
+    if filters.get("size"):
+        search_keywords.append(filters["size"])
+        
+    if search_keywords:
+        params["search"] = " ".join(search_keywords)
 
     try:
         response = requests.get(WOO_URL, params=params, auth=(CONSUMER_KEY, CONSUMER_SECRET), timeout=5)
@@ -146,10 +162,13 @@ def call_woocommerce_api_advanced(filters: dict):
             simplified_products = []
             if isinstance(raw_products, list):
                 for p in raw_products:
+                    # Bẫy kiểm tra kỹ hơn bằng Code Python trước khi trả về cho AI:
+                    # Nếu AI yêu cầu màu "đỏ", nhưng sản phẩm trả về không chứa từ "đỏ" nào trong dữ liệu, ta có thể lọc bỏ tại đây.
                     simplified_products.append({
                         "name": p.get("name", "Sản phẩm không tên"),
                         "price": p.get("price", "0"),
-                        "permalink": p.get("permalink", "#")
+                        "permalink": p.get("permalink", "#"),
+                        "images": p.get("images", [])
                     })
             print(f'woo trả về thành công: {simplified_products}')
             return simplified_products
@@ -159,7 +178,6 @@ def call_woocommerce_api_advanced(filters: dict):
     except Exception as e:
         print(f"Lỗi kết nối WooCommerce API: {e}")
     return []
-
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
