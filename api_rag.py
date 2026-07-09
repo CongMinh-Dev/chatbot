@@ -292,16 +292,20 @@ async def chat(request: dict = Body(...)):
         t_api_start = time.perf_counter()
         products = call_woocommerce_api_advanced(filters)
         
-        # Đóng gói danh sách sản phẩm thành ngữ cảnh dạng văn bản (Bổ sung thêm trường Ảnh)
+        # Đóng gói danh sách sản phẩm thành ngữ cảnh dạng văn bản (Đã cập nhật để lấy ảnh)
         api_context = ""
         if isinstance(products, list):
             for p in products:
-                # Lấy ảnh đầu tiên của sản phẩm nếu có, nếu không có thì để rỗng
+                # Tiến hành lấy URL ảnh đầu tiên trong mảng images của sản phẩm
                 img_url = ""
                 if p.get("images") and len(p["images"]) > 0:
                     img_url = p["images"][0].get("src", "")
                 
-                api_context += f"- Tên: {p['name']} | Giá: {p['price']}đ | Link: {p['permalink']} | Ảnh: {img_url}\n"
+                # Ghi nhận thông tin sản phẩm và đính kèm link ảnh ra context thô
+                api_context += f"- Tên: {p['name']} | Giá: {p['price']}đ | Link: {p['permalink']}"
+                if img_url:
+                    api_context += f" | Ảnh: {img_url}"
+                api_context += "\n"
         
         # Sinh câu trả lời bán hàng từ dữ liệu API
         answer = api_response_chain.invoke({
