@@ -163,29 +163,52 @@ def call_woocommerce_api_advanced(filters: dict):
                     outofstock_variants = []
                     
                     if product_type == "variable":
-                        # Gọi trực tiếp đến endpoint variations của sản phẩm đó để lấy dữ liệu thực tế trên Web
                         var_url = f"{WOO_URL}/{product_id}/variations"
                         var_response = requests.get(var_url, auth=(CONSUMER_KEY, CONSUMER_SECRET), timeout=4)
                         
                         if var_response.status_code == 200:
                             variations_data = var_response.json()
+                            
+                            # Dùng dict để gom nhóm các size hết hàng theo từng màu
+                            # Cấu trúc: {"Đen": ["S", "L", "XL"], "Trắng": ["M"]}
+                            color_groups = {}
+                            
                             for v in variations_data:
-                                # Điều kiện hết hàng: trạng thái outofstock HOẶC stock_quantity bằng 0 (quản lý tồn kho bật)
                                 is_out = (v.get("stock_status") == "outofstock" or 
                                           v.get("stock_quantity") == 0 or 
                                           v.get("is_in_stock") is False)
                                 
                                 if is_out:
-                                    # Lấy giá trị các thuộc tính kết hợp (Ví dụ: Đen, XL)
                                     attrs = v.get("attributes", [])
-                                    attr_values = [a.get("option", "") for a in attrs if a.get("option")]
                                     
-                                    if attr_values:
-                                        # Ghép lại thành chữ "Đen XL"
-                                        combo_name = " ".join(attr_values)
-                                        outofstock_variants.append(f"{combo_name} hết hàng")
+                                    # Phân tách chính xác thuộc tính Màu sắc và Kích thước dựa trên slug/name
+                                    color_val = ""
+                                    size_val = ""
+                                    for a in attrs:
+                                        attr_name = a.get("name", "").lower()
+                                        if "mau" in attr_name or "color" in attr_name or "màu" in attr_name:
+                                            color_val = a.get("option", "")
+                                        elif "size" in attr_name or "kich" in attr_name or "kích" in attr_name:
+                                            size_val = a.get("option", "")
+                                            
+                                    # Nếu tìm thấy đủ Màu và Size, tiến hành gom nhóm
+                                    if color_val and size_val:
+                                        if color_val not in color_groups:
+                                            color_groups[color_val] = []
+                                        color_groups[color_val].append(size_val)
+                                    elif color_val or size_val:
+                                        # Trường hợp sản phẩm chỉ có 1 loại thuộc tính (chỉ có Màu hoặc chỉ có Size)
+                                        standalone_val = color_val or size_val
+                                        if standalone_val not in outofstock_variants:
+                                            outofstock_variants.append(f"{standalone_val} hết hàng")
+
+                            # Tiến hành duyệt qua dict đã gom nhóm để tạo chuỗi dạng "Đen S,L,XL hết hàng"
+                            for color, sizes in color_groups.items():
+                                # Ghép các size lại cách nhau bằng dấu phẩy, ví dụ: "S,L,XL"
+                                sizes_str = ",".join(sizes)
+                                outofstock_variants.append(f"{color} {sizes_str} hết hàng")
                     
-                    # Định dạng chuỗi: "(Đen XL hết hàng)"
+                    # Định dạng chuỗi cuối cùng: "(Đen S,L,XL hết hàng)"
                     outofstock_string = f"({', '.join(outofstock_variants)})" if outofstock_variants else ""
 
                     simplified_products.append({
@@ -323,12 +346,18 @@ async def chat(request: dict = Body(...)):
         api_context = ""
         if isinstance(products, list):
             for p in products:
-                img_url = ""
-                if p.get("images") and len(p["images"]) > 0:
-                    img_url = p["images"][0].get("src", "")
+                # 1. Lấy url ảnh đầu tiên của sản phẩm
+                img_url = p["images"][0]["src"] if p.get("images") else ""
                 
-                # Cấu trúc gửi cho Gemini: Tên - Biến thể - Giá - Link - Ảnh
-                api_context += f"- Tên: {p['name']} | Biến thể: {p['variants']} | Giá: {p['price']}đ | Link: {p['permalink']}"
+                # 2. Lấy các thông tin biến thể và trạng thái hết hàng đã quét được
+                variants_str = p.get("variants", "Tiêu chuẩn")
+                outofstock_str = p.get("outofstock_info", "")
+                
+                # 3. Nối chuỗi ngữ cảnh thô đầy đủ cấu trúc để gửi cho Gemini ép form
+                api_context += f"- Tên: {p['name']} | Biến thể hiện có: {variants_str}"
+                if outofstock_str:
+                    api_context += f" | Trạng thái lỗi tồn kho: {outofstock_str}"
+                api_context += f" | Giá: {p['price']}đ | Link: {p['permalink']}"
                 if img_url:
                     api_context += f" | Ảnh: {img_url}"
                 api_context += "\n"
