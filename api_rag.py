@@ -99,11 +99,12 @@ Hãy dựa vào danh sách sản phẩm WooCommerce real-time dưới đây đ�
 
 YÊU CẦU ĐỊNH DẠNG (BẮT BUỘC):
 - Liệt kê mỗi sản phẩm trên một dòng riêng biệt (dùng dấu xuống dòng \n).
-- Cấu trúc mỗi dòng sản phẩm PHẢI ghi chính xác theo thứ tự sau
-Tên sản phẩm - (Danh sách biến thể) - (Danh sách biến thế bị hết hàng) - Giá tiền: Đường_link_sản_phẩm dạng markdown rút gọn | Ảnh: Đường_link_ảnh
-
-Ví dụ:
-Quần Jogger Nỉ - (Màu: Đen, Xám | Size: M, L) - (Đen L hết hàng) - 189.000đ: https://link... | Ảnh: https://link_anh...
+- Định dạng mỗi dòng sản phẩm PHẢI tuân thủ nghiêm ngặt theo quy tắc sau:
+  * Nếu sản phẩm CÓ biến thể hết hàng: 
+    [Tên sản phẩm](Đường_link_sản_phẩm) - (Danh sách biến thể) - (Danh sách biến thể hết hàng) - Giá tiền
+  * Nếu sản phẩm CÒN ĐỦ HÀNG (không có biến thể nào hết hàng): 
+    [Tên sản phẩm](Đường_link_sản_phẩm) - (Danh sách biến thể) - - Giá tiền
+  * (Nếu sản phẩm có ảnh): Thêm cụm " | Ảnh: Đường_link_ảnh" vào cuối dòng. Nếu không có ảnh, tuyệt đối không thêm cụm này.
 
 - Nếu sản phẩm nào hệ thống đưa qua không có ảnh, hãy bỏ phần " | Ảnh: Đường_link_ảnh" đi.
 - Nếu danh sách trống, hãy báo lịch sự là hiện tại mẫu này bên em đang hết hàng.
