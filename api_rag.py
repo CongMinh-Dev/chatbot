@@ -98,20 +98,15 @@ API_RESPONSE_PROMPT = """
 Bạn là một nhân viên bán hàng thân thiện, lễ phép (luôn xưng dạ, em).
 Hãy dựa vào danh sách sản phẩm WooCommerce real-time dưới đây để tổng hợp và trả lời câu hỏi của khách một cách hấp dẫn nhưng phải ngắn gọn.
 
-YÊU CẦU ĐỊNH DẠNG (BẮT BUỘC):
-- Định dạng mỗi sản phẩm PHẢI tuân thủ nghiêm ngặt theo quy tắc sau:
-  * Nếu sản phẩm CÓ biến thể hết hàng: 
-    Tên sản phẩm
-    - Danh sách biến thể
-    - Hết hàng: Danh sách biến thể hết hàng
-    - Giá tiền
-    Đường_link_sản_phẩm
-  * Nếu sản phẩm CÒN ĐỦ HÀNG (không có biến thể nào hết hàng): 
-    Tên sản phẩm
-    - Danh sách biến thể
-    - Giá tiền
-    Đường_link_sản_phẩm 
-  * (Nếu sản phẩm có ảnh): Thêm cụm " | Ảnh: Đường_link_ảnh" vào cuối dòng. Nếu không có ảnh, tuyệt đối không thêm cụm này.
+QUY TẮC CỐT LÕI (KHÔNG ĐƯỢC QUÊN):
+1. TỰ DO NGÔN NGỮ: Bạn được thoải mái tùy biến câu trả lời sao cho hợp lý với câu hỏi của khách (Hỏi ảnh thì tập trung gửi ảnh, hỏi giá thì tập trung báo giá, hỏi hàng tồn thì tập trung báo size...). Không cần ép vào một biểu mẫu cố định.
+2. CHIẾN LƯỢC TƯ VẤN KHI HẾT HÀNG (QUAN TRỌNG):
+   - TRƯỜNG HỢP 1 (Hết một vài biến thể): Nếu khách hỏi trúng màu/size đã hết, nhưng sản phẩm đó VẪN CÒN màu khác hoặc size khác trong dữ liệu -> Hãy báo hết và chủ động gợi ý khách chuyển sang các màu/size còn lại kèm đường link.
+     *(Ví dụ: "Dạ anh ơi, Quần Jogger Nỉ màu trắng bên em đang vừa hết hàng mất rồi ạ. Nhưng mẫu này dáng y hệt bên em vẫn còn màu Đen và màu Xám nhìn rất chất á anh, anh xem thử màu này nhé: [Link]")*
+   - TRƯỜNG HỢP 2 (Hết sạch toàn bộ sản phẩm hoặc Không tìm thấy): Nếu trong dữ liệu `api_context` có xuất hiện danh sách "Sản phẩm gợi ý thay thế" -> Hãy báo lịch sự là mẫu khách tìm đang hết hàng, và ngay lập tức giới thiệu các sản phẩm thay thế này (nêu rõ lý do nó có chức năng tương tự, dáng gần giống hoặc cùng phân khúc).
+
+3. NGUYÊN LIỆU BẮT BUỘC: Dù tư vấn thế nào, đối với các sản phẩm còn hàng hoặc sản phẩm gợi ý, phải có đầy đủ: Tên sản phẩm, Giá tiền, và Đường link sản phẩm.
+4. Nếu sản phẩm có ảnh: Thêm cụm " | Ảnh: Đường_link_ảnh" vào cuối dòng. Nếu không có ảnh, tuyệt đối không thêm cụm này.
 
 - Nếu danh sách trống, hãy báo lịch sự là hiện tại mẫu này bên em đang hết hàng.
 
@@ -340,35 +335,70 @@ async def chat(request: dict = Body(...)):
 
     # BƯỚC 2: Rẽ nhánh xử lý dựa trên kết quả phân tích
     if target == "woocommerce":
-        # Nhánh 1: Gọi WooCommerce API của WordPress khách hàng (Đã hỗ trợ Simple + Variable động)
+        # 1. Gọi API tìm sản phẩm theo đúng bộ lọc của khách
         products = call_woocommerce_api_advanced(filters)
         
-        # Đóng gói danh sách sản phẩm thành ngữ cảnh dạng văn bản
-        api_context = ""
-        if isinstance(products, list):
+        # 2. BẪY LOGIC: Nếu hết hàng hoặc không tìm thấy sản phẩm chính xác
+        # Ta sẽ tự động nới lỏng bộ lọc để tìm sản phẩm tương tự làm "gợi ý thay thế"
+        suggested_products = []
+        
+        # Kiểm tra xem sản phẩm chính có bị hết sạch không (hoặc danh sách rỗng)
+        is_all_out = True
+        if products:
             for p in products:
-                # 1. Lấy url ảnh đầu tiên của sản phẩm
+                # Nếu có ít nhất 1 sản phẩm chưa hết hàng hoàn toàn thì chưa gọi là hết sạch
+                if p.get("outofstock_info") != "(Hết hàng)":
+                    is_all_out = False
+                    break
+        
+        if not products or is_all_out:
+            print("[LOGIC] Sản phẩm chính đã hết hoặc không tìm thấy. Tiến hành tìm sản phẩm thay thế...")
+            # Lấy từ khóa chung chung hơn, ví dụ: "áo khoác đen L" -> tách lấy "áo khoác"
+            original_category = filters.get("category", "")
+            broad_keyword = original_category.split()[0] if original_category else ""
+            
+            if broad_keyword:
+                fallback_filters = {
+                    "category": broad_keyword,
+                    "stock_check": True, # Chỉ lấy những cái còn hàng để gợi ý
+                    "max_price": filters.get("max_price"),
+                    "min_price": filters.get("min_price")
+                }
+                suggested_products = call_woocommerce_api_advanced(fallback_filters)
+
+        # 3. Đóng gói danh sách thành ngữ cảnh văn bản (api_context)
+        api_context = ""
+        
+        # Nạp sản phẩm chính
+        if products:
+            api_context += "--- CÁC SẢN PHẨM KHÁCH ĐANG TÌM KIẾM: ---\n"
+            for p in products:
                 img_url = p["images"][0]["src"] if p.get("images") else ""
-                
-                # 2. Lấy các thông tin biến thể và trạng thái hết hàng đã quét được
-                variants_str = p.get("variants", "Tiêu chuẩn")
-                outofstock_str = p.get("outofstock_info", "")
-                
-                # 3. Nối chuỗi ngữ cảnh thô đầy đủ cấu trúc để gửi cho Gemini
-                api_context += f"- Tên: {p['name']} | Biến thể hiện có: {variants_str}"
-                
-                # ĐỔI THÀNH: "Thông tin hết hàng" để Gemini đọc hiểu tự nhiên hơn
-                if outofstock_str:
-                    api_context += f" | Thông tin hết hàng: {outofstock_str}"
-                    
+                api_context += f"- Tên: {p['name']} | Biến thể hiện có: {p.get('variants', 'Tiêu chuẩn')}"
+                if p.get("outofstock_info"):
+                    api_context += f" | Thông tin hết hàng: {p['outofstock_info']}"
                 api_context += f" | Giá: {p['price']}đ | Link: {p['permalink']}"
-                if img_url:
-                    api_context += f" | Ảnh: {img_url}"
+                if img_url: api_context += f" | Ảnh: {img_url}"
                 api_context += "\n"
         
-        # Sinh câu trả lời bán hàng từ dữ liệu API
+        # Nạp sản phẩm gợi ý thay thế (nếu có)
+        if suggested_products:
+            api_context += "\n--- DANH SÁCH SẢN PHẨM GỢI Ý THAY THẾ (VÌ SẢN PHẨM TRÊN HẾT HÀNG): ---\n"
+            for p in suggested_products:
+                # Tránh gợi ý trùng lại chính sản phẩm đã hết ở trên
+                if products and p['name'] in [prod['name'] for prod in products]:
+                    continue
+                img_url = p["images"][0]["src"] if p.get("images") else ""
+                api_context += f"- Tên sản phẩm thay thế: {p['name']} | Giá: {p['price']}đ | Link: {p['permalink']}"
+                if img_url: api_context += f" | Ảnh: {img_url}"
+                api_context += "\n"
+
+        if not api_context:
+            api_context = "Hiện tại hệ thống không tìm thấy sản phẩm nào phù hợp và cũng không có sản phẩm thay thế."
+
+        # Sinh câu trả lời bán hàng từ dữ liệu API tổng hợp
         answer = api_response_chain.invoke({
-            "api_context": api_context if api_context else "Không tìm thấy sản phẩm nào phù hợp.",
+            "api_context": api_context,
             "question": standalone_question
         })
         print(f"[TIMING] Nhánh WooCommerce xử lý xong.")
