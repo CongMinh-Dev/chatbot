@@ -100,7 +100,7 @@ Hãy dựa vào danh sách sản phẩm WooCommerce real-time dưới đây đ�
 YÊU CẦU ĐỊNH DẠNG (BẮT BUỘC):
 - Liệt kê mỗi sản phẩm trên một dòng riêng biệt (dùng dấu xuống dòng \n).
 - Cấu trúc mỗi dòng sản phẩm PHẢI ghi chính xác theo thứ tự sau (tuyệt đối không dùng dấu ngoặc vuông):
-Tên sản phẩm - (Danh sách biến thể) - Giá tiền: Đường_link_sản_phẩm | Ảnh: Đường_link_ảnh
+Tên sản phẩm - (Danh sách biến thể) - Giá tiền: Đường_link_sản_phẩm dạng markdown rút gọn | Ảnh: Đường_link_ảnh
 
 Ví dụ:
 Quần Jogger Nỉ - (Màu: Đen, Xám | Size: M, L) - 189.000đ: https://link... | Ảnh: https://link_anh...
@@ -131,7 +131,8 @@ def call_woocommerce_api_advanced(filters: dict):
     # Khởi tạo params mặc định
     params = {
         "status": "publish",
-        "per_page": 5
+        "per_page": 5,
+        "map_variations": True
     }
     
     # 1. Bộ lọc số tiền và tồn kho
@@ -166,30 +167,64 @@ def call_woocommerce_api_advanced(filters: dict):
         if response.status_code == 200:
             raw_products = response.json()
             simplified_products = []
+            
             if isinstance(raw_products, list):
                 for p in raw_products:
-                    # Bóc tách các thuộc tính còn hàng (ví dụ: Màu sắc, Kích thước)
+                    
+                    # CẤU TRÚC 1: Bóc tách thuộc tính tổng quát của sản phẩm cha
                     variant_list = []
                     if p.get("attributes"):
                         for attr in p["attributes"]:
-                            # Chỉ lấy các thuộc tính dùng cho biến thể (visible hoặc variation = True)
                             if attr.get("variation") is True or attr.get("visible") is True:
-                                name = attr.get("name", "")
+                                name = attr.get("name", "Thuộc tính")
                                 options = attr.get("options", [])
                                 if options:
-                                    # Ghép lại dạng: "Màu sắc: Đen, Trắng" hoặc "Size: M, L"
                                     variant_list.append(f"{name}: {', '.join(options)}")
                     
-                    # Gom các nhóm thuộc tính lại cách nhau bằng dấu phẩy hoặc gạch đứng
-                    variants_string = " | ".join(variant_list) if variant_list else "Không có biến thể"
+                    variants_string = " | ".join(variant_list) if variant_list else "Tiêu chuẩn"
 
+                    # CẤU TRÚC 2: QUÉT SÂU VÀO MẢNG BIẾN THỂ CÓ SẴN TRÊN RAM (KHÔNG GỌI API PHỤ)
+                    outofstock_variants = []
+                    
+                    # WooCommerce hoặc các plugin API thường trả về mảng biến thể con tại 1 trong các trường sau:
+                    all_variants = p.get("available_variations") or p.get("variations_data") or p.get("variations", [])
+                    
+                    if isinstance(all_variants, list):
+                        for v in all_variants:
+                            # Nếu phần tử v là một Object chứa thông tin chi tiết của biến thể con
+                            if isinstance(v, dict):
+                                # Kiểm tra điều kiện hết hàng: tồn kho bằng 0 hoặc trạng thái outofstock hoặc is_in_stock = False
+                                is_out = (v.get("is_in_stock") is False or 
+                                          v.get("stock_status") == "outofstock" or 
+                                          v.get("stock_quantity") == 0)
+                                
+                                if is_out:
+                                    # Thu thập các thuộc tính kết hợp của biến thể này (ví dụ: Màu Đen, Size XL)
+                                    attr_dict = v.get("attributes", {})
+                                    # Lấy các giá trị chữ (như "Đen", "XL") ra khỏi dict thuộc tính biến thể
+                                    if isinstance(attr_dict, dict):
+                                        v_name = " ".join([str(val) for val in attr_dict.values() if val])
+                                    elif isinstance(attr_dict, list):
+                                        v_name = " ".join([str(item.get("option", "")) for item in attr_dict if item.get("option")])
+                                    else:
+                                        v_name = ""
+                                        
+                                    if v_name:
+                                        outofstock_variants.append(f"{v_name} hết hàng")
+                    
+                    # Đóng gói chuỗi lỗi tồn kho dạng: "(Đen XL hết hàng)"
+                    outofstock_string = f"({', '.join(outofstock_variants)})" if outofstock_variants else ""
+
+                    # Gom tất cả vào mảng rút gọn trả về cho endpoint chat xử lý tiếp
                     simplified_products.append({
                         "name": p.get("name", "Sản phẩm không tên"),
                         "price": p.get("price", "0"),
                         "permalink": p.get("permalink", "#"),
                         "images": p.get("images", []),
-                        "variants": variants_string # <--- THÊM TRƯỜNG BIẾN THỂ ĐÃ XỬ LÝ
+                        "variants": variants_string,
+                        "outofstock_info": outofstock_string  # Đẩy thông tin lỗi sang cho Gemini tự xử lý text mẫu
                     })
+                    
             print(f'woo trả về thành công: {simplified_products}')
             return simplified_products
         else:
