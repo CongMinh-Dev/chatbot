@@ -101,9 +101,16 @@ YÊU CẦU ĐỊNH DẠNG (BẮT BUỘC):
 - Liệt kê mỗi sản phẩm trên một dòng riêng biệt.
 - Định dạng mỗi dòng sản phẩm PHẢI tuân thủ nghiêm ngặt theo quy tắc sau:
   * Nếu sản phẩm CÓ biến thể hết hàng: 
-    Tên sản phẩm \n -Danh sách biến thể \n -Danh sách biến thể hết hàng \n -Giá tiền \n Đường_link_sản_phẩm
+    Tên sản phẩm \n 
+    -Danh sách biến thể \n 
+    -Danh sách biến thể hết hàng \n 
+    -Giá tiền \n 
+    Đường_link_sản_phẩm
   * Nếu sản phẩm CÒN ĐỦ HÀNG (không có biến thể nào hết hàng): 
-    Tên sản phẩm \n -Danh sách biến thể \n -Giá tiền \n Đường_link_sản_phẩm 
+    Tên sản phẩm \n 
+    -Danh sách biến thể \n 
+    -Giá tiền \n 
+    Đường_link_sản_phẩm 
   * (Nếu sản phẩm có ảnh): Thêm cụm " | Ảnh: Đường_link_ảnh" vào cuối dòng. Nếu không có ảnh, tuyệt đối không thêm cụm này.
 
 - Nếu danh sách trống, hãy báo lịch sự là hiện tại mẫu này bên em đang hết hàng.
