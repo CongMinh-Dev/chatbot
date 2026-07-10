@@ -120,8 +120,8 @@ def format_docs(docs):
 
 def call_woocommerce_api_advanced(filters: dict):
     """
-    Hàm nâng cấp: Tự động gọi request phụ lấy chi tiết biến thể con (Variations)
-    để lọc chính xác cặp Màu + Size nào đang có Số lượng tồn kho bằng 0.
+    Hàm Ultimate: Xử lý mượt mà cho cả sản phẩm ĐƠN GIẢN và sản phẩm BIẾN THỂ.
+    Tự động gom nhóm động trạng thái hết hàng của biến thể (1, 2, 3+ thuộc tính).
     """
     WOO_URL = "https://minhshop.minh2309.io.vn/wp-json/wc/v3/products"
     CONSUMER_KEY = CONSUMER_KEY_ENV
@@ -146,9 +146,9 @@ def call_woocommerce_api_advanced(filters: dict):
             if isinstance(raw_products, list):
                 for p in raw_products:
                     product_id = p.get("id")
-                    product_type = p.get("type", "simple")
+                    product_type = p.get("type", "simple")  # Nhận biết loại sản phẩm (simple, variable...)
                     
-                    # 1. Bóc tách thuộc tính tổng quát của sản phẩm cha
+                    # 1. LẤY THUỘC TÍNH TỔNG QUÁT (Áp dụng cho mọi loại sản phẩm)
                     variant_list = []
                     if p.get("attributes"):
                         for attr in p["attributes"]:
@@ -159,19 +159,18 @@ def call_woocommerce_api_advanced(filters: dict):
                                     variant_list.append(f"{name}: {', '.join(options)}")
                     variants_string = " | ".join(variant_list) if variant_list else "Tiêu chuẩn"
 
-                    # 2. XỬ LÝ GỌI API PHỤ ĐỂ LẤY CHI TIẾT TỒN KHO BIẾN THỂ CON
-                    outofstock_variants = []
+                    # 2. XỬ LÝ TRẠNG THÁI HẾT HÀNG TÙY THEO LOẠI SẢN PHẨM
+                    outofstock_string = ""
                     
+                    # --- NHÁNH A: SẢN PHẨM BIẾN THỂ (VARIABLE) ---
                     if product_type == "variable":
                         var_url = f"{WOO_URL}/{product_id}/variations"
                         var_response = requests.get(var_url, auth=(CONSUMER_KEY, CONSUMER_SECRET), timeout=4)
                         
                         if var_response.status_code == 200:
                             variations_data = var_response.json()
-                            
-                            # Dùng dict để gom nhóm các size hết hàng theo từng màu
-                            # Cấu trúc: {"Đen": ["S", "L", "XL"], "Trắng": ["M"]}
-                            color_groups = {}
+                            generic_groups = {}
+                            outofstock_variants = []
                             
                             for v in variations_data:
                                 is_out = (v.get("stock_status") == "outofstock" or 
@@ -180,44 +179,40 @@ def call_woocommerce_api_advanced(filters: dict):
                                 
                                 if is_out:
                                     attrs = v.get("attributes", [])
+                                    attr_values = [a.get("option", "") for a in attrs if a.get("option")]
                                     
-                                    # Phân tách chính xác thuộc tính Màu sắc và Kích thước dựa trên slug/name
-                                    color_val = ""
-                                    size_val = ""
-                                    for a in attrs:
-                                        attr_name = a.get("name", "").lower()
-                                        if "mau" in attr_name or "color" in attr_name or "màu" in attr_name:
-                                            color_val = a.get("option", "")
-                                        elif "size" in attr_name or "kich" in attr_name or "kích" in attr_name:
-                                            size_val = a.get("option", "")
-                                            
-                                    # Nếu tìm thấy đủ Màu và Size, tiến hành gom nhóm
-                                    if color_val and size_val:
-                                        if color_val not in color_groups:
-                                            color_groups[color_val] = []
-                                        color_groups[color_val].append(size_val)
-                                    elif color_val or size_val:
-                                        # Trường hợp sản phẩm chỉ có 1 loại thuộc tính (chỉ có Màu hoặc chỉ có Size)
-                                        standalone_val = color_val or size_val
+                                    if len(attr_values) >= 2:
+                                        # Gom nhóm động N-1 thuộc tính làm gốc
+                                        main_key = " ".join(attr_values[:-1])
+                                        last_val = attr_values[-1]
+                                        
+                                        if main_key not in generic_groups:
+                                            generic_groups[main_key] = []
+                                        generic_groups[main_key].append(last_val)
+                                    elif len(attr_values) == 1:
+                                        standalone_val = attr_values[0]
                                         if standalone_val not in outofstock_variants:
                                             outofstock_variants.append(f"{standalone_val} hết hàng")
 
-                            # Tiến hành duyệt qua dict đã gom nhóm để tạo chuỗi dạng "Đen S,L,XL hết hàng"
-                            for color, sizes in color_groups.items():
-                                # Ghép các size lại cách nhau bằng dấu phẩy, ví dụ: "S,L,XL"
-                                sizes_str = ",".join(sizes)
-                                outofstock_variants.append(f"{color} {sizes_str} hết hàng")
-                    
-                    # Định dạng chuỗi cuối cùng: "(Đen S,L,XL hết hàng)"
-                    outofstock_string = f"({', '.join(outofstock_variants)})" if outofstock_variants else ""
+                            # Gom cụm ngọn bằng dấu phẩy và thêm chữ "hết hàng"
+                            for main_key, sub_vals in generic_groups.items():
+                                outofstock_variants.append(f"{main_key} {','.join(sub_vals)} hết hàng")
+                            
+                            if outofstock_variants:
+                                outofstock_string = f"({', '.join(outofstock_variants)})"
 
+                    # --- NHÁNH B: SẢN PHẨM ĐƠN GIẢN (SIMPLE) ---
+                    elif p.get("stock_status") == "outofstock" or p.get("stock_quantity") == 0:
+                        outofstock_string = "(Hết hàng)"
+
+                    # Đóng gói kết quả đồng nhất trả về
                     simplified_products.append({
                         "name": p.get("name", "Sản phẩm không tên"),
                         "price": p.get("price", "0"),
                         "permalink": p.get("permalink", "#"),
                         "images": p.get("images", []),
                         "variants": variants_string,
-                        "outofstock_info": outofstock_string  # Đã có dữ liệu chi tiết
+                        "outofstock_info": outofstock_string  # Sản phẩm thường hết hàng -> "(Hết hàng)"; Biến thể -> "(Đen S,L hết hàng)"
                     })
             
             print(f'woo trả về thành công: {simplified_products}')
@@ -338,11 +333,10 @@ async def chat(request: dict = Body(...)):
 
     # BƯỚC 2: Rẽ nhánh xử lý dựa trên kết quả phân tích
     if target == "woocommerce":
-        # Nhánh 1: Gọi WooCommerce API của WordPress khách hàng
-        t_api_start = time.perf_counter()
+        # Nhánh 1: Gọi WooCommerce API của WordPress khách hàng (Đã hỗ trợ Simple + Variable động)
         products = call_woocommerce_api_advanced(filters)
         
-        # Đóng gói danh sách sản phẩm thành ngữ cảnh dạng văn bản (Đã cập nhật để lấy ảnh)
+        # Đóng gói danh sách sản phẩm thành ngữ cảnh dạng văn bản
         api_context = ""
         if isinstance(products, list):
             for p in products:
@@ -353,10 +347,13 @@ async def chat(request: dict = Body(...)):
                 variants_str = p.get("variants", "Tiêu chuẩn")
                 outofstock_str = p.get("outofstock_info", "")
                 
-                # 3. Nối chuỗi ngữ cảnh thô đầy đủ cấu trúc để gửi cho Gemini ép form
+                # 3. Nối chuỗi ngữ cảnh thô đầy đủ cấu trúc để gửi cho Gemini
                 api_context += f"- Tên: {p['name']} | Biến thể hiện có: {variants_str}"
+                
+                # ĐỔI THÀNH: "Thông tin hết hàng" để Gemini đọc hiểu tự nhiên hơn
                 if outofstock_str:
-                    api_context += f" | Trạng thái lỗi tồn kho: {outofstock_str}"
+                    api_context += f" | Thông tin hết hàng: {outofstock_str}"
+                    
                 api_context += f" | Giá: {p['price']}đ | Link: {p['permalink']}"
                 if img_url:
                     api_context += f" | Ảnh: {img_url}"
