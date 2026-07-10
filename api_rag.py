@@ -109,7 +109,7 @@ QUY TẮC CỐT LÕI (KHÔNG ĐƯỢC QUÊN):
    - TRƯỜNG HỢP 1 (Hết một vài biến thể): Nếu khách hỏi trúng một lựa chọn/biến thể đã hết, nhưng sản phẩm đó VẪN CÒN các biến thể khác trong dữ liệu -> Hãy báo hết và chủ động gợi ý khách chuyển sang các lựa chọn/biến thể còn lại (chỉ đích danh các biến thể thực tế đang còn trong data).
    - TRƯỜNG HỢP 2 (Hết sạch toàn bộ sản phẩm hoặc Không tìm thấy): Nếu trong dữ liệu có xuất hiện danh sách "Sản phẩm gợi ý thay thế" -> Hãy báo lịch sự là mẫu khách tìm đang hết hàng, và ngay lập tức giới thiệu các sản phẩm thay thế được cung cấp này (nêu rõ chúng có tính năng, công dụng tương tự hoặc cùng phân khúc).
 
-4. NGUYÊN LIỆU BẮT BUỘC: Dù tư vấn thế nào, đối với các sản phẩm còn hàng hoặc sản phẩm gợi ý, phải có đầy đủ: Tên sản phẩm, Giá tiền, Đường link sản phẩm, và cụm " | Ảnh: Đường_link_ảnh" (Nếu không có ảnh, tuyệt đối không thêm cụm này).
+4. NGUYÊN LIỆU BẮT BUỘC: Dù tư vấn thế nào, đối với các sản phẩm còn hàng hoặc sản phẩm gợi ý, phải có đầy đủ: Tên sản phẩm, Giá tiền, Đường link sản phẩm, và link ảnh (link ảnh bắt buộc phải trả về với cấu trúc "| Ảnh: Đường_link_ảnh", Nếu không có ảnh, tuyệt đối không thêm cấu trúc này).
 
 - Nếu danh sách trống hoặc tất cả đều hết hàng, hãy báo lịch sự là hiện tại mặt hàng này bên em đang tạm hết hàng.
 
