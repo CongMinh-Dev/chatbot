@@ -103,7 +103,7 @@ YÊU CẦU ĐỊNH DẠNG (BẮT BUỘC):
   * Nếu sản phẩm CÓ biến thể hết hàng: 
     Tên sản phẩm
     - Danh sách biến thể
-    - Danh sách biến thể hết hàng: đang hết hàng
+    - Hết hàng: Danh sách biến thể hết hàng
     - Giá tiền
     Đường_link_sản_phẩm
   * Nếu sản phẩm CÒN ĐỦ HÀNG (không có biến thể nào hết hàng): 
