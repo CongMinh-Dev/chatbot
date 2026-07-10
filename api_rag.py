@@ -46,10 +46,10 @@ ANALYSIS_PROMPT = """
 Bạn là bộ não phân tích ý định khách hàng cho hệ thống Chatbot E-commerce kết nối với WooCommerce.
 Nhiệm vụ của bạn là đọc "Lịch sử hội thoại" và "Câu hỏi mới nhất" để thực hiện 2 việc cùng lúc:
 
-1. standalone_question: Viết lại câu hỏi mới nhất thành một câu đầy đủ, rõ ràng, sửa hết đại từ thay thế (nó, cái này, màu đó...) dựa vào lịch sử.
+1. standalone_question: Viết lại câu hỏi mới nhất thành một câu đầy đủ, rõ ràng, sửa hết đại từ thay thế (nó, cái này, màu đó, size đó, dung tích đó...) dựa vào lịch sử.
 2. target & filters: Phân tích xem câu hỏi này thuộc nhóm nào để hệ thống xử lý:
-   - Nếu câu hỏi cần tra cứu dữ liệu thực tế từ kho hàng WooCommerce (Hỏi giá, tìm khoảng giá, check màu sắc, check size, kiểm tra xem còn hàng/tồn kho không, tìm theo danh mục sản phẩm...). Hãy gắn "target": "woocommerce" và trích xuất các bộ lọc tương ứng.
-   - Nếu câu hỏi chỉ là hỏi đáp chung (Chính sách đổi trả, bảo hành, địa chỉ shop, tư vấn chất liệu...) hoặc chào hỏi xã giao. Hãy gắn "target": "rag".
+   - Nếu câu hỏi cần tra cứu dữ liệu thực tế từ kho hàng WooCommerce (Hỏi giá, tìm khoảng giá, kiểm tra xem còn hàng/tồn kho không, tìm theo tên sản phẩm hoặc bất kỳ thuộc tính biến thể nào như màu sắc, kích cỡ, dung tích, phiên bản...). Hãy gắn "target": "woocommerce" và trích xuất các bộ lọc tương ứng.
+   - Nếu câu hỏi chỉ là hỏi đáp chung (Chính sách đổi trả, bảo hành, địa chỉ shop, tư vấn chất liệu tổng quát...) hoặc chào hỏi xã giao. Hãy gắn "target": "rag".
 
 ĐẦU RA YÊU CẦU: Chỉ trả về một chuỗi JSON duy nhất, không giải thích gì thêm, tuân thủ cấu trúc sau:
 
@@ -59,12 +59,13 @@ Nhiệm vụ của bạn là đọc "Lịch sử hội thoại" và "Câu hỏi 
   "filters": {{
     "max_price": số_tiền_tối_đa_nếu_khách_yêu_cầu dạng số (hoặc null),
     "min_price": số_tiền_tối_thiểu_nếu_khách_yêu_cầu dạng số (hoặc null),
-    "color": "màu sắc khách tìm nếu có" (hoặc null),
-    "size": "size khách tìm nếu có" (hoặc null),
     "stock_check": true nếu khách hỏi còn hàng không/còn loại này không (hoặc false),
-    "category": "danh mục sản phẩm nếu có, ví dụ: áo khoác, giày..." (hoặc null)
+    "category": "Tên sản phẩm kết hợp với tất cả các thuộc tính biến thể khách tìm nếu có, ví dụ: 'áo khoác đen L', 'nước hoa 100ml', 'iphone 512gb'..." (hoặc null)
   }}
 }}
+
+LƯU Ý QUAN TRỌNG CHO TRƯỜNG 'category':
+- Vì sản phẩm có thể có vô vàn loại biến thể khác nhau (Màu sắc, Size, Dung tích, Phiên bản, Chất liệu...), bạn hãy GOM TẤT CẢ các từ khóa liên quan đến tên loại sản phẩm và thuộc tính biến thể mà khách đang hỏi vào chung trường "category" này để hệ thống thực hiện tìm kiếm toàn văn (Full-text search) trên WooCommerce.
 
 Lịch sử hội thoại:
 {history}
@@ -202,7 +203,7 @@ def call_woocommerce_api_advanced(filters: dict):
 
                             # Gom cụm ngọn bằng dấu phẩy và thêm chữ "hết hàng"
                             for main_key, sub_vals in generic_groups.items():
-                                outofstock_variants.append(f"{main_key} {','.join(sub_vals)} hết hàng")
+                                outofstock_variants.append(f"{main_key} {', '.join(sub_vals)} hết hàng")
                             
                             if outofstock_variants:
                                 outofstock_string = f"({', '.join(outofstock_variants)})"
