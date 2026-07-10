@@ -99,11 +99,11 @@ Hãy dựa vào danh sách sản phẩm WooCommerce real-time dưới đây đ�
 
 YÊU CẦU ĐỊNH DẠNG (BẮT BUỘC):
 - Liệt kê mỗi sản phẩm trên một dòng riêng biệt (dùng dấu xuống dòng \n).
-- Cấu trúc mỗi dòng sản phẩm PHẢI ghi chính xác theo thứ tự sau (tuyệt đối không dùng dấu ngoặc vuông):
-Tên sản phẩm - (Danh sách biến thể) - Giá tiền: Đường_link_sản_phẩm dạng markdown rút gọn | Ảnh: Đường_link_ảnh
+- Cấu trúc mỗi dòng sản phẩm PHẢI ghi chính xác theo thứ tự sau
+Tên sản phẩm - (Danh sách biến thể) - (Danh sách biến thế bị hết hàng) - Giá tiền: Đường_link_sản_phẩm dạng markdown rút gọn | Ảnh: Đường_link_ảnh
 
 Ví dụ:
-Quần Jogger Nỉ - (Màu: Đen, Xám | Size: M, L) - 189.000đ: https://link... | Ảnh: https://link_anh...
+Quần Jogger Nỉ - (Màu: Đen, Xám | Size: M, L) - (Đen L hết hàng) - 189.000đ: https://link... | Ảnh: https://link_anh...
 
 - Nếu sản phẩm nào hệ thống đưa qua không có ảnh, hãy bỏ phần " | Ảnh: Đường_link_ảnh" đi.
 - Nếu danh sách trống, hãy báo lịch sự là hiện tại mẫu này bên em đang hết hàng.
@@ -118,49 +118,24 @@ Câu hỏi gốc của khách: {question}
 def format_docs(docs):
     return "\n\n".join(doc.page_content for doc in docs)
 
-
 def call_woocommerce_api_advanced(filters: dict):
     """
-    Hàm gọi trực tiếp vào website WordPress của khách hàng thông qua WooCommerce REST API.
-    Xử lý tìm kiếm thông minh kết hợp lọc thuộc tính động.
+    Hàm nâng cấp: Tự động gọi request phụ lấy chi tiết biến thể con (Variations)
+    để lọc chính xác cặp Màu + Size nào đang có Số lượng tồn kho bằng 0.
     """
     WOO_URL = "https://minhshop.minh2309.io.vn/wp-json/wc/v3/products"
     CONSUMER_KEY = CONSUMER_KEY_ENV
     CONSUMER_SECRET = CONSUMER_SECRET_ENV
     
-    # Khởi tạo params mặc định
     params = {
         "status": "publish",
-        "per_page": 5,
-        "map_variations": True
+        "per_page": 5
     }
     
-    # 1. Bộ lọc số tiền và tồn kho
-    if filters.get("max_price"):
-        params["max_price"] = filters["max_price"]
-    if filters.get("min_price"):
-        params["min_price"] = filters["min_price"]
-    if filters.get("stock_check") is True:
-        params["stock_status"] = "instock"
-        
-    # 2. Xử lý tên sản phẩm / danh mục (category) bằng lệnh search chính xác
-    if filters.get("category"):
-        params["search"] = filters["category"]
-
-    # 3. Ghi chú về Màu sắc & Size (Attributes nâng cao)
-    # Nếu hệ thống WordPress của bạn cài thêm các plugin bộ lọc như "Premmerce" hoặc "WOOF", 
-    # họ sẽ cấp các param dạng ?filter_color=đen hoặc ?filter_size=l. 
-    # Nếu không dùng plugin, ta bổ sung từ khóa màu/size thẳng vào lệnh search để bổ trợ tìm kiếm:
-    search_keywords = []
-    if filters.get("category"):
-        search_keywords.append(filters["category"])
-    if filters.get("color"):
-        search_keywords.append(filters["color"])
-    if filters.get("size"):
-        search_keywords.append(filters["size"])
-        
-    if search_keywords:
-        params["search"] = " ".join(search_keywords)
+    if filters.get("max_price"): params["max_price"] = filters["max_price"]
+    if filters.get("min_price"): params["min_price"] = filters["min_price"]
+    if filters.get("stock_check") is True: params["stock_status"] = "instock"
+    if filters.get("category"): params["search"] = filters["category"]
 
     try:
         response = requests.get(WOO_URL, params=params, auth=(CONSUMER_KEY, CONSUMER_SECRET), timeout=5)
@@ -170,61 +145,58 @@ def call_woocommerce_api_advanced(filters: dict):
             
             if isinstance(raw_products, list):
                 for p in raw_products:
+                    product_id = p.get("id")
+                    product_type = p.get("type", "simple")
                     
-                    # CẤU TRÚC 1: Bóc tách thuộc tính tổng quát của sản phẩm cha
+                    # 1. Bóc tách thuộc tính tổng quát của sản phẩm cha
                     variant_list = []
                     if p.get("attributes"):
                         for attr in p["attributes"]:
                             if attr.get("variation") is True or attr.get("visible") is True:
-                                name = attr.get("name", "Thuộc tính")
+                                name = attr.get("name", "")
                                 options = attr.get("options", [])
                                 if options:
                                     variant_list.append(f"{name}: {', '.join(options)}")
-                    
                     variants_string = " | ".join(variant_list) if variant_list else "Tiêu chuẩn"
 
-                    # CẤU TRÚC 2: QUÉT SÂU VÀO MẢNG BIẾN THỂ CÓ SẴN TRÊN RAM (KHÔNG GỌI API PHỤ)
+                    # 2. XỬ LÝ GỌI API PHỤ ĐỂ LẤY CHI TIẾT TỒN KHO BIẾN THỂ CON
                     outofstock_variants = []
                     
-                    # WooCommerce hoặc các plugin API thường trả về mảng biến thể con tại 1 trong các trường sau:
-                    all_variants = p.get("available_variations") or p.get("variations_data") or p.get("variations", [])
-                    
-                    if isinstance(all_variants, list):
-                        for v in all_variants:
-                            # Nếu phần tử v là một Object chứa thông tin chi tiết của biến thể con
-                            if isinstance(v, dict):
-                                # Kiểm tra điều kiện hết hàng: tồn kho bằng 0 hoặc trạng thái outofstock hoặc is_in_stock = False
-                                is_out = (v.get("is_in_stock") is False or 
-                                          v.get("stock_status") == "outofstock" or 
-                                          v.get("stock_quantity") == 0)
+                    if product_type == "variable":
+                        # Gọi trực tiếp đến endpoint variations của sản phẩm đó để lấy dữ liệu thực tế trên Web
+                        var_url = f"{WOO_URL}/{product_id}/variations"
+                        var_response = requests.get(var_url, auth=(CONSUMER_KEY, CONSUMER_SECRET), timeout=4)
+                        
+                        if var_response.status_code == 200:
+                            variations_data = var_response.json()
+                            for v in variations_data:
+                                # Điều kiện hết hàng: trạng thái outofstock HOẶC stock_quantity bằng 0 (quản lý tồn kho bật)
+                                is_out = (v.get("stock_status") == "outofstock" or 
+                                          v.get("stock_quantity") == 0 or 
+                                          v.get("is_in_stock") is False)
                                 
                                 if is_out:
-                                    # Thu thập các thuộc tính kết hợp của biến thể này (ví dụ: Màu Đen, Size XL)
-                                    attr_dict = v.get("attributes", {})
-                                    # Lấy các giá trị chữ (như "Đen", "XL") ra khỏi dict thuộc tính biến thể
-                                    if isinstance(attr_dict, dict):
-                                        v_name = " ".join([str(val) for val in attr_dict.values() if val])
-                                    elif isinstance(attr_dict, list):
-                                        v_name = " ".join([str(item.get("option", "")) for item in attr_dict if item.get("option")])
-                                    else:
-                                        v_name = ""
-                                        
-                                    if v_name:
-                                        outofstock_variants.append(f"{v_name} hết hàng")
+                                    # Lấy giá trị các thuộc tính kết hợp (Ví dụ: Đen, XL)
+                                    attrs = v.get("attributes", [])
+                                    attr_values = [a.get("option", "") for a in attrs if a.get("option")]
+                                    
+                                    if attr_values:
+                                        # Ghép lại thành chữ "Đen XL"
+                                        combo_name = " ".join(attr_values)
+                                        outofstock_variants.append(f"{combo_name} hết hàng")
                     
-                    # Đóng gói chuỗi lỗi tồn kho dạng: "(Đen XL hết hàng)"
+                    # Định dạng chuỗi: "(Đen XL hết hàng)"
                     outofstock_string = f"({', '.join(outofstock_variants)})" if outofstock_variants else ""
 
-                    # Gom tất cả vào mảng rút gọn trả về cho endpoint chat xử lý tiếp
                     simplified_products.append({
                         "name": p.get("name", "Sản phẩm không tên"),
                         "price": p.get("price", "0"),
                         "permalink": p.get("permalink", "#"),
                         "images": p.get("images", []),
                         "variants": variants_string,
-                        "outofstock_info": outofstock_string  # Đẩy thông tin lỗi sang cho Gemini tự xử lý text mẫu
+                        "outofstock_info": outofstock_string  # Đã có dữ liệu chi tiết
                     })
-                    
+            
             print(f'woo trả về thành công: {simplified_products}')
             return simplified_products
         else:
