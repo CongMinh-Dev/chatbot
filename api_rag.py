@@ -100,15 +100,15 @@ Hãy dựa vào danh sách sản phẩm WooCommerce real-time dưới đây đ�
 YÊU CẦU ĐỊNH DẠNG (BẮT BUỘC):
 - Định dạng mỗi sản phẩm PHẢI tuân thủ nghiêm ngặt theo quy tắc sau:
   * Nếu sản phẩm CÓ biến thể hết hàng: 
-    Tên sản phẩm \n 
-    - Danh sách biến thể \n 
-    - Danh sách biến thể hết hàng \n 
-    - Giá tiền \n 
+    Tên sản phẩm
+    - Danh sách biến thể
+    - Danh sách biến thể hết hàng
+    - Giá tiền
     Đường_link_sản_phẩm
   * Nếu sản phẩm CÒN ĐỦ HÀNG (không có biến thể nào hết hàng): 
-    Tên sản phẩm \n 
-    - Danh sách biến thể \n 
-    - Giá tiền \n 
+    Tên sản phẩm
+    - Danh sách biến thể
+    - Giá tiền
     Đường_link_sản_phẩm 
   * (Nếu sản phẩm có ảnh): Thêm cụm " | Ảnh: Đường_link_ảnh" vào cuối dòng. Nếu không có ảnh, tuyệt đối không thêm cụm này.
 
