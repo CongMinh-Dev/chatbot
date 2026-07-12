@@ -378,30 +378,20 @@ async def chat(request: dict = Body(...)):
         if products:
             api_context += "--- CÁC SẢN PHẨM KHÁCH ĐANG TÌM KIẾM: ---\n"
             for p in products:
-                # Lấy danh sách ảnh mặc định của sản phẩm cha
-                parent_img_urls = [img["src"] for img in p.get("images", []) if "src" in img]
-                default_img = parent_img_urls[0] if parent_img_urls else ""
-                
-                # Biến lưu trữ thông tin ảnh của từng biến thể cụ thể
-                variant_images_info = []
-                
-                # KIỂM TRA: Nếu là sản phẩm biến thể, ta cần gọi API lấy chi tiết ảnh biến thể 
-                # (Hoặc tối ưu trực tiếp từ hàm call_woocommerce_api_advanced nếu bạn đã fetch variations_data ở đó)
-                # Để giữ cho code gọn gàng, ta tận dụng dữ liệu từ hàm call_woocommerce_api_advanced. 
-                # Nhắc nhở: Để chạy mượt nhất, bạn nên sửa hàm `call_woocommerce_api_advanced` để nó trả về thêm trường `images` trong từng biến thể nếu có.
-                
                 api_context += f"- Tên: {p['name']} | Biến thể hiện có: {p.get('variants', 'Tiêu chuẩn')}"
                 if p.get("outofstock_info"):
                     api_context += f" | Thông tin hết hàng: {p['outofstock_info']}"
                 api_context += f" | Giá: {p['price']}đ | Link: {p['permalink']}"
                 
-                # Ưu tiên đưa tất cả các ảnh hiện có của sản phẩm vào ngữ cảnh để LLM tự chọn ảnh phù hợp với màu khách hỏi
-                if parent_img_urls:
-                    # Gộp các ảnh lại thành một chuỗi thông tin để LLM nhận diện (Ví dụ: Ảnh 1: url1, Ảnh 2: url2)
-                    imgs_str = ", ".join([f"Ảnh {idx+1}: {url}" for idx, url in enumerate(parent_img_urls)])
-                    api_context += f" | Danh sách ảnh sản phẩm: {imgs_str}"
-                elif default_img:
-                    api_context += f" | Ảnh: {default_img}"
+                # ĐƯA DANH SÁCH ẢNH CỦA TỪNG BIẾN THỂ VÀO CHO LLM
+                if p.get("variant_images"):
+                    img_details = [f"Ảnh của bản {img['label']}: {img['src']}" for img in p["variant_images"]]
+                    api_context += f" | Danh sách ảnh biến thể: [{', '.join(img_details)}]"
+                
+                # Fallback nếu không có ảnh biến thể thì đưa mảng ảnh của sản phẩm tổng
+                elif p.get("images"):
+                    img_url = p["images"][0]["src"]
+                    api_context += f" | Ảnh: {img_url}"
                     
                 api_context += "\n"
         
