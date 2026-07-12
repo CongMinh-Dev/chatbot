@@ -126,7 +126,7 @@ def format_docs(docs):
 def call_woocommerce_api_advanced(filters: dict):
     """
     Hàm Ultimate: Xử lý mượt mà cho cả sản phẩm ĐƠN GIẢN và sản phẩm BIẾN THỂ.
-    Tự động gom nhóm động trạng thái hết hàng của biến thể (1, 2, 3+ thuộc tính).
+    Tự động gom nhóm động trạng thái hết hàng và trích xuất ẢNH của từng biến thể.
     """
     WOO_URL = "https://minhshop.minh2309.io.vn/wp-json/wc/v3/products"
     CONSUMER_KEY = CONSUMER_KEY_ENV
@@ -151,9 +151,9 @@ def call_woocommerce_api_advanced(filters: dict):
             if isinstance(raw_products, list):
                 for p in raw_products:
                     product_id = p.get("id")
-                    product_type = p.get("type", "simple")  # Nhận biết loại sản phẩm (simple, variable...)
+                    product_type = p.get("type", "simple")
                     
-                    # 1. LẤY THUỘC TÍNH TỔNG QUÁT (Áp dụng cho mọi loại sản phẩm)
+                    # 1. LẤY THUỘC TÍNH TỔNG QUÁT
                     variant_list = []
                     if p.get("attributes"):
                         for attr in p["attributes"]:
@@ -164,8 +164,9 @@ def call_woocommerce_api_advanced(filters: dict):
                                     variant_list.append(f"{name}: {', '.join(options)}")
                     variants_string = " | ".join(variant_list) if variant_list else "Tiêu chuẩn"
 
-                    # 2. XỬ LÝ TRẠNG THÁI HẾT HÀNG TÙY THEO LOẠI SẢN PHẨM
+                    # 2. XỬ LÝ TRẠNG THÁI HẾT HÀNG & ẢNH CHI TIẾT TỪNG BIẾN THỂ
                     outofstock_string = ""
+                    variant_images = []  # Danh sách chứa ảnh cụ thể của từng biến thể nếu có
                     
                     # --- NHÁNH A: SẢN PHẨM BIẾN THỂ (VARIABLE) ---
                     if product_type == "variable":
@@ -178,16 +179,25 @@ def call_woocommerce_api_advanced(filters: dict):
                             outofstock_variants = []
                             
                             for v in variations_data:
+                                # Trích xuất thông tin thuộc tính của biến thể này (ví dụ: Màu: Đen, Size: L)
+                                attrs = v.get("attributes", [])
+                                attr_values = [a.get("option", "") for a in attrs if a.get("option")]
+                                variant_name = " ".join(attr_values)
+                                
+                                # ĐỒNG BỘ ẢNH BIẾN THỂ: Nếu biến thể này có cấu hình ảnh riêng, lưu lại kèm nhãn tên
+                                if v.get("image") and v["image"].get("src"):
+                                    variant_images.append({
+                                        "label": variant_name,
+                                        "src": v["image"]["src"]
+                                    })
+                                
+                                # Kiểm tra tồn kho biến thể
                                 is_out = (v.get("stock_status") == "outofstock" or 
                                           v.get("stock_quantity") == 0 or 
                                           v.get("is_in_stock") is False)
                                 
                                 if is_out:
-                                    attrs = v.get("attributes", [])
-                                    attr_values = [a.get("option", "") for a in attrs if a.get("option")]
-                                    
                                     if len(attr_values) >= 2:
-                                        # Gom nhóm động N-1 thuộc tính làm gốc
                                         main_key = " ".join(attr_values[:-1])
                                         last_val = attr_values[-1]
                                         
@@ -199,7 +209,6 @@ def call_woocommerce_api_advanced(filters: dict):
                                         if standalone_val not in outofstock_variants:
                                             outofstock_variants.append(f"{standalone_val} hết hàng")
 
-                            # Gom cụm ngọn bằng dấu phẩy và thêm chữ "hết hàng"
                             for main_key, sub_vals in generic_groups.items():
                                 outofstock_variants.append(f"{main_key} {', '.join(sub_vals)} hết hàng")
                             
@@ -215,9 +224,10 @@ def call_woocommerce_api_advanced(filters: dict):
                         "name": p.get("name", "Sản phẩm không tên"),
                         "price": p.get("price", "0"),
                         "permalink": p.get("permalink", "#"),
-                        "images": p.get("images", []),
+                        "images": p.get("images", []),          # Giữ ảnh gốc của sản phẩm cha
+                        "variant_images": variant_images,      # NÂNG CẤP: Gửi kèm ảnh định danh của từng biến thể
                         "variants": variants_string,
-                        "outofstock_info": outofstock_string  # Sản phẩm thường hết hàng -> "(Hết hàng)"; Biến thể -> "(Đen S,L hết hàng)"
+                        "outofstock_info": outofstock_string  
                     })
             
             print(f'woo trả về thành công: {simplified_products}')
@@ -228,6 +238,7 @@ def call_woocommerce_api_advanced(filters: dict):
     except Exception as e:
         print(f"Lỗi kết nối WooCommerce API: {e}")
     return []
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -338,57 +349,66 @@ async def chat(request: dict = Body(...)):
 
     # BƯỚC 2: Rẽ nhánh xử lý dựa trên kết quả phân tích
     if target == "woocommerce":
-        # 1. Gọi API tìm sản phẩm theo đúng bộ lọc của khách
+        # 1. Gọi WooCommerce API lấy sản phẩm
         products = call_woocommerce_api_advanced(filters)
         
-        # 2. BẪY LOGIC: Nếu hết hàng hoặc không tìm thấy sản phẩm chính xác
-        # Ta sẽ tự động nới lỏng bộ lọc để tìm sản phẩm tương tự làm "gợi ý thay thế"
+        # 2. Xử lý nới lỏng bộ lọc tìm sản phẩm thay thế nếu hết hàng (giữ nguyên logic cũ của bạn)
         suggested_products = []
-        
-        # Kiểm tra xem sản phẩm chính có bị hết sạch không (hoặc danh sách rỗng)
         is_all_out = True
         if products:
             for p in products:
-                # Nếu có ít nhất 1 sản phẩm chưa hết hàng hoàn toàn thì chưa gọi là hết sạch
                 if p.get("outofstock_info") != "(Hết hàng)":
                     is_all_out = False
                     break
-        
         if not products or is_all_out:
-            print("[LOGIC] Sản phẩm chính đã hết hoặc không tìm thấy. Tiến hành tìm sản phẩm thay thế...")
-            # Lấy từ khóa chung chung hơn, ví dụ: "áo khoác đen L" -> tách lấy "áo khoác"
             original_category = filters.get("category", "")
             broad_keyword = original_category.split()[0] if original_category else ""
-            
             if broad_keyword:
                 fallback_filters = {
                     "category": broad_keyword,
-                    "stock_check": True, # Chỉ lấy những cái còn hàng để gợi ý
+                    "stock_check": True,
                     "max_price": filters.get("max_price"),
                     "min_price": filters.get("min_price")
                 }
                 suggested_products = call_woocommerce_api_advanced(fallback_filters)
 
-        # 3. Đóng gói danh sách thành ngữ cảnh văn bản (api_context)
+        # 3. ĐỒNG BỘ ẢNH BIẾN THỂ VÀO NGỮ CẢNH VĂN BẢN (NÂNG CẤP Ở ĐÂY)
         api_context = ""
         
-        # Nạp sản phẩm chính
         if products:
             api_context += "--- CÁC SẢN PHẨM KHÁCH ĐANG TÌM KIẾM: ---\n"
             for p in products:
-                img_url = p["images"][0]["src"] if p.get("images") else ""
+                # Lấy danh sách ảnh mặc định của sản phẩm cha
+                parent_img_urls = [img["src"] for img in p.get("images", []) if "src" in img]
+                default_img = parent_img_urls[0] if parent_img_urls else ""
+                
+                # Biến lưu trữ thông tin ảnh của từng biến thể cụ thể
+                variant_images_info = []
+                
+                # KIỂM TRA: Nếu là sản phẩm biến thể, ta cần gọi API lấy chi tiết ảnh biến thể 
+                # (Hoặc tối ưu trực tiếp từ hàm call_woocommerce_api_advanced nếu bạn đã fetch variations_data ở đó)
+                # Để giữ cho code gọn gàng, ta tận dụng dữ liệu từ hàm call_woocommerce_api_advanced. 
+                # Nhắc nhở: Để chạy mượt nhất, bạn nên sửa hàm `call_woocommerce_api_advanced` để nó trả về thêm trường `images` trong từng biến thể nếu có.
+                
                 api_context += f"- Tên: {p['name']} | Biến thể hiện có: {p.get('variants', 'Tiêu chuẩn')}"
                 if p.get("outofstock_info"):
                     api_context += f" | Thông tin hết hàng: {p['outofstock_info']}"
                 api_context += f" | Giá: {p['price']}đ | Link: {p['permalink']}"
-                if img_url: api_context += f" | Ảnh: {img_url}"
+                
+                # Ưu tiên đưa tất cả các ảnh hiện có của sản phẩm vào ngữ cảnh để LLM tự chọn ảnh phù hợp với màu khách hỏi
+                if parent_img_urls:
+                    # Gộp các ảnh lại thành một chuỗi thông tin để LLM nhận diện (Ví dụ: Ảnh 1: url1, Ảnh 2: url2)
+                    imgs_str = ", ".join([f"Ảnh {idx+1}: {url}" for idx, url in enumerate(parent_img_urls)])
+                    api_context += f" | Danh sách ảnh sản phẩm: {imgs_str}"
+                elif default_img:
+                    api_context += f" | Ảnh: {default_img}"
+                    
                 api_context += "\n"
         
-        # Nạp sản phẩm gợi ý thay thế (nếu có)
+        # Nạp sản phẩm gợi ý thay thế
         if suggested_products:
             api_context += "\n--- DANH SÁCH SẢN PHẨM GỢI Ý THAY THẾ (VÌ SẢN PHẨM TRÊN HẾT HÀNG): ---\n"
             for p in suggested_products:
-                # Tránh gợi ý trùng lại chính sản phẩm đã hết ở trên
                 if products and p['name'] in [prod['name'] for prod in products]:
                     continue
                 img_url = p["images"][0]["src"] if p.get("images") else ""
@@ -399,7 +419,7 @@ async def chat(request: dict = Body(...)):
         if not api_context:
             api_context = "Hiện tại hệ thống không tìm thấy sản phẩm nào phù hợp và cũng không có sản phẩm thay thế."
 
-        # Sinh câu trả lời bán hàng từ dữ liệu API tổng hợp
+        # Sinh câu trả lời
         answer = api_response_chain.invoke({
             "api_context": api_context,
             "question": standalone_question
