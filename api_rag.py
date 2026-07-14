@@ -60,7 +60,8 @@ Nhiệm vụ của bạn là đọc "Lịch sử hội thoại" và "Câu hỏi 
     "max_price": số_tiền_tối_đa_nếu_khách_yêu_cầu dạng số (hoặc null),
     "min_price": số_tiền_tối_thiểu_nếu_khách_yêu_cầu dạng số (hoặc null),
     "stock_check": true nếu khách hỏi còn hàng không/còn loại này không (hoặc false),
-    "category": "Tên sản phẩm kết hợp với tất cả các thuộc tính biến thể khách tìm nếu có, ví dụ: 'áo khoác đen L', 'nước hoa 100ml', 'iphone 512gb'..." (hoặc null)
+    "category": "Tên sản phẩm kết hợp với tất cả các thuộc tính biến thể khách tìm nếu có, ví dụ: 'áo khoác đen L', 'nước hoa 100ml', 'iphone 512gb'..." (hoặc null),
+    "get_total_count": true nếu khách hỏi về tổng số lượng sản phẩm/cửa hàng có bao nhiêu sản phẩm (hoặc false)
   }}
 }}
 
@@ -140,6 +141,16 @@ def call_woocommerce_api_advanced(filters: dict):
     try:
         response = requests.get(WOO_URL, params=params, auth=(CONSUMER_KEY, CONSUMER_SECRET), timeout=5)
         if response.status_code == 200:
+            # đoạn xử lý tổng số lượng sản phẩm
+            total_products = response.headers.get("X-WP-Total")
+            if filters.get("get_total_count") is True:
+                return [{
+                    "name": "Hệ thống cửa hàng",
+                    "total_count_info": f"Tổng số sản phẩm đang có trên website là {total_products} sản phẩm.",
+                    "price": "0",
+                    "permalink": "#"
+                }]
+
             raw_products = response.json()
             simplified_products = []
             
@@ -373,6 +384,9 @@ async def chat(request: dict = Body(...)):
         if products:
             api_context += "--- CÁC SẢN PHẨM KHÁCH ĐANG TÌM KIẾM: ---\n"
             for p in products:
+                if p.get("total_count_info"):
+                    api_context += f"- Thông tin hệ thống: {p['total_count_info']}\n"
+                    continue
                 api_context += f"- Tên: {p['name']} | Biến thể hiện có: {p.get('variants', 'Tiêu chuẩn')}"
                 if p.get("outofstock_info"):
                     api_context += f" | Thông tin hết hàng: {p['outofstock_info']}"
