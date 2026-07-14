@@ -51,6 +51,10 @@ Nhiệm vụ của bạn là đọc "Lịch sử hội thoại" và "Câu hỏi 
    - Nếu câu hỏi cần tra cứu dữ liệu thực tế từ kho hàng WooCommerce (Hỏi giá, tìm khoảng giá, kiểm tra xem còn hàng/tồn kho không, tìm theo tên sản phẩm hoặc bất kỳ thuộc tính biến thể nào như màu sắc, kích cỡ, dung tích, phiên bản, các câu hỏi thống kê tổng số lượng sản phẩm, tổng số danh mục hiện có...). Hãy gắn "target": "woocommerce" và trích xuất các bộ lọc tương ứng.
    - Nếu câu hỏi chỉ là hỏi đáp chung (Chính sách đổi trả, bảo hành, địa chỉ shop, tư vấn chất liệu tổng quát...) hoặc chào hỏi xã giao. Hãy gắn "target": "rag".
 
+LƯU Ý QUAN TRỌNG CHO TRƯỜNG 'category':
+- Vì sản phẩm có thể có vô vàn loại biến thể khác nhau (Màu sắc, Size, Dung tích...). Bạn hãy GOM TẤT CẢ các từ khóa liên quan đến tên loại sản phẩm thực tế khách tìm vào trường "category".
+- TUYỆT ĐỐI KHÔNG điền vào trường "category" những từ khóa chung chung, mơ hồ của khách như: "tất cả sản phẩm", "sản phẩm nào", "các sản phẩm", "danh sách sản phẩm", "hàng hóa"... Nếu khách chỉ muốn liệt kê chung chung không có tên sản phẩm cụ thể, hãy để "category": null.
+
 ĐẦU RA YÊU CẦU: Chỉ trả về một chuỗi JSON duy nhất, không giải thích gì thêm, tuân thủ cấu trúc sau:
 
 {{
@@ -60,13 +64,10 @@ Nhiệm vụ của bạn là đọc "Lịch sử hội thoại" và "Câu hỏi 
     "max_price": số_tiền_tối_đa_nếu_khách_yêu_cầu dạng số (hoặc null),
     "min_price": số_tiền_tối_thiểu_nếu_khách_yêu_cầu dạng số (hoặc null),
     "stock_check": true nếu khách hỏi còn hàng không/còn loại này không (hoặc false),
-    "category": "Tên sản phẩm kết hợp với tất cả các thuộc tính biến thể khách tìm nếu có, ví dụ: 'áo khoác đen L', 'nước hoa 100ml', 'iphone 512gb'..." (hoặc null),
-    "get_total_count": true nếu khách hỏi về tổng số lượng sản phẩm/cửa hàng có bao nhiêu sản phẩm (hoặc false)
+    "category": Tên sản phẩm cụ thể (hoặc null),
+    "get_total_count": true nếu khách hỏi "bao nhiêu sản phẩm" (hỏi số lượng). Gán false nếu khách hỏi "sản phẩm nào" (hỏi danh sách liệt kê cụ thể)
   }}
 }}
-
-LƯU Ý QUAN TRỌNG CHO TRƯỜNG 'category':
-- Vì sản phẩm có thể có vô vàn loại biến thể khác nhau (Màu sắc, Size, Dung tích, Phiên bản, Chất liệu...), bạn hãy GOM TẤT CẢ các từ khóa liên quan đến tên loại sản phẩm và thuộc tính biến thể mà khách đang hỏi vào chung trường "category" này để hệ thống thực hiện tìm kiếm toàn văn (Full-text search) trên WooCommerce.
 
 Lịch sử hội thoại:
 {history}
@@ -139,7 +140,14 @@ def call_woocommerce_api_advanced(filters: dict):
     if filters.get("max_price"): params["max_price"] = filters["max_price"]
     if filters.get("min_price"): params["min_price"] = filters["min_price"]
     if filters.get("stock_check") is True: params["stock_status"] = "instock"
-    if filters.get("category"): params["search"] = filters["category"]
+    category_search = filters.get("category")
+    invalid_keywords = ["tất cả sản phẩm", "các sản phẩm", "sản phẩm nào", "danh sách sản phẩm"]
+    if category_search:
+        # Nếu từ khóa nằm trong danh sách rác, bỏ qua không truyền vào params["search"]
+        if category_search.lower().strip() in invalid_keywords:
+            pass 
+        else:
+            params["search"] = category_search
 
     try:
         response = requests.get(WOO_URL, params=params, auth=(CONSUMER_KEY, CONSUMER_SECRET), timeout=5)
