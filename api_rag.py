@@ -65,7 +65,8 @@ LƯU Ý QUAN TRỌNG CHO TRƯỜNG 'category':
     "min_price": số_tiền_tối_thiểu_nếu_khách_yêu_cầu dạng số (hoặc null),
     "stock_check": true nếu khách hỏi còn hàng không/còn loại này không (hoặc false),
     "category": Tên sản phẩm cụ thể (hoặc null),
-    "get_total_count": true nếu khách hỏi "bao nhiêu sản phẩm" (hỏi số lượng). Gán false nếu khách hỏi "sản phẩm nào" (hỏi danh sách liệt kê cụ thể)
+    "get_total_count": true nếu khách hỏi "bao nhiêu sản phẩm" (hỏi số lượng). Gán false nếu khách hỏi "sản phẩm nào" (hỏi danh sách liệt kê cụ thể),
+    "page": số_trang_cần_lấy_dữ_liệu (Mặc định là 1. Nếu khách có ý định muốn xem các mẫu còn lại, xem tiếp các sản phẩm khác, hoặc xem trang sau dựa vào lịch sử hội thoại, hãy tăng số này lên thành 2, hoặc 3...)
   }}
 }}
 
@@ -105,10 +106,11 @@ QUY TẮC CỐT LÕI (KHÔNG ĐƯỢC QUÊN):
    - Chỉ trả lời chính xác, trực tiếp vào câu hỏi của khách dựa trên dữ liệu được cung cấp.
    - TUYỆT ĐỐI không tự ý thêm các câu chào hỏi xã giao, câu kết thúc rườm rà (ví dụ: "Nếu anh/chị cần em hỗ trợ thêm...", "Em cảm ơn anh/chị...").
 
-2. XỬ LÝ KHI SỐ LƯỢNG HIỂN THỊ ÍT HƠN THỰC TẾ (QUAN TRỌNG):
+2. XỬ LÝ KHI SỐ LƯỢNG HIỂN THỊ ÍT HƠN THỰC TẾ HOẶC XEM TIẾP (QUAN TRỌNG):
    - Nếu trong câu hỏi của khách hoặc lịch sử có nhắc đến một con số cụ thể (ví dụ: "8 sản phẩm nào thế"), nhưng danh sách hệ thống trả về hiện tại ít hơn con số đó (ví dụ chỉ có 5 sản phẩm).
-   - Bạn PHẢI trả lời khéo léo theo hướng: Liệt kê trước các sản phẩm nổi bật/mới nhất, và chủ động mời khách bấm vào link website hoặc nhắn cụ thể để xem nốt các mẫu còn lại.
-   - Ví dụ mẫu: "Dạ, em xin phép gợi ý trước 5 sản phẩm nổi bật nhất trong số 8 sản phẩm của cửa hàng mình ạ:..." hoặc "Dạ, đây là 5 mẫu đang sẵn hàng/mới nhất trong số 8 sản phẩm ạ:..."
+   - Bạn PHẢI trả lời khéo léo theo hướng: Liệt kê trước các sản phẩm nổi bật/mới nhất.
+   - Nếu khách yêu cầu "xem các mẫu còn lại" hoặc "gửi thêm mẫu", và dữ liệu hệ thống bên dưới đang cung cấp các sản phẩm tiếp theo.
+   - Hãy trả lời tự nhiên theo hướng: Gửi các mẫu còn lại cho khách tham khảo.
 
 3. RÀNG BUỘC BIẾN THỂ THỰC TẾ (TUYỆT ĐỐI KHÔNG SUY DIỄN):
    - Tuyệt đối không phỏng đoán logic để tự bịa ra bất kỳ thông số, kích thước, màu sắc hay phiên bản nào khác nếu dữ liệu hệ thống không liệt kê. Nếu hệ thống báo hết hoặc không ghi, nghĩa là HẾT HÀNG.
@@ -140,7 +142,8 @@ def call_woocommerce_api_advanced(filters: dict):
     
     params = {
         "status": "publish",
-        "per_page": 5
+        "per_page": 5,
+        "page": filters.get("page", 1)
     }
     
     if filters.get("max_price"): params["max_price"] = filters["max_price"]
