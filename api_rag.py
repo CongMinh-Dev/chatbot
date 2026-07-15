@@ -288,6 +288,12 @@ async def lifespan(app: FastAPI):
         temperature=0.2,
         max_output_tokens=512,
     )
+    llm0 = ChatGoogleGenerativeAI(
+        model="gemini-3.1-flash-lite",
+        google_api_key=GOOGLE_API_KEY,
+        temperature=0.0,
+        max_output_tokens=512,
+    )
     
     # 4. Thiết lập các Chains hành động độc lập
     
@@ -303,13 +309,13 @@ async def lifespan(app: FastAPI):
             "question": RunnablePassthrough()
         }
         | sales_prompt_template
-        | llm
+        | llm0
         | StrOutputParser()
     )
     
     # Chain 3: Xử lý câu trả lời từ API WooCommerce
     api_res_prompt_template = ChatPromptTemplate.from_template(API_RESPONSE_PROMPT)
-    api_response_chain = api_res_prompt_template | llm | StrOutputParser()
+    api_response_chain = api_res_prompt_template | llm0 | StrOutputParser()
 
     yield
 
