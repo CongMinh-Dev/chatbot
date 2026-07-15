@@ -440,16 +440,18 @@ async def chat(request: dict = Body(...)):
             "question": standalone_question
         })
         print(f"[TIMING] Nhánh WooCommerce xử lý xong.")
+        
     else:
         # Nhánh 2: Truy vấn dữ liệu tĩnh (RAG ChromaDB) như cũ
         answer = rag_chain.invoke(standalone_question)
         print(f"[TIMING] Nhánh RAG xử lý xong.")
 
     t_end = time.perf_counter()
-    
+    total_seconds = round(t_end - start_time, 4)
+    print(f"bot trả lời: {answer} \n thời gian: {total_seconds}")
     return {
         "answer": answer,
         "timing": {
-            "total_seconds": round(t_end - start_time, 4)
+            "total_seconds": total_seconds
         }
     }
