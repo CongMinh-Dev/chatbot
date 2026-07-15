@@ -376,19 +376,24 @@ async def chat(request: dict = Body(...)):
     print("="*50 + "\n")
 
     # BƯỚC 2: Rẽ nhánh xử lý dựa trên kết quả phân tích
+    # BƯỚC 2: Rẽ nhánh xử lý dựa trên kết quả phân tích
     if target == "woocommerce":
         # 1. Gọi WooCommerce API lấy sản phẩm
         products = call_woocommerce_api_advanced(filters)
+        current_page = filters.get("page", 1)
         
-        # 2. Xử lý nới lỏng bộ lọc tìm sản phẩm thay thế nếu hết hàng (giữ nguyên logic cũ của bạn)
+        # 2. Xử lý nới lỏng bộ lọc hoặc nhận diện hết trang
         suggested_products = []
         is_all_out = True
+        
         if products:
             for p in products:
                 if p.get("outofstock_info") != "(Hết hàng)":
                     is_all_out = False
                     break
-        if not products or is_all_out:
+        
+        # CHỈ TÌM SẢN PHẨM THAY THẾ Ở TRANG 1 (nếu trang 1 hết hàng hoặc không có sản phẩm)
+        if current_page == 1 and (not products or is_all_out):
             original_category = filters.get("category", "")
             broad_keyword = original_category.split()[0] if original_category else ""
             if broad_keyword:
@@ -400,12 +405,15 @@ async def chat(request: dict = Body(...)):
                 }
                 suggested_products = call_woocommerce_api_advanced(fallback_filters)
 
-        # 3. ĐỒNG BỘ ẢNH BIẾN THỂ VÀO NGỮ CẢNH VĂN BẢN (NÂNG CẤP Ở ĐÂY)
+        # 3. ĐỒNG BỘ ẢNH BIẾN THỂ VÀO NGỮ CẢNH VĂN BẢN
         api_context = ""
-        current_page = filters.get("page", 1)
         api_context += f"[THÔNG TIN HỆ THỐNG: Đang hiển thị dữ liệu ở trang số {current_page}]\n\n"
         
-        if products:
+        # Xử lý trường hợp HẾT TRANG (vượt quá số sản phẩm hiện có khi page > 1)
+        if not products and current_page > 1:
+            api_context += f"[THÔNG TIN HỆ THỐNG: Đã hết sản phẩm ở các trang tiếp theo. Không còn sản phẩm nào khác ở trang {current_page}. Hãy báo cho khách biết một cách lịch sự là đã xem hết sản phẩm rồi và gợi ý họ quay lại trang trước hoặc tìm từ khóa khác].\n"
+        
+        elif products:
             api_context += "--- CÁC SẢN PHẨM KHÁCH ĐANG TÌM KIẾM: ---\n"
             for p in products:
                 if p.get("total_count_info"):
@@ -428,8 +436,8 @@ async def chat(request: dict = Body(...)):
                     
                 api_context += "\n"
         
-        # Nạp sản phẩm gợi ý thay thế
-        if suggested_products:
+        # Nạp sản phẩm gợi ý thay thế (chỉ hiển thị ở trang 1)
+        if suggested_products and current_page == 1:
             api_context += "\n--- DANH SÁCH SẢN PHẨM GỢI Ý THAY THẾ (VÌ SẢN PHẨM TRÊN HẾT HÀNG): ---\n"
             for p in suggested_products:
                 if products and p['name'] in [prod['name'] for prod in products]:
@@ -439,7 +447,7 @@ async def chat(request: dict = Body(...)):
                 if img_url: api_context += f" | Ảnh: {img_url}"
                 api_context += "\n"
 
-        if not api_context:
+        if not api_context.strip():
             api_context = "Hiện tại hệ thống không tìm thấy sản phẩm nào phù hợp và cũng không có sản phẩm thay thế."
 
         # Sinh câu trả lời
@@ -448,7 +456,6 @@ async def chat(request: dict = Body(...)):
             "question": standalone_question
         })
         print(f"[TIMING] Nhánh WooCommerce xử lý xong.")
-        
     else:
         # Nhánh 2: Truy vấn dữ liệu tĩnh (RAG ChromaDB) như cũ
         answer = rag_chain.invoke(standalone_question)
