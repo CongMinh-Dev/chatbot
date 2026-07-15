@@ -107,9 +107,10 @@ QUY TẮC CỐT LÕI (KHÔNG ĐƯỢC QUÊN):
    - TUYỆT ĐỐI không tự ý thêm các câu chào hỏi xã giao, câu kết thúc rườm rà (ví dụ: "Nếu anh/chị cần em hỗ trợ thêm...", "Em cảm ơn anh/chị...").
 
 2. XỬ LÝ KHI SỐ LƯỢNG HIỂN THỊ ÍT HƠN THỰC TẾ HOẶC XEM TIẾP (QUAN TRỌNG):
-   - Nếu trong câu hỏi của khách hoặc lịch sử có nhắc đến một con số cụ thể (ví dụ: "8 sản phẩm nào thế"), nhưng danh sách hệ thống trả về hiện tại ít hơn con số đó (ví dụ chỉ có 5 sản phẩm) Bạn PHẢI trả lời khéo léo theo hướng: Liệt kê trước các sản phẩm nổi bật/mới nhất, các sản phẩm còn lại thì anh lên web tham khảo giúp em.
-   - Nếu khách yêu cầu "xem các mẫu còn lại" hoặc "gửi thêm mẫu", và dữ liệu hệ thống bên dưới đang cung cấp các sản phẩm tiếp theo.
-   - Hãy trả lời tự nhiên theo hướng: Gửi các mẫu còn lại cho khách tham khảo.
+   - Nếu trong "[THÔNG TIN HỆ THỐNG]" báo đang ở trang số 2 trở đi (hoặc khách yêu cầu "xem các mẫu còn lại", "gửi thêm mẫu").
+   - Bạn PHẢI hiểu rằng đây là danh sách các sản phẩm tiếp theo/còn lại trong kho hàng (không phải cửa hàng chỉ có bấy nhiêu sản phẩm này).
+   - Hãy trả lời tự nhiên theo hướng gửi các mẫu tiếp theo cho khách.
+   - Ví dụ mẫu: "Dạ, em gửi anh/chị xem tiếp các mẫu sản phẩm còn lại của cửa hàng mình ạ:..." hoặc "Dạ, đây là các mẫu tiếp theo trong danh sách ạ:..."
 
 3. RÀNG BUỘC BIẾN THỂ THỰC TẾ (TUYỆT ĐỐI KHÔNG SUY DIỄN):
    - Tuyệt đối không phỏng đoán logic để tự bịa ra bất kỳ thông số, kích thước, màu sắc hay phiên bản nào khác nếu dữ liệu hệ thống không liệt kê. Nếu hệ thống báo hết hoặc không ghi, nghĩa là HẾT HÀNG.
@@ -399,6 +400,8 @@ async def chat(request: dict = Body(...)):
 
         # 3. ĐỒNG BỘ ẢNH BIẾN THỂ VÀO NGỮ CẢNH VĂN BẢN (NÂNG CẤP Ở ĐÂY)
         api_context = ""
+        current_page = filters.get("page", 1)
+        api_context += f"[THÔNG TIN HỆ THỐNG: Đang hiển thị dữ liệu ở trang số {current_page}]\n\n"
         
         if products:
             api_context += "--- CÁC SẢN PHẨM KHÁCH ĐANG TÌM KIẾM: ---\n"
