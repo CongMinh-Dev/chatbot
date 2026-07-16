@@ -48,8 +48,8 @@ Nhiệm vụ của bạn là đọc "Lịch sử hội thoại" và "Câu hỏi 
 
 1. standalone_question: Viết lại câu hỏi mới nhất thành một câu đầy đủ, rõ ràng, sửa hết đại từ thay thế (nó, cái này, màu đó, size đó, dung tích đó...) dựa vào lịch sử.
 2. target & filters: Phân tích xem câu hỏi này thuộc nhóm nào để hệ thống xử lý:
-   - Nếu câu hỏi cần tra cứu dữ liệu thực tế từ kho hàng WooCommerce (Hỏi giá, tìm khoảng giá, kiểm tra xem còn hàng/tồn kho không, tìm theo tên sản phẩm hoặc bất kỳ thuộc tính biến thể nào như màu sắc, kích cỡ, dung tích, phiên bản, các câu hỏi thống kê tổng số lượng sản phẩm, tổng số danh mục hiện có...). Hãy gắn "target": "woocommerce" và trích xuất các bộ lọc tương ứng.
-   - Nếu câu hỏi chỉ là hỏi đáp chung (Chính sách đổi trả, bảo hành, địa chỉ shop, tư vấn chất liệu tổng quát...) hoặc chào hỏi xã giao. Hãy gắn "target": "rag".
+   - Nếu câu hỏi cần tra cứu dữ liệu thực tế từ kho hàng WooCommerce. Ví dụ: Hỏi giá, tìm khoảng giá, kiểm tra xem sản phẩm cụ thể còn hàng/tồn kho không, tìm danh sách sản phẩm theo tên/danh mục, hoặc hỏi xem sản phẩm đó có những size/màu sắc/biến thể cụ thể nào để đặt mua. Hãy gắn "target": "woocommerce" và trích xuất các bộ lọc tương ứng.
+   - nếu câu hỏi là hỏi đáp chung (Chính sách đổi trả, bảo hành, địa chỉ shop, tư vấn chất liệu tổng quát, chào hỏi xã giao...) HOẶC là câu hỏi nhờ tư vấn chọn size/đo size dựa trên số đo cơ thể. Hãy gắn "target": "rag".
 
 LƯU Ý QUAN TRỌNG CHO TRƯỜNG 'category':
 - Vì sản phẩm có thể có vô vàn loại biến thể khác nhau (Màu sắc, Size, Dung tích...). Bạn hãy GOM TẤT CẢ các từ khóa liên quan đến tên loại sản phẩm thực tế khách tìm vào trường "category".
