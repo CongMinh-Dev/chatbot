@@ -54,8 +54,8 @@ Nhiệm vụ của bạn là đọc "Lịch sử hội thoại" và "Câu hỏi 
 LƯU Ý QUAN TRỌNG CHO TRƯỜNG 'category':
 - Vì sản phẩm có thể có vô vàn loại biến thể khác nhau (Màu sắc, Size, Dung tích...). Bạn hãy GOM TẤT CẢ các từ khóa liên quan đến tên loại sản phẩm thực tế khách tìm vào trường "category".
 - TUYỆT ĐỐI KHÔNG điền vào trường "category" những từ khóa chung chung, mơ hồ của khách như: "tất cả sản phẩm", "sản phẩm nào", "các sản phẩm", "danh sách sản phẩm", "hàng hóa"... Nếu khách chỉ muốn liệt kê chung chung không có tên sản phẩm cụ thể, hãy để "category": null.
-- Nếu khách hỏi: "thời trang nữ", "đồ con gái"... -> LUÔN ĐỂ "category": "Đồ nữ"
-- Nếu khách hỏi: "đồ nam", "thời trang nam"... -> LUÔN ĐỂ "category": "Đồ nam"
+- Nếu khách hỏi: "thời trang nữ", "đồ con gái"... -> LUÔN ĐỂ "category": "Đồ Nữ"
+- Nếu khách hỏi: "đồ nam", "thời trang nam"... -> LUÔN ĐỂ "category": "Đồ Nam"
 
 ĐẦU RA YÊU CẦU: Chỉ trả về một chuỗi JSON duy nhất, không giải thích gì thêm, tuân thủ cấu trúc sau:
 
