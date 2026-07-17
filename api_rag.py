@@ -188,9 +188,8 @@ def call_woocommerce_api_advanced(filters: dict):
                     results = vectorstore_cat.similarity_search_with_relevance_scores(category_clean, k=1)
                     if results:
                         doc, score = results[0]
-                        # Ngưỡng tin cậy score > 0.35 (Tùy chỉnh linh hoạt dựa trên model Embedding của bạn)
                         print(f"[DEBUG VECTOR CAT] Khớp thử: {doc.metadata.get('name')} với điểm số score = {score}")
-                        if score > 0.1:
+                        if score > 0.22:
                             matched_cat_id = doc.metadata.get("id")
                             matched_name = doc.metadata.get("name")
                 except Exception as ex:
