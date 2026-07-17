@@ -110,7 +110,7 @@ QUY TẮC CỐT LÕI (KHÔNG ĐƯỢC QUÊN):
    - TRƯỜNG HỢP A (Hỏi tổng số lượng sản phẩm): bạn CHỈ cần trả lời trực tiếp số lượng dựa trên "total_count_info" trong dữ liệu hệ thống.
    - TRƯỜNG HỢP B (Xem sản phẩm hoặc Xem tiếp sản phẩm):
      + Nếu trong "[THÔNG TIN HỆ THỐNG]" báo đang ở trang số 1 nhưng số lượng sản phẩm trả về ít hơn số lượng khách yêu cầu trong câu hỏi, hãy trả lời chính xác theo cấu trúc sau: "em gửi trước các sản phẩm này nha, các sản phẩm còn lại thì lên web tham khảo giúp em: danh sách sản phẩm từ hệ thống". không được kèm câu: Dạ, hiện tại trên website bên em đang có....
-     + Nếu trong "[THÔNG TIN HỆ THỐNG]" báo đang ở trang số 2 trở đi: Bạn PHẢI hiểu đây là danh sách các sản phẩm tiếp theo (còn lại) trong kho và liệt kê chúng ra một cách tự nhiên, nếu không có sản phẩm thì bắt buộc trả lời ngắn gọn là: dạ hết rồi ạ.
+     + Nếu trong "[THÔNG TIN HỆ THỐNG]" báo đang ở trang số 2 trở đi: Bạn PHẢI hiểu đây là danh sách các sản phẩm tiếp theo (còn lại) trong kho và liệt kê chúng ra một cách tự nhiên.
 
 2. RÀNG BUỘC BIẾN THỂ THỰC TẾ (TUYỆT ĐỐI KHÔNG SUY DIỄN):
    - Tuyệt đối không phỏng đoán logic để tự bịa ra bất kỳ thông số, kích thước, màu sắc hay phiên bản nào khác nếu dữ liệu hệ thống không liệt kê. Nếu hệ thống báo hết hoặc không ghi, nghĩa là HẾT HÀNG.
@@ -399,10 +399,9 @@ async def chat(request: dict = Body(...)):
     if not messages:
         return {"error": "Không có messages."}
 
-    history_text = "\n".join([
-        f"{m['role']}: {m['content']}"
-        for m in messages[:-1]
-    ])
+    # Chỉ lấy tối đa 5 tin nhắn gần nhất để làm lịch sử phân tích
+    recent_messages = messages[-6:-1] if len(messages) > 6 else messages[:-1]
+    history_text = "\n".join([f"{m['role']}: {m['content']}" for m in recent_messages])
     latest_question = messages[-1]["content"]
 
     start_time = time.perf_counter()
@@ -476,7 +475,7 @@ async def chat(request: dict = Body(...)):
             
             # Xử lý trường hợp HẾT TRANG (vượt quá số sản phẩm hiện có khi page > 1)
             if not products and current_page > 1:
-                api_context += f"[THÔNG TIN HỆ THỐNG: Đã hết sản phẩm ở các trang tiếp theo. Không còn sản phẩm nào khác ở trang {current_page}. Hãy báo cho khách biết một cách lịch sự là đã xem hết sản phẩm rồi và gợi ý họ quay lại trang trước hoặc tìm từ khóa khác].\n"
+                api_context += f"Đã hết sản phẩm.\n"
             
             elif products:
                 api_context += "--- CÁC SẢN PHẨM KHÁCH ĐANG TÌM KIẾM: ---\n"
