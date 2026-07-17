@@ -46,18 +46,19 @@ CONSUMER_SECRET_ENV = os.getenv("CONSUMER_SECRET_ENV")
 # --- PROMPT 1: PHÂN TÍCH Ý ĐỊNH & VIẾT LẠI CÂU HỎI (GỘP DUY NHẤT) ---
 ANALYSIS_PROMPT = """
 Bạn là bộ não phân tích ý định khách hàng cho hệ thống Chatbot E-commerce kết nối với WooCommerce.
-Nhiệm vụ của bạn là đọc "Lịch sử hội thoại" và "Câu hỏi mới nhất" để thực hiện 2 việc cùng lúc:
+Nhiệm vụ của bạn là đọc "Lịch sử hội thoại" và "Câu hỏi mới nhất" để thực hiện các bước sau:
 
-1. standalone_question: Viết lại câu hỏi mới nhất thành một câu đầy đủ, rõ ràng, sửa hết đại từ thay thế (nó, cái này, màu đó, size đó, dung tích đó...) dựa vào lịch sử.
-2. target & filters: Phân tích xem câu hỏi này thuộc nhóm nào để hệ thống xử lý:
+Bước 1. standalone_question: Viết lại câu hỏi mới nhất thành một câu đầy đủ, rõ ràng, sửa hết đại từ thay thế (nó, cái này, màu đó, size đó, dung tích đó...) dựa vào lịch sử.
+Bước 2: dựa vào standalone_question này để xử lý các ý sau:
+1. target & filters: Phân tích xem câu hỏi này thuộc nhóm nào để hệ thống xử lý:
    - Nếu câu hỏi cần tra cứu dữ liệu thực tế từ kho hàng WooCommerce. Ví dụ: Hỏi giá, tìm khoảng giá, kiểm tra xem sản phẩm cụ thể còn hàng/tồn kho không, tìm danh sách sản phẩm theo tên/danh mục, hoặc hỏi xem sản phẩm đó có những size/màu sắc/biến thể cụ thể nào để đặt mua. Hãy gắn "target": "woocommerce" và trích xuất các bộ lọc tương ứng.
    - Nếu câu hỏi là hỏi đáp chung (Chính sách đổi trả, bảo hành, địa chỉ shop, tư vấn chất liệu tổng quát, chào hỏi xã giao...) HOẶC là câu hỏi nhờ tư vấn chọn size/đo size dựa trên số đo cơ thể. Hãy gắn "target": "rag".
 
-LƯU Ý QUAN TRỌNG CHO TRƯỜNG 'category':
-- Vì sản phẩm có thể có vô vàn loại biến thể khác nhau (Màu sắc, Size, Dung tích...). Bạn hãy GOM TẤT CẢ các từ khóa liên quan đến tên loại sản phẩm thực tế khách tìm vào trường "category".
-- TUYỆT ĐỐI KHÔNG điền vào trường "category" những từ khóa chung chung, mơ hồ của khách như: "tất cả sản phẩm", "sản phẩm nào", "các sản phẩm", "danh sách sản phẩm", "hàng hóa"... Nếu khách chỉ muốn liệt kê chung chung không có tên sản phẩm cụ thể, hãy để "category": null.
+2. LƯU Ý QUAN TRỌNG CHO TRƯỜNG 'category':
+ - Vì sản phẩm có thể có vô vàn loại biến thể khác nhau (Màu sắc, Size, Dung tích...). Bạn hãy GOM TẤT CẢ các từ khóa liên quan đến tên loại sản phẩm thực tế khách tìm vào trường "category".
+ - TUYỆT ĐỐI KHÔNG điền vào trường "category" những từ khóa chung chung, mơ hồ của khách như: "tất cả sản phẩm", "sản phẩm nào", "các sản phẩm", "danh sách sản phẩm", "hàng hóa"... Nếu khách chỉ muốn liệt kê chung chung không có tên sản phẩm cụ thể, hãy để "category": null.
 
-ĐẦU RA YÊU CẦU: Chỉ trả về một chuỗi JSON duy nhất, không giải thích gì thêm, tuân thủ cấu trúc sau:
+3. ĐẦU RA YÊU CẦU: Chỉ trả về một chuỗi JSON duy nhất, không giải thích gì thêm, tuân thủ cấu trúc sau:
 
 {{
   "standalone_question": "Câu hỏi sau khi đã viết lại đầy đủ ngữ cảnh",
