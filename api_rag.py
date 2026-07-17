@@ -27,6 +27,8 @@ rag_chain = None
 analysis_chain = None
 api_response_chain = None
 embeddings = None
+vectorstore_cat = None
+retriever_cat = None
 
 async def check_concurrency():
     """Dependency kiểm tra số lượng request, nếu đầy sẽ tự đưa vào hàng đợi."""
@@ -54,8 +56,6 @@ Nhiệm vụ của bạn là đọc "Lịch sử hội thoại" và "Câu hỏi 
 LƯU Ý QUAN TRỌNG CHO TRƯỜNG 'category':
 - Vì sản phẩm có thể có vô vàn loại biến thể khác nhau (Màu sắc, Size, Dung tích...). Bạn hãy GOM TẤT CẢ các từ khóa liên quan đến tên loại sản phẩm thực tế khách tìm vào trường "category".
 - TUYỆT ĐỐI KHÔNG điền vào trường "category" những từ khóa chung chung, mơ hồ của khách như: "tất cả sản phẩm", "sản phẩm nào", "các sản phẩm", "danh sách sản phẩm", "hàng hóa"... Nếu khách chỉ muốn liệt kê chung chung không có tên sản phẩm cụ thể, hãy để "category": null.
-- Nếu khách hỏi: "thời trang nữ", "đồ con gái"... -> LUÔN ĐỂ "category": "Đồ Nữ"
-- Nếu khách hỏi: "đồ nam", "thời trang nam"... -> LUÔN ĐỂ "category": "Đồ Nam"
 
 ĐẦU RA YÊU CẦU: Chỉ trả về một chuỗi JSON duy nhất, không giải thích gì thêm, tuân thủ cấu trúc sau:
 
@@ -133,23 +133,25 @@ Câu hỏi gốc của khách: {question}
 def format_docs(docs):
     return "\n\n".join(doc.page_content for doc in docs)
 
-def get_category_id_by_slug(slug_name: str) -> int:
+def optimize_rag_query(question: str) -> str:
     """
-    Hàm phụ trợ lấy ID danh mục dựa trên slug danh mục từ WooCommerce API.
+    Hàm chuẩn hóa câu hỏi kích cỡ cơ thể trước khi truy vấn ChromaDB dữ liệu tĩnh.
+    Loại bỏ các từ khóa tên sản phẩm gây nhiễu để bốc trúng bảng size trong file Word.
     """
-    WOO_CAT_URL = "https://minhshop.minh2309.io.vn/wp-json/wc/v3/products/categories"
-    CONSUMER_KEY = CONSUMER_KEY_ENV
-    CONSUMER_SECRET = CONSUMER_SECRET_ENV
-    
-    try:
-        response = requests.get(WOO_CAT_URL, auth=(CONSUMER_KEY, CONSUMER_SECRET), params={"slug": slug_name}, timeout=5)
-        if response.status_code == 200:
-            cats = response.json()
-            if cats and isinstance(cats, list) and len(cats) > 0:
-                return cats[0].get("id")
-    except Exception as e:
-        print(f"[ERROR] Lỗi khi lấy ID danh mục cho slug '{slug_name}': {e}")
-    return None
+    q_lower = question.lower()
+    if any(keyword in q_lower for keyword in ["size", "nặng", "cao", "kg", "m", "cm", "mặc"]):
+        product_keywords = ["jean", "khaki", "short", "áo thun", "polo", "sơ mi", "jacket", "áo khoác"]
+        found_product = None
+        for kw in product_keywords:
+            if kw in q_lower:
+                found_product = kw
+                break
+        if found_product:
+            return f"Bảng quy đổi size kích cỡ cho sản phẩm {found_product} theo cân nặng và chiều cao"
+        else:
+            return "Bảng quy đổi size kích cỡ quần áo chung theo cân nặng và chiều cao"
+    return question
+
 
 def call_woocommerce_api_advanced(filters: dict):
     """
@@ -173,29 +175,32 @@ def call_woocommerce_api_advanced(filters: dict):
     category_search = filters.get("category")
     invalid_keywords = ["tất cả sản phẩm", "các sản phẩm", "sản phẩm nào", "danh sách sản phẩm"]
 
-    # Bản đồ ánh xạ từ Tên danh mục viết thường sang Slug tương ứng trong Flatsome
-    category_slug_map = {
-        "đồ nữ": "do-nu",
-        "đồ nam": "do-nam",
-        "quần": "quan",
-        "áo": "ao",
-        "tất cả sản phẩm": "tat-ca-san-pham"
-    }
-
     if category_search:
         category_clean = category_search.lower().strip()
         if category_clean not in invalid_keywords:
-            # Nếu phát hiện từ khóa khớp danh mục hệ thống
-            if category_clean in category_slug_map:
-                target_slug = category_slug_map[category_clean]
-                cat_id = get_category_id_by_slug(target_slug)
-                if cat_id:
-                    params["category"] = target_slug  # Lọc chuẩn theo ID danh mục!
-                else:
-                    # Dự phòng nếu không lấy được ID từ API danh mục
-                    params["search"] = category_search
+            matched_cat_id = None
+            matched_name = ""
+            
+            # Sử dụng Vector Search để tìm kiếm danh mục theo ngữ nghĩa (Semantic Match)
+            if vectorstore_cat:
+                try:
+                    # Truy vấn trực tiếp từ collection "woocommerce_categories" đã nạp bên nap_data
+                    results = vectorstore_cat.similarity_search_with_relevance_scores(category_clean, k=1)
+                    if results:
+                        doc, score = results[0]
+                        # Ngưỡng tin cậy score > 0.35 (Tùy chỉnh linh hoạt dựa trên model Embedding của bạn)
+                        if score > 0.35:
+                            matched_cat_id = doc.metadata.get("id")
+                            matched_name = doc.metadata.get("name")
+                except Exception as ex:
+                    print(f"[VECTOR SEARCH ERROR] Lỗi query danh mục: {ex}")
+
+            if matched_cat_id:
+                print(f"[CATEGORY MATCHED] Tự động khớp '{category_search}' -> Danh mục thực tế '{matched_name}' (ID: {matched_cat_id})")
+                params["category"] = matched_cat_id  # Gán chuẩn ID cho WooCommerce API
             else:
-                # Nếu không thuộc danh mục tĩnh, xem như từ khóa tìm sản phẩm cụ thể (ví dụ: "áo thun cổ V")
+                # Nếu không khớp danh mục nào, quay về tìm kiếm text tự do (Ví dụ: "áo thun cổ V")
+                print(f"[CATEGORY FALLBACK] Không khớp danh mục, tìm kiếm tự do với từ khóa: '{category_search}'")
                 params["search"] = category_search
 
     try:
@@ -312,7 +317,7 @@ def call_woocommerce_api_advanced(filters: dict):
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    global vectorstore, rag_chain, retriever, analysis_chain, api_response_chain, embeddings
+    global vectorstore, rag_chain, retriever, analysis_chain, api_response_chain, embeddings, vectorstore_cat, retriever_cat
 
     # 1. Khởi tạo Embeddings
     embeddings = NVIDIAEmbeddings(
@@ -323,10 +328,21 @@ async def lifespan(app: FastAPI):
     # 2. Kết nối với ChromaDB
     vectorstore = Chroma(
         persist_directory="./chroma_db",
-        embedding_function=embeddings
+        embedding_function=embeddings,
+        collection_name="rag_contents"
     )
     retriever = vectorstore.as_retriever(
         search_kwargs={"k": 2}
+    )
+
+    vectorstore_cat = Chroma(
+        persist_directory="./chroma_db",
+        embedding_function=embeddings,
+        collection_name="woocommerce_categories"  # Collection dành riêng cho danh mục
+    )
+    # k=1 vì chúng ta chỉ cần tìm ra 1 danh mục khớp nhất
+    retriever_cat = vectorstore_cat.as_retriever(
+        search_kwargs={"k": 1} 
     )
 
     # 3. Khởi tạo LLMs
@@ -351,7 +367,7 @@ async def lifespan(app: FastAPI):
     sales_prompt_template = ChatPromptTemplate.from_template(SALES_PROMPT)
     rag_chain = (
         {
-            "context": retriever | RunnableLambda(format_docs),
+            "context": RunnableLambda(optimize_rag_query) | retriever | RunnableLambda(format_docs),
             "question": RunnablePassthrough()
         }
         | sales_prompt_template
