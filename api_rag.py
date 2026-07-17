@@ -133,6 +133,24 @@ Câu hỏi gốc của khách: {question}
 def format_docs(docs):
     return "\n\n".join(doc.page_content for doc in docs)
 
+def get_category_id_by_slug(slug_name: str) -> int:
+    """
+    Hàm phụ trợ lấy ID danh mục dựa trên slug danh mục từ WooCommerce API.
+    """
+    WOO_CAT_URL = "https://minhshop.minh2309.io.vn/wp-json/wc/v3/products/categories"
+    CONSUMER_KEY = CONSUMER_KEY_ENV
+    CONSUMER_SECRET = CONSUMER_SECRET_ENV
+    
+    try:
+        response = requests.get(WOO_CAT_URL, auth=(CONSUMER_KEY, CONSUMER_SECRET), params={"slug": slug_name}, timeout=5)
+        if response.status_code == 200:
+            cats = response.json()
+            if cats and isinstance(cats, list) and len(cats) > 0:
+                return cats[0].get("id")
+    except Exception as e:
+        print(f"[ERROR] Lỗi khi lấy ID danh mục cho slug '{slug_name}': {e}")
+    return None
+
 def call_woocommerce_api_advanced(filters: dict):
     """
     Hàm Ultimate: Xử lý mượt mà cho cả sản phẩm ĐƠN GIẢN và sản phẩm BIẾN THỂ.
@@ -151,13 +169,34 @@ def call_woocommerce_api_advanced(filters: dict):
     if filters.get("max_price"): params["max_price"] = filters["max_price"]
     if filters.get("min_price"): params["min_price"] = filters["min_price"]
     if filters.get("stock_check") is True: params["stock_status"] = "instock"
+
     category_search = filters.get("category")
     invalid_keywords = ["tất cả sản phẩm", "các sản phẩm", "sản phẩm nào", "danh sách sản phẩm"]
+
+    # Bản đồ ánh xạ từ Tên danh mục viết thường sang Slug tương ứng trong Flatsome
+    category_slug_map = {
+        "đồ nữ": "do-nu",
+        "đồ nam": "do-nam",
+        "quần": "quan",
+        "áo": "ao",
+        "tất cả sản phẩm": "tat-ca-san-pham"
+    }
+
     if category_search:
-        if category_search.lower().strip() in invalid_keywords:
-            pass 
-        else:
-            params["search"] = category_search
+        category_clean = category_search.lower().strip()
+        if category_clean not in invalid_keywords:
+            # Nếu phát hiện từ khóa khớp danh mục hệ thống
+            if category_clean in category_slug_map:
+                target_slug = category_slug_map[category_clean]
+                cat_id = get_category_id_by_slug(target_slug)
+                if cat_id:
+                    params["category"] = cat_id  # Lọc chuẩn theo ID danh mục!
+                else:
+                    # Dự phòng nếu không lấy được ID từ API danh mục
+                    params["search"] = category_search
+            else:
+                # Nếu không thuộc danh mục tĩnh, xem như từ khóa tìm sản phẩm cụ thể (ví dụ: "áo thun cổ V")
+                params["search"] = category_search
 
     try:
         response = requests.get(WOO_URL, params=params, auth=(CONSUMER_KEY, CONSUMER_SECRET), timeout=5)
