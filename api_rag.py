@@ -190,7 +190,7 @@ def call_woocommerce_api_advanced(filters: dict):
                 target_slug = category_slug_map[category_clean]
                 cat_id = get_category_id_by_slug(target_slug)
                 if cat_id:
-                    params["category"] = cat_id  # Lọc chuẩn theo ID danh mục!
+                    params["category"] = target_slug  # Lọc chuẩn theo ID danh mục!
                 else:
                     # Dự phòng nếu không lấy được ID từ API danh mục
                     params["search"] = category_search
