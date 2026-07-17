@@ -189,7 +189,8 @@ def call_woocommerce_api_advanced(filters: dict):
                     if results:
                         doc, score = results[0]
                         # Ngưỡng tin cậy score > 0.35 (Tùy chỉnh linh hoạt dựa trên model Embedding của bạn)
-                        if score > 0.35:
+                        print(f"[DEBUG VECTOR CAT] Khớp thử: {doc.metadata.get('name')} với điểm số score = {score}")
+                        if score > 0.1:
                             matched_cat_id = doc.metadata.get("id")
                             matched_name = doc.metadata.get("name")
                 except Exception as ex:
