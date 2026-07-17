@@ -57,6 +57,7 @@ Bước 2: dựa vào standalone_question này để xử lý các ý sau:
 2. LƯU Ý QUAN TRỌNG CHO TRƯỜNG 'category':
  - Vì sản phẩm có thể có vô vàn loại biến thể khác nhau (Màu sắc, Size, Dung tích...). Bạn hãy GOM TẤT CẢ các từ khóa liên quan đến tên loại sản phẩm thực tế khách tìm vào trường "category".
  - TUYỆT ĐỐI KHÔNG điền vào trường "category" những từ khóa chung chung, mơ hồ của khách như: "tất cả sản phẩm", "sản phẩm nào", "các sản phẩm", "danh sách sản phẩm", "hàng hóa"... Nếu khách chỉ muốn liệt kê chung chung không có tên sản phẩm cụ thể, hãy để "category": null.
+ - ĐẶC BIỆT KHI KHÁCH HỎI XEM TIẾP / LẬT TRANG: Bạn PHẢI nhìn vào Lịch sử hội thoại và câu Standalone Question để biết họ đang muốn xem tiếp của danh mục nào lượt trước, tuyệt đối không được bỏ trống trường này.
 
 3. ĐẦU RA YÊU CẦU: Chỉ trả về một chuỗi JSON duy nhất, không giải thích gì thêm, tuân thủ cấu trúc sau:
 
