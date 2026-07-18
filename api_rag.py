@@ -306,7 +306,7 @@ def call_woocommerce_api_advanced(filters: dict):
                         "outofstock_info": outofstock_string  
                     })
             
-            print(f'woo trả về thành công: {simplified_products}')
+            # print(f'woo trả về thành công: {simplified_products}')
             return simplified_products
         else:
             print(f"[API ERROR] Chi tiết lỗi từ WordPress: {response.text}")
@@ -518,6 +518,7 @@ async def chat(request: dict = Body(...)):
                 api_context = "Hiện tại hệ thống không tìm thấy sản phẩm nào phù hợp và cũng không có sản phẩm thay thế."
 
         # Sinh câu trả lời từ LLM
+        print(f"dữ liệu đưa vào llm: {api_context}")
         answer = api_response_chain.invoke({
             "api_context": api_context,
             "question": standalone_question
