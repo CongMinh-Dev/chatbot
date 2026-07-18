@@ -108,9 +108,6 @@ Hãy dựa vào danh sách sản phẩm WooCommerce real-time dưới đây đ�
 QUY TẮC CỐT LÕI (KHÔNG ĐƯỢC QUÊN):
 1. PHÂN BIỆT Ý ĐỊNH HỎI SỐ LƯỢNG VÀ YÊU CẦU XEM SẢN PHẨM:
    - TRƯỜNG HỢP A (Hỏi tổng số lượng sản phẩm): bạn CHỈ cần trả lời trực tiếp số lượng dựa trên "total_count_info" trong dữ liệu hệ thống.
-   - TRƯỜNG HỢP B (Xem sản phẩm hoặc Xem tiếp sản phẩm):
-     + Nếu trong "[THÔNG TIN HỆ THỐNG]" báo đang ở trang số 1 nhưng số lượng sản phẩm trả về ít hơn số lượng khách yêu cầu trong câu hỏi, hãy trả lời chính xác theo cấu trúc sau: "em gửi trước các sản phẩm này nha, các sản phẩm còn lại thì lên web tham khảo giúp em: danh sách sản phẩm từ hệ thống". không được kèm câu: Dạ, hiện tại trên website bên em đang có....
-     + Nếu trong "[THÔNG TIN HỆ THỐNG]" báo đang ở trang số 2 trở đi: Bạn PHẢI hiểu đây là danh sách các sản phẩm tiếp theo (còn lại) trong kho và liệt kê chúng ra một cách tự nhiên.
 
 2. RÀNG BUỘC BIẾN THỂ THỰC TẾ (TUYỆT ĐỐI KHÔNG SUY DIỄN):
    - Tuyệt đối không phỏng đoán logic để tự bịa ra bất kỳ thông số, kích thước, màu sắc hay phiên bản nào khác nếu dữ liệu hệ thống không liệt kê. Nếu hệ thống báo hết hoặc không ghi, nghĩa là HẾT HÀNG.
@@ -478,7 +475,18 @@ async def chat(request: dict = Body(...)):
                 api_context += f"Đã hết sản phẩm.\n"
             
             elif products:
-                api_context += "--- CÁC SẢN PHẨM KHÁCH ĐANG TÌM KIẾM: ---\n"
+                actual_products = [p for p in products if not p.get("total_count_info")]
+                prod_count = len(actual_products)
+                
+                if prod_count >= 5:
+                    if current_page == 1:
+                        api_context += "--- Hướng xử lý: Báo 'em gửi trước các sản phẩm này ạ, các sản phẩm còn lại em gửi sau hoặc anh/chị có thể lên web tham khảo giúp em nha:' và liệt kê danh sách bên dưới. ---\n"
+                    elif current_page > 1:
+                        api_context += "--- Hướng xử lý: Báo 'em gửi tiếp các sản phẩm này ạ, các sản phẩm còn lại em gửi sau hoặc anh/chị có thể lên web tham khảo giúp em nha:' và liệt kê danh sách bên dưới. ---\n"
+                elif prod_count > 0:
+                    api_context += f"--- Hướng xử lý: Báo 'Dạ hiện tại bên em chỉ còn các sản phẩm sau:' và liệt kê danh sách bên dưới. ---\n"
+
+                api_context += "--- DANH SÁCH SẢN PHẨM: ---\n"
                 for p in products:
                     if p.get("total_count_info"):
                         api_context += f"- Thông tin hệ thống: {p['total_count_info']}\n"
