@@ -35,19 +35,19 @@ Bạn là bộ phân tích ý định khách hàng E-commerce.
 Đọc "Lịch sử hội thoại" và "Câu hỏi mới nhất" để làm 2 bước:
 1. standalone_question: Viết lại câu hỏi đầy đủ ngữ cảnh.
 2. target & filters: 
-   - Nếu cần tra kho WooCommerce (giá, hàng còn không, biến thể, tìm danh sách...): "target": "woocommerce"
-   - Nếu hỏi đáp chung (chính sách, tư vấn size, file tài liệu cá nhân): "target": "rag"
+   - Nếu hỏi sản phẩm, giá cả, mẫu mã, tồn kho, tìm đồ, mua sắm: "target": "woocommerce"
+   - Nếu hỏi đáp chung (chính sách đổi trả, tư vấn chọn size chung, tài liệu cá nhân): "target": "rag"
 
 Trả về đúng 1 chuỗi JSON duy nhất, KHÔNG kèm markdown:
 {{
   "standalone_question": "string",
   "target": "woocommerce" hoặc "rag",
   "filters": {{
+    "keyword": null,
     "max_price": null,
     "min_price": null,
     "stock_check": false,
-    "category": null,
-    "page": 1
+    "category": null
   }}
 }}
 
@@ -68,8 +68,8 @@ Câu hỏi:
 
 API_RESPONSE_PROMPT = """
 Bạn là nhân viên bán hàng chuyên nghiệp (luôn xưng dạ, em).
-Dựa vào dữ liệu sản phẩm WooCommerce dưới đây để trả lời CỰC KỲ NGẮN GỌN.
-Dữ liệu:
+Dựa vào dữ liệu sản phẩm trong kho dưới đây để tư vấn CỰC KỲ NGẮN GỌN, thân thiện, kèm giá và thông tin rõ ràng.
+Dữ liệu sản phẩm tìm thấy:
 {api_context}
 Câu hỏi:
 {question}
@@ -94,7 +94,7 @@ class RAGService:
             min_size=5,
             max_size=25
         )
-        self.httpx_client = httpx.AsyncClient(timeout=10.0)
+        self.httpx_client = httpx.AsyncClient(timeout=30.0)
         self.embeddings = NVIDIAEmbeddings(model="nvidia/nv-embed-v1", api_key=NVIDIA_API_KEY)
         self.llm = ChatDeepSeek(model="deepseek-v4-flash", api_key=DEEPSEEK_API_KEY, temperature=0.1)
 
@@ -103,118 +103,156 @@ class RAGService:
         if self.pg_pool: await self.pg_pool.close()
         if self.httpx_client: await self.httpx_client.aclose()
 
-    # --- NẠP DỮ LIỆU FILE WORD (ASYNC) ---
-    async def process_word_file(self, file_path: str, id_ho_so_khach: str, id_kenh: str):
-        if not os.path.exists(file_path):
-            print(f"❌ File không tồn tại: {file_path}")
-            return
+    # =========================================================================
+    # 1. BỘ ĐỒNG BỘ DỮ LIỆU TỪ WOOCOMMERCE VỀ POSTGRESQL (SYNC WORKFLOW)
+    # =========================================================================
 
-        try:
-            loader = Docx2txtLoader(file_path)
-            documents = await asyncio.to_thread(loader.load)
-            text_splitter = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=100)
-            splits = text_splitter.split_documents(documents)
-
-            async with self.pg_pool.acquire() as conn:
-                await conn.execute("DELETE FROM file_khach_hang_embeddings WHERE id_ho_so_khach = $1", id_ho_so_khach)
-
-                for doc in splits:
-                    content = doc.page_content
-                    vector = await self.embeddings.aembed_query(content)
-                    await conn.execute("""
-                        INSERT INTO file_khach_hang_embeddings (id_kenh, id_ho_so_khach, noi_dung, embedding, metadata)
-                        VALUES ($1, $2, $3, $4, $5)
-                    """, id_kenh, id_ho_so_khach, content, str(vector), json.dumps({"file_path": file_path}))
-
-            print(f"✅ Nạp {len(splits)} đoạn vector cho khách {id_ho_so_khach}")
-            if os.path.exists(file_path): os.remove(file_path)
-        except Exception as e:
-            print(f"❌ Lỗi nạp file Word: {e}")
-
-    # --- ĐỒNG BỘ DANH MỤC WOOCOMMERCE (ASYNC) ---
-    async def sync_woocommerce_categories(self, id_kenh: str):
+    async def sync_all_woocommerce_data(self, id_kenh: str):
+        """Đồng bộ toàn bộ Danh mục, Sản phẩm & Biến thể từ Woo về Postgres"""
         async with self.pg_pool.acquire() as conn:
             kenh = await conn.fetchrow("SELECT domain_website, token_truy_cap, token_lam_moi FROM kenh_ket_noi WHERE id = $1", id_kenh)
             if not kenh or not kenh['domain_website']: return
 
-            woo_url = f"{kenh['domain_website'].rstrip('/')}/wp-json/wc/v3/products/categories"
+            base_url = kenh['domain_website'].rstrip('/')
+            auth = (kenh['token_truy_cap'], kenh['token_lam_moi'])
+
             try:
-                res = await self.httpx_client.get(
-                    woo_url, 
-                    auth=(kenh['token_truy_cap'], kenh['token_lam_moi']),
-                    params={"per_page": 100}
-                )
-                if res.status_code == 200:
-                    categories = res.json()
-                    for cat in categories:
-                        cat_id_ngoai = str(cat.get("id"))
-                        name, slug, desc = cat.get("name", ""), cat.get("slug", ""), cat.get("description", "")
-
-                        db_cat_id = await conn.fetchval("""
-                            INSERT INTO danh_muc_san_pham (id_kenh, id_danh_muc_ngoai, ten_danh_muc, slug, mo_ta)
-                            VALUES ($1, $2, $3, $4, $5)
-                            ON CONFLICT (id_kenh, id_danh_muc_ngoai) 
-                            DO UPDATE SET ten_danh_muc = EXCLUDED.ten_danh_muc, slug = EXCLUDED.slug, mo_ta = EXCLUDED.mo_ta
-                            RETURNING id;
-                        """, id_kenh, cat_id_ngoai, name, slug, desc)
-
-                        text_content = f"Danh mục sản phẩm: {name}. Slug: {slug}. Mô tả: {desc}"
-                        cat_vector = await self.embeddings.aembed_query(text_content)
-
-                        await conn.execute("DELETE FROM danh_muc_embeddings WHERE id_danh_muc = $1", db_cat_id)
-                        await conn.execute("""
-                            INSERT INTO danh_muc_embeddings (id_danh_muc, id_kenh, noi_dung, embedding)
-                            VALUES ($1, $2, $3, $4)
-                        """, db_cat_id, id_kenh, text_content, str(cat_vector))
-                    print(f"✅ Đồng bộ {len(categories)} danh mục Woo kênh {id_kenh}")
+                # 1. Synchronize Categories
+                await self._sync_categories(conn, id_kenh, base_url, auth)
+                # 2. Synchronize Products & Variations
+                await self._sync_products_and_variations(conn, id_kenh, base_url, auth)
+                print(f"🎉 [SUCCESS] Đã đồng bộ hoàn tất dữ liệu Woo cho kênh {id_kenh}")
             except Exception as e:
-                print(f"❌ Lỗi đồng bộ danh mục Woo: {e}")
+                print(f"❌ Lỗi đồng bộ Woo: {e}")
 
-    # --- XỬ LÝ TIN NHẮN RAG & CHAT ---
-    async def get_conversation_history(self, conn, id_cuoc_hoi_thoai):
-        rows = await conn.fetch("""
-            SELECT loai_nguoi_gui, noi_dung 
-            FROM tin_nhan WHERE id_cuoc_hoi_thoai = $1 
-            ORDER BY ngay_tao DESC LIMIT 5
-        """, id_cuoc_hoi_thoai)
-        return "\n".join([f"{'Khách hàng' if r['loai_nguoi_gui']=='khach_hang' else 'Bot'}: {r['noi_dung']}" for r in reversed(rows)])
+    async def _sync_categories(self, conn, id_kenh, base_url, auth):
+        url = f"{base_url}/wp-json/wc/v3/products/categories"
+        res = await self.httpx_client.get(url, auth=auth, params={"per_page": 100})
+        if res.status_code == 200:
+            for cat in res.json():
+                cat_id_ngoai = str(cat.get("id"))
+                name, slug, desc = cat.get("name", ""), cat.get("slug", ""), cat.get("description", "")
 
-    async def search_category_vector(self, conn, id_kenh, category_name):
-        query_vec = await self.embeddings.aembed_query(category_name)
-        row = await conn.fetchrow("""
-            SELECT d.id_danh_muc_ngoai FROM danh_muc_embeddings e
-            JOIN danh_muc_san_pham d ON e.id_danh_muc = d.id
-            WHERE e.id_kenh = $1
-            ORDER BY e.embedding <-> $2::vector LIMIT 1;
-        """, id_kenh, str(query_vec))
-        return row['id_danh_muc_ngoai'] if row else None
+                db_cat_id = await conn.fetchval("""
+                    INSERT INTO danh_muc_san_pham (id_kenh, id_danh_muc_ngoai, ten_danh_muc, slug, mo_ta)
+                    VALUES ($1, $2, $3, $4, $5)
+                    ON CONFLICT (id_kenh, id_danh_muc_ngoai) 
+                    DO UPDATE SET ten_danh_muc = EXCLUDED.ten_danh_muc, slug = EXCLUDED.slug, mo_ta = EXCLUDED.mo_ta
+                    RETURNING id;
+                """, id_kenh, cat_id_ngoai, name, slug, desc)
 
-    async def query_woocommerce(self, conn, id_kenh, filters):
-        row = await conn.fetchrow("SELECT domain_website, token_truy_cap, token_lam_moi FROM kenh_ket_noi WHERE id = $1", id_kenh)
-        if not row or not row['domain_website']: return "Không tìm thấy cấu hình Woo."
+                # Vector hóa Danh mục
+                text_content = f"Danh mục: {name}. Mô tả: {desc}"
+                cat_vector = await self.embeddings.aembed_query(text_content)
+                await conn.execute("DELETE FROM danh_muc_embeddings WHERE id_danh_muc = $1", db_cat_id)
+                await conn.execute("""
+                    INSERT INTO danh_muc_embeddings (id_danh_muc, id_kenh, noi_dung, embedding)
+                    VALUES ($1, $2, $3, $4)
+                """, db_cat_id, id_kenh, text_content, str(cat_vector))
 
-        woo_url = f"{row['domain_website'].rstrip('/')}/wp-json/wc/v3/products"
-        params = {"status": "publish", "per_page": 5, "page": filters.get("page", 1)}
+    async def _sync_products_and_variations(self, conn, id_kenh, base_url, auth):
+        page = 1
+        while True:
+            url = f"{base_url}/wp-json/wc/v3/products"
+            res = await self.httpx_client.get(url, auth=auth, params={"per_page": 50, "page": page})
+            if res.status_code != 200 or not res.json():
+                break
+
+            products = res.json()
+            for p in products:
+                sp_id_ngoai = str(p.get("id"))
+                ten_sp = p.get("name", "")
+                gia = float(p.get("price") or 0)
+                mo_ta = p.get("description", "") or p.get("short_description", "")
+                ton_kho = p.get("stock_quantity") or 0
+                link = p.get("permalink", "")
+                type_sp = p.get("type", "simple")
+
+                # Lưu Sản phẩm chính vào Postgres
+                db_sp_id = await conn.fetchval("""
+                    INSERT INTO san_pham (id_kenh, id_san_pham_ngoai, ten_san_pham, gia, mo_ta, ton_kho, link_san_pham, loai_san_pham)
+                    VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+                    ON CONFLICT (id_kenh, id_san_pham_ngoai) 
+                    DO UPDATE SET ten_san_pham = EXCLUDED.ten_san_pham, gia = EXCLUDED.gia, 
+                                  mo_ta = EXCLUDED.mo_ta, ton_kho = EXCLUDED.ton_kho, link_san_pham = EXCLUDED.link_san_pham
+                    RETURNING id;
+                """, id_kenh, sp_id_ngoai, ten_sp, gia, mo_ta, ton_kho, link, type_sp)
+
+                # Fetch biến thể nếu là sản phẩm biến thể (variable)
+                var_text_list = []
+                if type_sp == "variable":
+                    var_url = f"{base_url}/wp-json/wc/v3/products/{sp_id_ngoai}/variations"
+                    var_res = await self.httpx_client.get(var_url, auth=auth, params={"per_page": 50})
+                    if var_res.status_code == 200:
+                        for v in var_res.json():
+                            v_id_ngoai = str(v.get("id"))
+                            v_gia = float(v.get("price") or gia)
+                            v_ton_kho = v.get("stock_quantity") or 0
+                            
+                            # Lấy các thuộc tính (ví dụ: Size L, Màu Đỏ)
+                            attrs = ", ".join([f"{a.get('name')}: {a.get('option')}" for a in v.get("attributes", [])])
+                            
+                            await conn.execute("""
+                                INSERT INTO bien_the_san_pham (id_san_pham, id_bien_the_ngoai, thuoc_tinh, gia, ton_kho)
+                                VALUES ($1, $2, $3, $4, $5)
+                                ON CONFLICT (id_san_pham, id_bien_the_ngoai)
+                                DO UPDATE SET thuoc_tinh = EXCLUDED.thuoc_tinh, gia = EXCLUDED.gia, ton_kho = EXCLUDED.ton_kho
+                            """, db_sp_id, v_id_ngoai, attrs, v_gia, v_ton_kho)
+                            
+                            var_text_list.append(f"Biến thể ({attrs}) - Giá: {v_gia}đ")
+
+                # Cần Embedding trước rồi mới lưu Vector Search cho sản phẩm
+                text_to_embed = f"Sản phẩm: {ten_sp}. Giá: {gia}đ. Mô tả: {mo_ta}. " + " ".join(var_text_list)
+                sp_vector = await self.embeddings.aembed_query(text_to_embed)
+
+                await conn.execute("DELETE FROM san_pham_embeddings WHERE id_san_pham = $1", db_sp_id)
+                await conn.execute("""
+                    INSERT INTO san_pham_embeddings (id_san_pham, id_kenh, noi_dung, embedding)
+                    VALUES ($1, $2, $3, $4)
+                """, db_sp_id, id_kenh, text_to_embed, str(sp_vector))
+
+            page += 1
+
+    # =========================================================================
+    # 2. BỘ TRUY VẤN DỮ LIỆU TỪ POSTGRESQL KHI CÓ CÂU HỎI (RETRIEVAL WORKFLOW)
+    # =========================================================================
+
+    async def search_products_from_postgres(self, conn, id_kenh, question, filters):
+        """Logic tìm kiếm Sản phẩm & Biến thể hoàn toàn trên Postgres"""
+        query_vec = await self.embeddings.aembed_query(question)
         
-        if filters.get("category"):
-            cat_id = await self.search_category_vector(conn, id_kenh, filters["category"])
-            if cat_id: params["category"] = cat_id
-            else: params["search"] = filters["category"]
+        # 1. Vector search kết hợp Filter giá/tồn kho
+        rows = await conn.fetch("""
+            SELECT s.ten_san_pham, s.gia, s.mo_ta, s.ton_kho, s.link_san_pham,
+                   COALESCE(string_agg(concat(b.thuoc_tinh, ' (Giá: ', b.gia, 'đ)'), '; '), 'Không có biến thể') as ds_bien_the
+            FROM san_pham_embeddings e
+            JOIN san_pham s ON e.id_san_pham = s.id
+            LEFT JOIN bien_the_san_pham b ON s.id = b.id_san_pham
+            WHERE e.id_kenh = $1
+            GROUP BY s.id, e.embedding
+            ORDER BY e.embedding <-> $2::vector LIMIT 5;
+        """, id_kenh, str(query_vec))
 
-        try:
-            res = await self.httpx_client.get(woo_url, params=params, auth=(row['token_truy_cap'], row['token_lam_moi']))
-            if res.status_code == 200:
-                return "Danh sách sản phẩm:\n" + "\n".join([f"- Tên: {p.get('name')} | Giá: {p.get('price')}đ | Link: {p.get('permalink')}" for p in res.json()])
-        except Exception as e:
-            print(f"❌ Lỗi Woo: {e}")
-        return "Lỗi kết nối Woo."
+        if not rows:
+            return "Không tìm thấy sản phẩm nào phù hợp trong kho."
+
+        res_text = "Danh sách sản phẩm tìm thấy trong hệ thống:\n"
+        for r in rows:
+            res_text += f"- Tên: {r['ten_san_pham']} | Giá: {r['gia']}đ | Tồn kho: {r['ton_kho']} | Link: {r['link_san_pham']}\n"
+            res_text += f"  Chi tiết mẫu mã/biến thể: {r['ds_bien_the']}\n"
+        return res_text
 
     async def search_rag_context(self, conn, id_kenh, id_ho_so_khach, question):
+        """Retrieval từ File Word cá nhân + Kho tri thức chung"""
         query_vec = await self.embeddings.aembed_query(question)
         rows_word = await conn.fetch("SELECT noi_dung FROM file_khach_hang_embeddings WHERE id_ho_so_khach = $1 ORDER BY embedding <-> $2::vector LIMIT 2;", id_ho_so_khach, str(query_vec))
         rows_common = await conn.fetch("SELECT noi_dung FROM kho_tri_thuc_ai WHERE id_kenh = $1 ORDER BY vector_dac_trung <-> $2::vector LIMIT 2;", id_kenh, str(query_vec))
         docs = [r['noi_dung'] for r in rows_word] + [r['noi_dung'] for r in rows_common]
         return "\n\n".join(docs) if docs else "Không có tài liệu."
+
+    # =========================================================================
+    # 3. LUỒNG XỬ LÝ CHÍNH
+    # =========================================================================
 
     async def process_message(self, id_tin_nhan):
         async with self.pg_pool.acquire() as conn:
@@ -227,8 +265,12 @@ class RAGService:
             if not msg or not msg['bat_bot_tu_dong']: return
 
             question, id_cuoc_hoi_thoai, id_kenh, id_ho_so_khach = msg['noi_dung'], msg['id_cuoc_hoi_thoai'], msg['id_kenh'], msg['id_ho_so_khach']
-            history_text = await self.get_conversation_history(conn, id_cuoc_hoi_thoai)
+            
+            # Lấy 5 tin nhắn gần nhất
+            rows = await conn.fetch("SELECT loai_nguoi_gui, noi_dung FROM tin_nhan WHERE id_cuoc_hoi_thoai = $1 ORDER BY ngay_tao DESC LIMIT 5", id_cuoc_hoi_thoai)
+            history_text = "\n".join([f"{'Khách hàng' if r['loai_nguoi_gui']=='khach_hang' else 'Bot'}: {r['noi_dung']}" for r in reversed(rows)])
 
+            # DeepSeek phân loại Intent
             analysis_chain = ChatPromptTemplate.from_template(ANALYSIS_PROMPT) | self.llm | StrOutputParser()
             raw_analysis = await analysis_chain.ainvoke({"history": history_text, "question": question})
             
@@ -240,18 +282,22 @@ class RAGService:
             standalone_question = res_json.get("standalone_question", question)
             target = res_json.get("target", "rag")
 
+            # Xử lý theo Target
             if target == "woocommerce":
-                api_context = await self.query_woocommerce(conn, id_kenh, res_json.get("filters", {}))
+                # Lấy dữ liệu sản phẩm + biến thể TRỰC TIẾP từ PostgreSQL
+                api_context = await self.search_products_from_postgres(conn, id_kenh, standalone_question, res_json.get("filters", {}))
                 answer = await (ChatPromptTemplate.from_template(API_RESPONSE_PROMPT) | self.llm | StrOutputParser()).ainvoke({"api_context": api_context, "question": standalone_question})
             else:
+                # Retrieval từ RAG Documents trong Postgres
                 rag_context = await self.search_rag_context(conn, id_kenh, id_ho_so_khach, standalone_question)
                 answer = await (ChatPromptTemplate.from_template(SALES_PROMPT) | self.llm | StrOutputParser()).ainvoke({"context": rag_context, "question": standalone_question})
 
+            # Lưu phản hồi của Bot
             await conn.execute("INSERT INTO tin_nhan (id_cuoc_hoi_thoai, loai_nguoi_gui, noi_dung, loai_tin_nhan) VALUES ($1, 'bot', $2, 'van_ban')", id_cuoc_hoi_thoai, answer)
 
 rag_service = RAGService()
 
-# --- BACKGROUND WORKERS (CHẠY CHUNG PROCESS) ---
+# --- WORKERS & FASTAPI SETUP ---
 async def start_chat_worker():
     print("🚀 Worker Chat AI đã kích hoạt...")
     while True:
@@ -264,17 +310,15 @@ async def start_chat_worker():
             await asyncio.sleep(0.2)
 
 async def start_ingest_worker():
-    print("🚀 Worker Ingest (Word + Woo) đã kích hoạt...")
+    print("🚀 Worker Ingest (Word + Sync Woo) đã kích hoạt...")
     while True:
         try:
             packed = await rag_service.redis.blpop("ingest_queue", timeout=10)
             if packed:
                 _, data_bytes = packed
                 job = json.loads(data_bytes.decode('utf-8'))
-                if job.get("type") == "word":
-                    asyncio.create_task(rag_service.process_word_file(job["file_path"], job["id_ho_so_khach"], job["id_kenh"]))
-                elif job.get("type") == "sync_woo":
-                    asyncio.create_task(rag_service.sync_woocommerce_categories(job["id_kenh"]))
+                if job.get("type") == "sync_woo":
+                    asyncio.create_task(rag_service.sync_all_woocommerce_data(job["id_kenh"]))
         except Exception as e:
             await asyncio.sleep(0.5)
 
@@ -289,16 +333,3 @@ async def lifespan(app: FastAPI):
     await rag_service.close_resources()
 
 app = FastAPI(title="CRM AI Service", lifespan=lifespan)
-
-@app.get("/health")
-async def health_check():
-    return {"status": "ok", "service": "crm-ai-service"}
-
-class TestRAGRequest(BaseModel):
-    id_kenh: str
-    id_ho_so_khach: str
-    question: str
-
-@app.post("/api/v1/test-rag")
-async def test_rag_endpoint(payload: TestRAGRequest):
-    return {"status": "success", "message": "API sẵn sàng mở rộng sau này!"}
