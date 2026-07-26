@@ -96,7 +96,7 @@ class RAGService:
         )
         self.httpx_client = httpx.AsyncClient(timeout=10.0)
         self.embeddings = NVIDIAEmbeddings(model="nvidia/nv-embed-v1", api_key=NVIDIA_API_KEY)
-        self.llm = ChatDeepSeek(model="deepseek-chat", api_key=DEEPSEEK_API_KEY, temperature=0.1)
+        self.llm = ChatDeepSeek(model="deepseek-v4-flash", api_key=DEEPSEEK_API_KEY, temperature=0.1)
 
     async def close_resources(self):
         if self.redis: await self.redis.close()
