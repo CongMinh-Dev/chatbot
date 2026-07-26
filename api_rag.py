@@ -1,549 +1,304 @@
-import time
 import os
-import asyncio
 import json
-import requests
-from dotenv import load_dotenv
-from fastapi import FastAPI, Body, Depends
-from fastapi.middleware.cors import CORSMiddleware
+import asyncio
+import redis.asyncio as aioredis
+import asyncpg
+import httpx
 from contextlib import asynccontextmanager
+from fastapi import FastAPI, HTTPException
+from pydantic import BaseModel
+from dotenv import load_dotenv
 
-from langchain_chroma import Chroma
-from langchain_google_genai import ChatGoogleGenerativeAI
-from langchain_google_genai import GoogleGenerativeAIEmbeddings
+from langchain_community.document_loaders import Docx2txtLoader
+from langchain_text_splitters import RecursiveCharacterTextSplitter
+from langchain_deepseek import ChatDeepSeek
 from langchain_nvidia_ai_endpoints import NVIDIAEmbeddings
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
-from langchain_core.runnables import RunnablePassthrough
-from langchain_core.runnables import RunnableLambda
 
-# --- CẤU HÌNH SEMAPHORE (Hàng đợi xử lý) ---
-MAX_CONCURRENT_REQUESTS = 3
-request_semaphore = asyncio.Semaphore(MAX_CONCURRENT_REQUESTS)
-
-vectorstore = None
-retriever = None
-rag_chain = None
-analysis_chain = None
-api_response_chain = None
-embeddings = None
-vectorstore_cat = None
-retriever_cat = None
-
-async def check_concurrency():
-    """Dependency kiểm tra số lượng request, nếu đầy sẽ tự đưa vào hàng đợi."""
-    async with request_semaphore:
-        yield
-
-# Load các biến môi trường
 load_dotenv()
+
+# --- BIẾN MÔI TRƯỜNG ---
+POSTGRES_DB = os.getenv("POSTGRES_DB", "crm_db")
+POSTGRES_HOST = os.getenv("POSTGRES_HOST", "localhost")
+POSTGRES_USER = os.getenv("POSTGRES_USER", "postgres")
+POSTGRES_PASSWORD = os.getenv("POSTGRES_PASSWORD", "postgres")
+POSTGRES_PORT = int(os.getenv("POSTGRES_PORT", "5432"))
+
+REDIS_URL = os.getenv("REDIS_URL", "redis://localhost:6379/0")
 NVIDIA_API_KEY = os.getenv("NVIDIA_API_KEY")
-GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
-CONSUMER_KEY_ENV = os.getenv("CONSUMER_KEY_ENV")
-CONSUMER_SECRET_ENV = os.getenv("CONSUMER_SECRET_ENV")
+DEEPSEEK_API_KEY = os.getenv("DEEPSEEK_API_KEY")
 
-
-# --- PROMPT 1: PHÂN TÍCH Ý ĐỊNH & VIẾT LẠI CÂU HỎI (GỘP DUY NHẤT) ---
+# --- PROMPTS ---
 ANALYSIS_PROMPT = """
-Bạn là bộ não phân tích ý định khách hàng cho hệ thống Chatbot E-commerce kết nối với WooCommerce.
-Nhiệm vụ của bạn là đọc "Lịch sử hội thoại" và "Câu hỏi mới nhất" để thực hiện các bước sau:
+Bạn là bộ phân tích ý định khách hàng E-commerce.
+Đọc "Lịch sử hội thoại" và "Câu hỏi mới nhất" để làm 2 bước:
+1. standalone_question: Viết lại câu hỏi đầy đủ ngữ cảnh.
+2. target & filters: 
+   - Nếu cần tra kho WooCommerce (giá, hàng còn không, biến thể, tìm danh sách...): "target": "woocommerce"
+   - Nếu hỏi đáp chung (chính sách, tư vấn size, file tài liệu cá nhân): "target": "rag"
 
-Bước 1. standalone_question: Viết lại câu hỏi mới nhất thành một câu đầy đủ, rõ ràng, sửa hết đại từ thay thế (nó, cái này, màu đó, size đó, dung tích đó...) dựa vào lịch sử.
-Bước 2: dựa vào standalone_question này để xử lý các ý sau:
-1. target & filters: Phân tích xem câu hỏi này thuộc nhóm nào để hệ thống xử lý:
-   - Nếu câu hỏi cần tra cứu dữ liệu thực tế từ kho hàng WooCommerce. Ví dụ: Hỏi giá, tìm khoảng giá, kiểm tra xem sản phẩm cụ thể còn hàng/tồn kho không, tìm danh sách sản phẩm theo tên/danh mục, hoặc hỏi xem sản phẩm đó có những size/màu sắc/biến thể cụ thể nào để đặt mua. Hãy gắn "target": "woocommerce" và trích xuất các bộ lọc tương ứng.
-   - Nếu câu hỏi là hỏi đáp chung (Chính sách đổi trả, bảo hành, địa chỉ shop, tư vấn chất liệu tổng quát, chào hỏi xã giao...) HOẶC là câu hỏi nhờ tư vấn chọn size/đo size dựa trên số đo cơ thể. Hãy gắn "target": "rag".
-
-2. LƯU Ý QUAN TRỌNG CHO TRƯỜNG 'category':
- - Vì sản phẩm có thể có vô vàn loại biến thể khác nhau (Màu sắc, Size, Dung tích...). Bạn hãy GOM TẤT CẢ các từ khóa liên quan đến tên loại sản phẩm thực tế khách tìm vào trường "category".
- - TUYỆT ĐỐI KHÔNG điền vào trường "category" những từ khóa chung chung, mơ hồ của khách như: "tất cả sản phẩm", "sản phẩm nào", "các sản phẩm", "danh sách sản phẩm", "hàng hóa"... Nếu khách chỉ muốn liệt kê chung chung không có tên sản phẩm cụ thể, hãy để "category": null.
- - ĐẶC BIỆT KHI KHÁCH HỎI XEM TIẾP / LẬT TRANG: Bạn PHẢI nhìn vào Lịch sử hội thoại và câu Standalone Question để biết họ đang muốn xem tiếp của danh mục nào lượt trước, tuyệt đối không được bỏ trống trường này.
-
-3. ĐẦU RA YÊU CẦU: Chỉ trả về một chuỗi JSON duy nhất, không giải thích gì thêm, tuân thủ cấu trúc sau:
-
+Trả về đúng 1 chuỗi JSON duy nhất, KHÔNG kèm markdown:
 {{
-  "standalone_question": "Câu hỏi sau khi đã viết lại đầy đủ ngữ cảnh",
+  "standalone_question": "string",
   "target": "woocommerce" hoặc "rag",
   "filters": {{
-    "max_price": số_tiền_tối_đa_nếu_khách_yêu_cầu dạng số (hoặc null),
-    "min_price": số_tiền_tối_thiểu_nếu_khách_yêu_cầu dạng số (hoặc null),
-    "stock_check": true nếu khách hỏi còn hàng không/còn loại này không (hoặc false),
-    "category": Tên sản phẩm cụ thể (hoặc null),
-    "get_total_count": true nếu khách hỏi "bao nhiêu sản phẩm" (hỏi số lượng). Gán false nếu khách hỏi "sản phẩm nào" (hỏi danh sách liệt kê cụ thể),
-    "page": số_trang_cần_lấy_dữ_liệu (Mặc định là 1. Nếu khách có ý định muốn xem các mẫu còn lại, xem tiếp các sản phẩm khác, hoặc xem trang sau dựa vào lịch sử hội thoại, hãy tăng số này lên thành 2, hoặc 3...)
+    "max_price": null,
+    "min_price": null,
+    "stock_check": false,
+    "category": null,
+    "page": 1
   }}
 }}
 
-Lịch sử hội thoại:
+Lịch sử:
 {history}
-
-Câu hỏi mới nhất của khách:
+Câu hỏi:
 {question}
 """
 
-# --- PROMPT 2: RAG CHĂM SÓC KHÁCH HÀNG THÔNG THƯỜNG ---
 SALES_PROMPT = """
-Bạn là một nhân viên bán hàng chuyên nghiệp.
-
-QUY TẮC CỐT LÕI:
-1. Chỉ được trả lời dựa trên thông tin trong tài liệu.
-2. Nếu tài liệu có câu trả lời thì cứ trả lời dạ kèm câu trả lời.
-3. Nếu tài liệu không chứa câu trả lời thì trả lời chính xác là:'Dạ để em hỏi lại sếp'.
-4. Không được suy luận.
-5. Không được sử dụng kiến thức bên ngoài.
-6. Luôn xưng hô dạ, em. và trả lời một cách ngắn gọn.
-
-Thông tin tài liệu:
+Bạn là nhân viên bán hàng chuyên nghiệp (luôn xưng dạ, em).
+Chỉ trả lời dựa vào thông tin tài liệu dưới đây. Nếu không có trả lời: 'Dạ để em hỏi lại sếp'.
+Tài liệu:
 {context}
-
-Câu hỏi khách hàng:
+Câu hỏi:
 {question}
 """
 
-# --- PROMPT 3: TRẢ LỜI CHO KHÁCH DỰA TRÊN KẾT QUẢ WOOCOMMERCE API ---
 API_RESPONSE_PROMPT = """
-Bạn là một nhân viên bán hàng chuyên nghiệp, thân thiện và lễ phép (luôn xưng dạ, em).
-Hãy dựa vào danh sách sản phẩm WooCommerce real-time dưới đây để trả lời câu hỏi của khách một cách CỰC KỲ NGẮN GỌN và TRỰC TIẾP.
-
-QUY TẮC CỐT LÕI (KHÔNG ĐƯỢC QUÊN):
-1. PHÂN BIỆT Ý ĐỊNH HỎI SỐ LƯỢNG VÀ YÊU CẦU XEM SẢN PHẨM:
-   - TRƯỜNG HỢP A (Hỏi tổng số lượng sản phẩm): bạn CHỈ cần trả lời trực tiếp số lượng dựa trên "total_count_info" trong dữ liệu hệ thống.
-
-2. RÀNG BUỘC BIẾN THỂ THỰC TẾ (TUYỆT ĐỐI KHÔNG SUY DIỄN):
-   - Tuyệt đối không phỏng đoán logic để tự bịa ra bất kỳ thông số, kích thước, màu sắc hay phiên bản nào khác nếu dữ liệu hệ thống không liệt kê. Nếu hệ thống báo hết hoặc không ghi, nghĩa là HẾT HÀNG.
-
-3. CHIẾN LƯỢC TƯ VẤN KHI HẾT HÀNG (UPSELL/CROSS-SELL):
-   - TRƯỜNG HỢP 1 (Hết một vài biến thể): Nếu khách hỏi trúng một lựa chọn/biến thể đã hết, nhưng sản phẩm đó VẪN CÒN các biến thể khác trong dữ liệu -> Hãy báo hết và chủ động gợi ý khách chuyển sang các lựa chọn/biến thể còn lại (chỉ đích danh các biến thể thực tế đang còn trong data).
-   - TRƯỜNG HỢP 2 (Hết sạch toàn bộ sản phẩm hoặc Không tìm thấy): Nếu trong dữ liệu có xuất hiện danh sách "Sản phẩm gợi ý thay thế" -> Hãy báo lịch sự là mẫu khách tìm đang hết hàng, và ngay lập tức giới thiệu các sản phẩm thay thế được cung cấp này (nêu rõ chúng có tính năng, công dụng tương tự hoặc cùng phân khúc).
-
-4. NGUYÊN LIỆU BẮT BUỘC: Dù tư vấn thế nào, đối với các sản phẩm còn hàng hoặc sản phẩm gợi ý, Nếu sản phẩm có ảnh thì phải có link ảnh (gửi 1 ảnh thôi, khi nào khách yêu cầu gửi nhiều ảnh thì mới gửi nhiều ảnh)
-
-5. CHỐNG BỊA ĐẶT DỮ LIỆU (QUAN TRỌNG):
-   - Tuyệt đối không tự ý sinh ra các sản phẩm ảo dạng "[Tên sản phẩm 1]", "[Link ảnh 1]" hoặc tự bịa ra các link ảnh không có thật trong dữ liệu hệ thống.
-   - Nếu dữ liệu báo gặp lỗi kết nối hệ thống hoặc trống rỗng, hãy xin lỗi khách một cách lịch sự và báo rằng hệ thống tra cứu đang bận hoặc gặp sự cố kết nối, hẹn khách kiểm tra lại sau ít phút.
-
-Danh sách sản phẩm từ hệ thống:
+Bạn là nhân viên bán hàng chuyên nghiệp (luôn xưng dạ, em).
+Dựa vào dữ liệu sản phẩm WooCommerce dưới đây để trả lời CỰC KỲ NGẮN GỌN.
+Dữ liệu:
 {api_context}
-
-Câu hỏi gốc của khách: {question}
+Câu hỏi:
+{question}
 """
 
+class RAGService:
+    def __init__(self):
+        self.redis = None
+        self.pg_pool = None
+        self.embeddings = None
+        self.llm = None
+        self.httpx_client = None
 
-def format_docs(docs):
-    return "\n\n".join(doc.page_content for doc in docs)
+    async def init_resources(self):
+        self.redis = await aioredis.from_url(REDIS_URL)
+        self.pg_pool = await asyncpg.create_pool(
+            database=POSTGRES_DB,
+            user=POSTGRES_USER,
+            password=POSTGRES_PASSWORD,
+            host=POSTGRES_HOST,
+            port=POSTGRES_PORT,
+            min_size=5,
+            max_size=25
+        )
+        self.httpx_client = httpx.AsyncClient(timeout=10.0)
+        self.embeddings = NVIDIAEmbeddings(model="nvidia/nv-embed-v1", api_key=NVIDIA_API_KEY)
+        self.llm = ChatDeepSeek(model="deepseek-chat", api_key=DEEPSEEK_API_KEY, temperature=0.1)
 
-def optimize_rag_query(question: str) -> str:
-    """
-    Hàm chuẩn hóa câu hỏi kích cỡ cơ thể trước khi truy vấn ChromaDB dữ liệu tĩnh.
-    Loại bỏ các từ khóa tên sản phẩm gây nhiễu để bốc trúng bảng size trong file Word.
-    """
-    q_lower = question.lower()
-    if any(keyword in q_lower for keyword in ["size", "nặng", "cao", "kg", "m", "cm", "mặc"]):
-        product_keywords = ["jean", "khaki", "short", "áo thun", "polo", "sơ mi", "jacket", "áo khoác"]
-        found_product = None
-        for kw in product_keywords:
-            if kw in q_lower:
-                found_product = kw
-                break
-        if found_product:
-            return f"Bảng quy đổi size kích cỡ cho sản phẩm {found_product} theo cân nặng và chiều cao"
-        else:
-            return "Bảng quy đổi size kích cỡ quần áo chung theo cân nặng và chiều cao"
-    return question
+    async def close_resources(self):
+        if self.redis: await self.redis.close()
+        if self.pg_pool: await self.pg_pool.close()
+        if self.httpx_client: await self.httpx_client.aclose()
 
+    # --- NẠP DỮ LIỆU FILE WORD (ASYNC) ---
+    async def process_word_file(self, file_path: str, id_ho_so_khach: str, id_kenh: str):
+        if not os.path.exists(file_path):
+            print(f"❌ File không tồn tại: {file_path}")
+            return
 
-def call_woocommerce_api_advanced(filters: dict):
-    """
-    Hàm Ultimate: Xử lý mượt mà cho cả sản phẩm ĐƠN GIẢN và sản phẩm BIẾN THỂ.
-    Tự động gom nhóm động trạng thái hết hàng và trích xuất ẢNH của từng biến thể.
-    """
-    WOO_URL = "https://minhshop.minh2309.io.vn/wp-json/wc/v3/products"
-    CONSUMER_KEY = CONSUMER_KEY_ENV
-    CONSUMER_SECRET = CONSUMER_SECRET_ENV
-    
-    params = {
-        "status": "publish",
-        "per_page": 5,
-        "page": filters.get("page", 1)
-    }
-    
-    if filters.get("max_price"): params["max_price"] = filters["max_price"]
-    if filters.get("min_price"): params["min_price"] = filters["min_price"]
-    if filters.get("stock_check") is True: params["stock_status"] = "instock"
+        try:
+            loader = Docx2txtLoader(file_path)
+            documents = await asyncio.to_thread(loader.load)
+            text_splitter = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=100)
+            splits = text_splitter.split_documents(documents)
 
-    category_search = filters.get("category")
-    invalid_keywords = ["tất cả sản phẩm", "các sản phẩm", "sản phẩm nào", "danh sách sản phẩm"]
+            async with self.pg_pool.acquire() as conn:
+                await conn.execute("DELETE FROM file_khach_hang_embeddings WHERE id_ho_so_khach = $1", id_ho_so_khach)
 
-    if category_search:
-        category_clean = category_search.lower().strip()
-        if category_clean not in invalid_keywords:
-            matched_cat_id = None
-            matched_name = ""
-            
-            # Sử dụng Vector Search để tìm kiếm danh mục theo ngữ nghĩa (Semantic Match)
-            if vectorstore_cat:
-                try:
-                    # Truy vấn trực tiếp từ collection "woocommerce_categories" đã nạp bên nap_data
-                    results = vectorstore_cat.similarity_search_with_relevance_scores(category_clean, k=1)
-                    if results:
-                        doc, score = results[0]
-                        print(f"[DEBUG VECTOR CAT] Khớp thử: {doc.metadata.get('name')} với điểm số score = {score}")
-                        if score > 0.22:
-                            matched_cat_id = doc.metadata.get("id")
-                            matched_name = doc.metadata.get("name")
-                except Exception as ex:
-                    print(f"[VECTOR SEARCH ERROR] Lỗi query danh mục: {ex}")
+                for doc in splits:
+                    content = doc.page_content
+                    vector = await self.embeddings.aembed_query(content)
+                    await conn.execute("""
+                        INSERT INTO file_khach_hang_embeddings (id_kenh, id_ho_so_khach, noi_dung, embedding, metadata)
+                        VALUES ($1, $2, $3, $4, $5)
+                    """, id_kenh, id_ho_so_khach, content, str(vector), json.dumps({"file_path": file_path}))
 
-            if matched_cat_id:
-                print(f"[CATEGORY MATCHED] Tự động khớp '{category_search}' -> Danh mục thực tế '{matched_name}' (ID: {matched_cat_id})")
-                params["category"] = matched_cat_id  # Gán chuẩn ID cho WooCommerce API
-            else:
-                # Nếu không khớp danh mục nào, quay về tìm kiếm text tự do (Ví dụ: "áo thun cổ V")
-                print(f"[CATEGORY FALLBACK] Không khớp danh mục, tìm kiếm tự do với từ khóa: '{category_search}'")
-                params["search"] = category_search
+            print(f"✅ Nạp {len(splits)} đoạn vector cho khách {id_ho_so_khach}")
+            if os.path.exists(file_path): os.remove(file_path)
+        except Exception as e:
+            print(f"❌ Lỗi nạp file Word: {e}")
 
-    try:
-        response = requests.get(WOO_URL, params=params, auth=(CONSUMER_KEY, CONSUMER_SECRET), timeout=5)
-        if response.status_code == 200:
-            total_products = response.headers.get("X-WP-Total")
-            if filters.get("get_total_count") is True:
-                return [{
-                    "name": "Hệ thống cửa hàng",
-                    "total_count_info": f"Tổng số sản phẩm đang có trên website là {total_products} sản phẩm.",
-                    "price": "0",
-                    "permalink": "#"
-                }]
+    # --- ĐỒNG BỘ DANH MỤC WOOCOMMERCE (ASYNC) ---
+    async def sync_woocommerce_categories(self, id_kenh: str):
+        async with self.pg_pool.acquire() as conn:
+            kenh = await conn.fetchrow("SELECT domain_website, token_truy_cap, token_lam_moi FROM kenh_ket_noi WHERE id = $1", id_kenh)
+            if not kenh or not kenh['domain_website']: return
 
-            raw_products = response.json()
-            simplified_products = []
-            
-            if isinstance(raw_products, list):
-                for p in raw_products:
-                    product_id = p.get("id")
-                    product_type = p.get("type", "simple")
-                    
-                    # 1. LẤY THUỘC TÍNH TỔNG QUÁT
-                    variant_list = []
-                    if p.get("attributes"):
-                        for attr in p["attributes"]:
-                            if attr.get("variation") is True or attr.get("visible") is True:
-                                name = attr.get("name", "")
-                                options = attr.get("options", [])
-                                if options:
-                                    variant_list.append(f"{name}: {', '.join(options)}")
-                    variants_string = " | ".join(variant_list) if variant_list else "Tiêu chuẩn"
+            woo_url = f"{kenh['domain_website'].rstrip('/')}/wp-json/wc/v3/products/categories"
+            try:
+                res = await self.httpx_client.get(
+                    woo_url, 
+                    auth=(kenh['token_truy_cap'], kenh['token_lam_moi']),
+                    params={"per_page": 100}
+                )
+                if res.status_code == 200:
+                    categories = res.json()
+                    for cat in categories:
+                        cat_id_ngoai = str(cat.get("id"))
+                        name, slug, desc = cat.get("name", ""), cat.get("slug", ""), cat.get("description", "")
 
-                    # 2. XỬ LÝ TRẠNG THÁI HẾT HÀNG & ẢNH CHI TIẾT TỪNG BIẾN THỂ
-                    outofstock_string = ""
-                    variant_images = []
-                    
-                    # --- NHÁNH A: SẢN PHẨM BIẾN THỂ (VARIABLE) ---
-                    if product_type == "variable":
-                        var_url = f"{WOO_URL}/{product_id}/variations"
-                        try:
-                            # Nâng timeout lên 6s để tránh ngắt kết nối mạng chập chờn
-                            var_response = requests.get(var_url, auth=(CONSUMER_KEY, CONSUMER_SECRET), timeout=6)
-                            
-                            if var_response.status_code == 200:
-                                variations_data = var_response.json()
-                                generic_groups = {}
-                                outofstock_variants = []
-                                
-                                for v in variations_data:
-                                    attrs = v.get("attributes", [])
-                                    attr_values = [a.get("option", "") for a in attrs if a.get("option")]
-                                    variant_name = " ".join(attr_values)
-                                    
-                                    if v.get("image") and v["image"].get("src"):
-                                        variant_images.append({
-                                            "label": variant_name,
-                                            "src": v["image"]["src"]
-                                        })
-                                    
-                                    is_out = (v.get("stock_status") == "outofstock" or 
-                                              v.get("stock_quantity") == 0 or 
-                                              v.get("is_in_stock") is False)
-                                    
-                                    if is_out:
-                                        if len(attr_values) >= 2:
-                                            main_key = " ".join(attr_values[:-1])
-                                            last_val = attr_values[-1]
-                                            
-                                            if main_key not in generic_groups:
-                                                generic_groups[main_key] = []
-                                            generic_groups[main_key].append(last_val)
-                                        elif len(attr_values) == 1:
-                                            standalone_val = attr_values[0]
-                                            if standalone_val not in outofstock_variants:
-                                                outofstock_variants.append(f"{standalone_val} hết hàng")
+                        db_cat_id = await conn.fetchval("""
+                            INSERT INTO danh_muc_san_pham (id_kenh, id_danh_muc_ngoai, ten_danh_muc, slug, mo_ta)
+                            VALUES ($1, $2, $3, $4, $5)
+                            ON CONFLICT (id_kenh, id_danh_muc_ngoai) 
+                            DO UPDATE SET ten_danh_muc = EXCLUDED.ten_danh_muc, slug = EXCLUDED.slug, mo_ta = EXCLUDED.mo_ta
+                            RETURNING id;
+                        """, id_kenh, cat_id_ngoai, name, slug, desc)
 
-                                for main_key, sub_vals in generic_groups.items():
-                                    outofstock_variants.append(f"{main_key} {', '.join(sub_vals)} hết hàng")
-                                
-                                if outofstock_variants:
-                                    outofstock_string = f"({', '.join(outofstock_variants)})"
-                            else:
-                                outofstock_string = "(Tạm thời không xác định được trạng thái kho)"
-                        except Exception as inner_e:
-                            # Nếu lỗi kết nối API con, đánh dấu để không xử lý rác
-                            print(f"[ERROR] Lỗi lấy biến thể của sản phẩm {product_id}: {inner_e}")
-                            outofstock_string = "(Lỗi kết nối kho hàng biến thể)"
+                        text_content = f"Danh mục sản phẩm: {name}. Slug: {slug}. Mô tả: {desc}"
+                        cat_vector = await self.embeddings.aembed_query(text_content)
 
-                    # --- NHÁNH B: SẢN PHẨM ĐƠN GIẢN (SIMPLE) ---
-                    elif p.get("stock_status") == "outofstock" or p.get("stock_quantity") == 0:
-                        outofstock_string = "(Hết hàng)"
+                        await conn.execute("DELETE FROM danh_muc_embeddings WHERE id_danh_muc = $1", db_cat_id)
+                        await conn.execute("""
+                            INSERT INTO danh_muc_embeddings (id_danh_muc, id_kenh, noi_dung, embedding)
+                            VALUES ($1, $2, $3, $4)
+                        """, db_cat_id, id_kenh, text_content, str(cat_vector))
+                    print(f"✅ Đồng bộ {len(categories)} danh mục Woo kênh {id_kenh}")
+            except Exception as e:
+                print(f"❌ Lỗi đồng bộ danh mục Woo: {e}")
 
-                    simplified_products.append({
-                        "name": p.get("name", "Sản phẩm không tên"),
-                        "price": p.get("price", "0"),
-                        "permalink": p.get("permalink", "#"),
-                        "images": p.get("images", []),
-                        "variant_images": variant_images,
-                        "variants": variants_string,
-                        "outofstock_info": outofstock_string  
-                    })
-            
-            # print(f'woo trả về thành công: {simplified_products}')
-            return simplified_products
-        else:
-            print(f"[API ERROR] Chi tiết lỗi từ WordPress: {response.text}")
+    # --- XỬ LÝ TIN NHẮN RAG & CHAT ---
+    async def get_conversation_history(self, conn, id_cuoc_hoi_thoai):
+        rows = await conn.fetch("""
+            SELECT loai_nguoi_gui, noi_dung 
+            FROM tin_nhan WHERE id_cuoc_hoi_thoai = $1 
+            ORDER BY ngay_tao DESC LIMIT 5
+        """, id_cuoc_hoi_thoai)
+        return "\n".join([f"{'Khách hàng' if r['loai_nguoi_gui']=='khach_hang' else 'Bot'}: {r['noi_dung']}" for r in reversed(rows)])
+
+    async def search_category_vector(self, conn, id_kenh, category_name):
+        query_vec = await self.embeddings.aembed_query(category_name)
+        row = await conn.fetchrow("""
+            SELECT d.id_danh_muc_ngoai FROM danh_muc_embeddings e
+            JOIN danh_muc_san_pham d ON e.id_danh_muc = d.id
+            WHERE e.id_kenh = $1
+            ORDER BY e.embedding <-> $2::vector LIMIT 1;
+        """, id_kenh, str(query_vec))
+        return row['id_danh_muc_ngoai'] if row else None
+
+    async def query_woocommerce(self, conn, id_kenh, filters):
+        row = await conn.fetchrow("SELECT domain_website, token_truy_cap, token_lam_moi FROM kenh_ket_noi WHERE id = $1", id_kenh)
+        if not row or not row['domain_website']: return "Không tìm thấy cấu hình Woo."
+
+        woo_url = f"{row['domain_website'].rstrip('/')}/wp-json/wc/v3/products"
+        params = {"status": "publish", "per_page": 5, "page": filters.get("page", 1)}
         
-    except Exception as e:
-        print(f"Lỗi kết nối WooCommerce API: {e}")
-    # Trả về None thay vì [] khi thực sự lỗi kết nối để phân biệt với "Hết hàng/Hết trang"
-    return None
+        if filters.get("category"):
+            cat_id = await self.search_category_vector(conn, id_kenh, filters["category"])
+            if cat_id: params["category"] = cat_id
+            else: params["search"] = filters["category"]
 
+        try:
+            res = await self.httpx_client.get(woo_url, params=params, auth=(row['token_truy_cap'], row['token_lam_moi']))
+            if res.status_code == 200:
+                return "Danh sách sản phẩm:\n" + "\n".join([f"- Tên: {p.get('name')} | Giá: {p.get('price')}đ | Link: {p.get('permalink')}" for p in res.json()])
+        except Exception as e:
+            print(f"❌ Lỗi Woo: {e}")
+        return "Lỗi kết nối Woo."
+
+    async def search_rag_context(self, conn, id_kenh, id_ho_so_khach, question):
+        query_vec = await self.embeddings.aembed_query(question)
+        rows_word = await conn.fetch("SELECT noi_dung FROM file_khach_hang_embeddings WHERE id_ho_so_khach = $1 ORDER BY embedding <-> $2::vector LIMIT 2;", id_ho_so_khach, str(query_vec))
+        rows_common = await conn.fetch("SELECT noi_dung FROM kho_tri_thuc_ai WHERE id_kenh = $1 ORDER BY vector_dac_trung <-> $2::vector LIMIT 2;", id_kenh, str(query_vec))
+        docs = [r['noi_dung'] for r in rows_word] + [r['noi_dung'] for r in rows_common]
+        return "\n\n".join(docs) if docs else "Không có tài liệu."
+
+    async def process_message(self, id_tin_nhan):
+        async with self.pg_pool.acquire() as conn:
+            msg = await conn.fetchrow("""
+                SELECT t.id, t.noi_dung, t.id_cuoc_hoi_thoai, c.id_kenh, c.id_ho_so_khach, c.bat_bot_tu_dong
+                FROM tin_nhan t JOIN cuoc_hoi_thoai c ON t.id_cuoc_hoi_thoai = c.id
+                WHERE t.id = $1
+            """, id_tin_nhan)
+
+            if not msg or not msg['bat_bot_tu_dong']: return
+
+            question, id_cuoc_hoi_thoai, id_kenh, id_ho_so_khach = msg['noi_dung'], msg['id_cuoc_hoi_thoai'], msg['id_kenh'], msg['id_ho_so_khach']
+            history_text = await self.get_conversation_history(conn, id_cuoc_hoi_thoai)
+
+            analysis_chain = ChatPromptTemplate.from_template(ANALYSIS_PROMPT) | self.llm | StrOutputParser()
+            raw_analysis = await analysis_chain.ainvoke({"history": history_text, "question": question})
+            
+            try:
+                res_json = json.loads(raw_analysis.replace("```json", "").replace("```", "").strip())
+            except Exception:
+                res_json = {"standalone_question": question, "target": "rag", "filters": {}}
+
+            standalone_question = res_json.get("standalone_question", question)
+            target = res_json.get("target", "rag")
+
+            if target == "woocommerce":
+                api_context = await self.query_woocommerce(conn, id_kenh, res_json.get("filters", {}))
+                answer = await (ChatPromptTemplate.from_template(API_RESPONSE_PROMPT) | self.llm | StrOutputParser()).ainvoke({"api_context": api_context, "question": standalone_question})
+            else:
+                rag_context = await self.search_rag_context(conn, id_kenh, id_ho_so_khach, standalone_question)
+                answer = await (ChatPromptTemplate.from_template(SALES_PROMPT) | self.llm | StrOutputParser()).ainvoke({"context": rag_context, "question": standalone_question})
+
+            await conn.execute("INSERT INTO tin_nhan (id_cuoc_hoi_thoai, loai_nguoi_gui, noi_dung, loai_tin_nhan) VALUES ($1, 'bot', $2, 'van_ban')", id_cuoc_hoi_thoai, answer)
+
+rag_service = RAGService()
+
+# --- BACKGROUND WORKERS (CHẠY CHUNG PROCESS) ---
+async def start_chat_worker():
+    print("🚀 Worker Chat AI đã kích hoạt...")
+    while True:
+        try:
+            packed = await rag_service.redis.blpop("process_ai_queue", timeout=10)
+            if packed:
+                _, msg_id_bytes = packed
+                asyncio.create_task(rag_service.process_message(msg_id_bytes.decode('utf-8')))
+        except Exception as e:
+            await asyncio.sleep(0.2)
+
+async def start_ingest_worker():
+    print("🚀 Worker Ingest (Word + Woo) đã kích hoạt...")
+    while True:
+        try:
+            packed = await rag_service.redis.blpop("ingest_queue", timeout=10)
+            if packed:
+                _, data_bytes = packed
+                job = json.loads(data_bytes.decode('utf-8'))
+                if job.get("type") == "word":
+                    asyncio.create_task(rag_service.process_word_file(job["file_path"], job["id_ho_so_khach"], job["id_kenh"]))
+                elif job.get("type") == "sync_woo":
+                    asyncio.create_task(rag_service.sync_woocommerce_categories(job["id_kenh"]))
+        except Exception as e:
+            await asyncio.sleep(0.5)
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    global vectorstore, rag_chain, retriever, analysis_chain, api_response_chain, embeddings, vectorstore_cat, retriever_cat
-
-    # 1. Khởi tạo Embeddings
-    embeddings = NVIDIAEmbeddings(
-        model="nvidia/nv-embed-v1", 
-        api_key=NVIDIA_API_KEY
-    )
-
-    # 2. Kết nối với ChromaDB
-    vectorstore = Chroma(
-        persist_directory="./chroma_db",
-        embedding_function=embeddings,
-        collection_name="rag_contents"
-    )
-    retriever = vectorstore.as_retriever(
-        search_kwargs={"k": 2}
-    )
-
-    vectorstore_cat = Chroma(
-        persist_directory="./chroma_db",
-        embedding_function=embeddings,
-        collection_name="woocommerce_categories"  # Collection dành riêng cho danh mục
-    )
-    # k=1 vì chúng ta chỉ cần tìm ra 1 danh mục khớp nhất
-    retriever_cat = vectorstore_cat.as_retriever(
-        search_kwargs={"k": 1} 
-    )
-
-    # 3. Khởi tạo LLMs
-    llm = ChatGoogleGenerativeAI(
-        model="gemini-3.1-flash-lite",
-        google_api_key=GOOGLE_API_KEY,
-        temperature=0.2,
-        max_output_tokens=512,
-    )
-    llm0 = ChatGoogleGenerativeAI(
-        model="gemini-3.1-flash-lite",
-        google_api_key=GOOGLE_API_KEY,
-        temperature=0.0,
-        max_output_tokens=512,
-    )
-    
-    # Chain 1: Phân tích tích hợp
-    analysis_prompt_template = ChatPromptTemplate.from_template(ANALYSIS_PROMPT)
-    analysis_chain = analysis_prompt_template | llm | StrOutputParser()
-    
-    # Chain 2: Xử lý RAG truyền thống
-    sales_prompt_template = ChatPromptTemplate.from_template(SALES_PROMPT)
-    rag_chain = (
-        {
-            "context": RunnableLambda(optimize_rag_query) | retriever | RunnableLambda(format_docs),
-            "question": RunnablePassthrough()
-        }
-        | sales_prompt_template
-        | llm0
-        | StrOutputParser()
-    )
-    
-    # Chain 3: Xử lý câu trả lời từ API WooCommerce
-    api_res_prompt_template = ChatPromptTemplate.from_template(API_RESPONSE_PROMPT)
-    api_response_chain = api_res_prompt_template | llm0 | StrOutputParser()
-
+    await rag_service.init_resources()
+    t1 = asyncio.create_task(start_chat_worker())
+    t2 = asyncio.create_task(start_ingest_worker())
     yield
+    t1.cancel()
+    t2.cancel()
+    await rag_service.close_resources()
 
-app = FastAPI(lifespan=lifespan)
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["https://minhshop.minh2309.io.vn"], 
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+app = FastAPI(title="CRM AI Service", lifespan=lifespan)
 
-# --- ENDPOINT CHAT CHÍNH ---
-@app.post("/api/chat", dependencies=[Depends(check_concurrency)])
-async def chat(request: dict = Body(...)):
-    messages = request.get("messages", [])
-    if not messages:
-        return {"error": "Không có messages."}
+@app.get("/health")
+async def health_check():
+    return {"status": "ok", "service": "crm-ai-service"}
 
-    # Chỉ lấy tối đa 5 tin nhắn gần nhất để làm lịch sử phân tích
-    recent_messages = messages[-6:-1] if len(messages) > 6 else messages[:-1]
-    history_text = "\n".join([f"{m['role']}: {m['content']}" for m in recent_messages])
-    latest_question = messages[-1]["content"]
+class TestRAGRequest(BaseModel):
+    id_kenh: str
+    id_ho_so_khach: str
+    question: str
 
-    start_time = time.perf_counter()
-    
-    # BƯỚC 1: Gọi phân tích Re-phrase
-    raw_analysis = analysis_chain.invoke({
-        "history": history_text,
-        "question": latest_question
-    })
-    
-    clean_json = raw_analysis.replace("```json", "").replace("```", "").strip()
-    
-    try:
-        analysis_result = json.loads(clean_json)
-    except Exception as e:
-        print(f"[ERROR] Không thể parse JSON từ AI. Kết quả thô: {raw_analysis}")
-        analysis_result = {
-            "standalone_question": latest_question,
-            "target": "rag",
-            "filters": {}
-        }
-
-    standalone_question = analysis_result.get("standalone_question", latest_question)
-    target = analysis_result.get("target", "rag")
-    filters = analysis_result.get("filters", {})
-
-    # DEBUG LOG TRÊN TERMINAL
-    print("\n" + "="*50)
-    print(f"LATEST QUESTION: {latest_question}")
-    print(f"STANDALONE QUESTION: {standalone_question}")
-    print(f"ROUTING TARGET: {target.upper()}")
-    print(f"EXTRACTED FILTERS: {filters}")
-    print("="*50 + "\n")
-
-    # BƯỚC 2: Rẽ nhánh xử lý dựa trên kết quả phân tích
-    if target == "woocommerce":
-        # 1. Gọi WooCommerce API lấy sản phẩm
-        products = call_woocommerce_api_advanced(filters)
-        current_page = filters.get("page", 1)
-        
-        # Kiểm tra xem API có thực sự lỗi kết nối (None) hay không
-        if products is None:
-            api_context = "[HỆ THỐNG GẶP LỖI KẾT NỐI MẠNG ĐẾN WOOCOMMERCE. HÃY BÁO LỖI LỊCH SỰ VỚI KHÁCH HÀNG]"
-        else:
-            # 2. Xử lý nới lỏng bộ lọc hoặc nhận diện hết trang
-            suggested_products = []
-            is_all_out = True
-            
-            if products:
-                for p in products:
-                    if p.get("outofstock_info") != "(Hết hàng)":
-                        is_all_out = False
-                        break
-            
-            # CHỈ TÌM SẢN PHẨM THAY THẾ Ở TRANG 1 (nếu trang 1 hết hàng hoặc không có sản phẩm)
-            if current_page == 1 and (not products or is_all_out):
-                original_category = filters.get("category", "")
-                broad_keyword = original_category.split()[0] if original_category else ""
-                if broad_keyword:
-                    fallback_filters = {
-                        "category": broad_keyword,
-                        "stock_check": True,
-                        "max_price": filters.get("max_price"),
-                        "min_price": filters.get("min_price")
-                    }
-                    suggested_products = call_woocommerce_api_advanced(fallback_filters)
-
-            # 3. ĐỒNG BỘ ẢNH BIẾN THỂ VÀO NGỮ CẢNH VĂN BẢN
-            api_context = ""
-            api_context += f"[THÔNG TIN HỆ THỐNG: Đang hiển thị dữ liệu ở trang số {current_page}]\n\n"
-            
-            # Xử lý trường hợp HẾT TRANG (vượt quá số sản phẩm hiện có khi page > 1)
-            if not products and current_page > 1:
-                api_context += f"Đã hết sản phẩm.\n"
-            
-            elif products:
-                actual_products = [p for p in products if not p.get("total_count_info")]
-                prod_count = len(actual_products)
-                
-                if prod_count >= 5:
-                    if current_page == 1:
-                        api_context += "--- Hướng xử lý: Báo 'em gửi trước các sản phẩm này ạ, các sản phẩm còn lại em gửi sau hoặc anh/chị có thể lên web tham khảo giúp em nha:' và liệt kê danh sách bên dưới. ---\n"
-                    elif current_page > 1:
-                        api_context += "--- Hướng xử lý: Báo 'em gửi tiếp các sản phẩm này ạ, các sản phẩm còn lại em gửi sau hoặc anh/chị có thể lên web tham khảo giúp em nha:' và liệt kê danh sách bên dưới. ---\n"
-                elif prod_count > 0:
-                    api_context += f"--- Hướng xử lý: Báo 'Dạ hiện tại bên em chỉ còn các sản phẩm sau:' và liệt kê danh sách bên dưới. ---\n"
-
-                api_context += "--- DANH SÁCH SẢN PHẨM: ---\n"
-                for p in products:
-                    if p.get("total_count_info"):
-                        api_context += f"- Thông tin hệ thống: {p['total_count_info']}\n"
-                        continue
-                    api_context += f"- Tên: {p['name']} | Biến thể hiện có: {p.get('variants', 'Tiêu chuẩn')}"
-                    if p.get("outofstock_info"):
-                        api_context += f" | Thông tin hết hàng: {p['outofstock_info']}"
-                    api_context += f" | Giá: {p['price']}đ | Link: {p['permalink']}"
-                    
-                    # ĐƯA DANH SÁCH ẢNH CỦA TỪNG BIẾN THỂ VÀO CHO LLM
-                    if p.get("variant_images"):
-                        img_details = [f"Ảnh của bản {img['label']}: {img['src']}" for img in p["variant_images"]]
-                        api_context += f" | Danh sách ảnh biến thể: [{', '.join(img_details)}]"
-                    
-                    # Fallback nếu không có ảnh biến thể thì đưa mảng ảnh của sản phẩm tổng
-                    elif p.get("images"):
-                        img_url = p["images"][0]["src"]
-                        api_context += f" | Ảnh: {img_url}"
-                        
-                    api_context += "\n"
-            
-            # Nạp sản phẩm gợi ý thay thế (chỉ hiển thị ở trang 1)
-            if suggested_products and current_page == 1:
-                api_context += "\n--- DANH SÁCH SẢN PHẨM GỢI Ý THAY THẾ (VÌ SẢN PHẨM TRÊN HẾT HÀNG): ---\n"
-                for p in suggested_products:
-                    # Tránh bị lỗi NoneType nếu fallback_filters cũng bị lỗi mạng trả về None
-                    if p is None: 
-                        continue
-                    if products and p['name'] in [prod['name'] for prod in products if prod is not None]:
-                        continue
-                    img_url = p["images"][0]["src"] if p.get("images") else ""
-                    api_context += f"- Tên sản phẩm thay thế: {p['name']} | Giá: {p['price']}đ | Link: {p['permalink']}"
-                    if img_url: api_context += f" | Ảnh: {img_url}"
-                    api_context += "\n"
-
-            if not api_context.strip() or api_context.strip() == f"[THÔNG TIN HỆ THỐNG: Đang hiển thị dữ liệu ở trang số {current_page}]":
-                api_context = "Hiện tại hệ thống không tìm thấy sản phẩm nào phù hợp và cũng không có sản phẩm thay thế."
-
-        # Sinh câu trả lời từ LLM
-        print(f"dữ liệu đưa vào llm: {api_context}")
-        answer = api_response_chain.invoke({
-            "api_context": api_context,
-            "question": standalone_question
-        })
-        print(f"[TIMING] Nhánh WooCommerce xử lý xong.")
-        
-    else:
-        # Nhánh 2: Truy vấn dữ liệu tĩnh (RAG ChromaDB) như cũ
-        answer = rag_chain.invoke(standalone_question)
-        print(f"[TIMING] Nhánh RAG xử lý xong.")
-
-    t_end = time.perf_counter()
-    total_seconds = round(t_end - start_time, 4)
-    print(f"bot trả lời: {answer} \n thời gian: {total_seconds}")
-    return {
-        "answer": answer,
-        "timing": {
-            "total_seconds": total_seconds
-        }
-    }
+@app.post("/api/v1/test-rag")
+async def test_rag_endpoint(payload: TestRAGRequest):
+    return {"status": "success", "message": "API sẵn sàng mở rộng sau này!"}

@@ -1,42 +1,41 @@
-name: Deploy Chatbot
+name: Deploy Chatbot Microservice
+
 on:
   push:
     branches: [ main ]
 
 jobs:
   deploy:
-    # 1. Chuyển sang self-hosted để dùng runner trên server của bạn
     runs-on: self-hosted 
     steps:
       - uses: actions/checkout@v3
       
       - name: Deploy to Server
         env:
-            # Đảm bảo bạn đã lưu NVIDIA_API_KEY trong GitHub Settings > Secrets
+            DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
             NVIDIA_API_KEY: ${{ secrets.NVIDIA_API_KEY }}
-            GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
-            CONSUMER_KEY_ENV: ${{ secrets.CONSUMER_KEY_ENV }}
-            CONSUMER_SECRET_ENV: ${{ secrets.CONSUMER_SECRET_ENV }}
+            POSTGRES_HOST: ${{ secrets.POSTGRES_HOST }}
+            POSTGRES_PORT: ${{ secrets.POSTGRES_PORT }}
+            POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
+            POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+            POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
+            REDIS_URL: ${{ secrets.REDIS_URL }}
         run: |
-          # 2. Xóa hết nội dung cũ trong thư mục production (nếu cần sạch) 
-          # hoặc bạn có thể bỏ qua dòng này nếu muốn giữ file cũ
-          rm -rf /root/chatbot_root/chatbot
+          DEPLOY_DIR="/root/chatbot_root/chatbot"
+          mkdir -p $DEPLOY_DIR
           
-          # 3. Copy source code vừa checkout từ github vào thư mục production
-          cp -r . /root/chatbot_root/chatbot
+          cp -r . $DEPLOY_DIR
+          cd $DEPLOY_DIR
           
-          # 4. Di chuyển vào thư mục và chạy docker-compose
-          cd /root/chatbot_root/chatbot
-          
-          # Tạo file .env tạm thời trên server để docker-compose đọc
+          # Ghi file .env tạm thời cho Container đọc
+          echo "DEEPSEEK_API_KEY=$DEEPSEEK_API_KEY" > .env
           echo "NVIDIA_API_KEY=$NVIDIA_API_KEY" >> .env
-          echo "GOOGLE_API_KEY=$GOOGLE_API_KEY" >> .env
-          echo "CONSUMER_KEY_ENV=$CONSUMER_KEY_ENV" >> .env
-          echo "CONSUMER_SECRET_ENV=$CONSUMER_SECRET_ENV" >> .env
+          echo "POSTGRES_DB=$POSTGRES_DB" >> .env
+          echo "POSTGRES_HOST=$POSTGRES_HOST" >> .env
+          echo "POSTGRES_USER=$POSTGRES_USER" >> .env
+          echo "POSTGRES_PASSWORD=$POSTGRES_PASSWORD" >> .env
+          echo "POSTGRES_PORT=$POSTGRES_PORT" >> .env
+          echo "REDIS_URL=$REDIS_URL" >> .env
 
-
-          # xóa container, volum, mạng liên quan.
           docker compose down
-
-          # có --build là nó tự biết xóa thư viện cũ, image có tồn tại nó vẫn biết cập nhật.
           docker compose up -d --build

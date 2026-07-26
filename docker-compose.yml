@@ -1,14 +1,18 @@
+version: "3.8"
+
 services:
-  chatbot:
+  rag_chatbot:
     build: .
     container_name: rag_chatbot
     ports:
       - "8003:8000"
-    volumes:
-      - ./data:/app/data
-      - ./chroma_db:/app/chroma_db # Thay đổi từ faiss_index sang chroma_db
-    tty: true
-    stdin_open: true
     restart: always
     env_file:
-      - .env #đọc file .env trên máy chủ (host) và nạp chúng trực tiếp vào bộ nhớ của container dưới dạng Environment Variables.
+      - .env
+    networks:
+      - crm_network
+
+# Kết nối vào Docker Network dùng chung của hệ thống
+networks:
+  crm_network:
+    external: true
