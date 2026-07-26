@@ -22,7 +22,7 @@ jobs:
             REDIS_URL: ${{ secrets.REDIS_URL }}
         run: |
           DEPLOY_DIR="/root/chatbot_root/chatbot"
-          rm -f $DEPLOY_DIR
+          rm -rf $DEPLOY_DIR
           cp -r . $DEPLOY_DIR
           cd $DEPLOY_DIR
           
