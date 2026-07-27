@@ -8,6 +8,8 @@ services:
     ports:
       - "8003:8000"
     restart: always
+    volumes:
+      - shared_data_fastapi_node:/app/data
     env_file:
       - .env
     networks:
@@ -17,3 +19,5 @@ services:
 networks:
   crm_network:
     external: true
+volumes:
+  shared_data_fastapi_node: # Docker Compose sẽ tự động tạo volume này nếu chưa tồn tại
