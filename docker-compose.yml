@@ -9,7 +9,7 @@ services:
       - "8003:8000"
     restart: always
     volumes:
-      - shared_data_fastapi_node:/app/data
+      - shared_data_fastapi_node:/app/uploads
     env_file:
       - .env
     networks:
@@ -20,4 +20,5 @@ networks:
   crm_network:
     external: true
 volumes:
-  shared_data_fastapi_node: # Docker Compose sẽ tự động tạo volume này nếu chưa tồn tại
+  shared_data_fastapi_node:
+    external: true # Khai báo volume dùng chung đã tạo sẵn trên Server
