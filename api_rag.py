@@ -5,8 +5,7 @@ import redis.asyncio as aioredis
 import asyncpg
 import httpx
 from contextlib import asynccontextmanager
-from fastapi import FastAPI, HTTPException
-from pydantic import BaseModel
+from fastapi import FastAPI
 from dotenv import load_dotenv
 
 from langchain_community.document_loaders import Docx2txtLoader
@@ -85,13 +84,14 @@ class RAGService:
 
     async def init_resources(self):
         self.redis = await aioredis.from_url(REDIS_URL)
+        # Tối ưu RAM: Giới hạn max_size = 25 connections cho FastAPI Worker
         self.pg_pool = await asyncpg.create_pool(
             database=POSTGRES_DB,
             user=POSTGRES_USER,
             password=POSTGRES_PASSWORD,
             host=POSTGRES_HOST,
             port=POSTGRES_PORT,
-            min_size=5,
+            min_size=2,
             max_size=25
         )
         self.httpx_client = httpx.AsyncClient(timeout=30.0)
@@ -104,11 +104,44 @@ class RAGService:
         if self.httpx_client: await self.httpx_client.aclose()
 
     # =========================================================================
-    # 1. BỘ ĐỒNG BỘ DỮ LIỆU TỪ WOOCOMMERCE VỀ POSTGRESQL (SYNC WORKFLOW)
+    # 1. BỘ XỬ LÝ NẠP FILE WORD TỪ SHARED VOLUME
     # =========================================================================
+    async def ingest_word_file(self, file_id: str, file_path: str, id_ho_so_khach: str):
+        """Đọc file Word từ Shared Volume -> Chunking -> Embeddings -> Xóa Vector Cũ -> Lưu Vector Mới"""
+        if not os.path.exists(file_path):
+            print(f"❌ File không tồn tại tại đường dẫn Shared Volume: {file_path}")
+            return
 
+        try:
+            # 1. Đọc file word bằng Docx2txtLoader
+            loader = Docx2txtLoader(file_path)
+            documents = loader.load()
+
+            # 2. Cắt nhỏ văn bản (Chunking)
+            text_splitter = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=50)
+            chunks = text_splitter.split_documents(documents)
+
+            async with self.pg_pool.acquire() as conn:
+                # 3. Xóa các vector cũ của file_id này trong DB trước khi nạp mới
+                await conn.execute("DELETE FROM file_khach_hang_embeddings WHERE file_id = $1", file_id)
+
+                # 4. Embed & Insert từng chunk vào Postgres
+                for chunk in chunks:
+                    text_content = chunk.page_content
+                    vector = await self.embeddings.aembed_query(text_content)
+                    await conn.execute("""
+                        INSERT INTO file_khach_hang_embeddings (file_id, id_ho_so_khach, noi_dung, embedding)
+                        VALUES ($1, $2, $3, $4)
+                    """, file_id, id_ho_so_khach, text_content, str(vector))
+
+            print(f"✅ [SUCCESS] Đã Vector hóa thành công File Word ID: {file_id}. File vật lý được GIỮ NGUYÊN trên đĩa.")
+        except Exception as e:
+            print(f"❌ Lỗi xử lý Ingest Word: {e}")
+
+    # =========================================================================
+    # 2. BỘ ĐỒNG BỘ WOOCOMMERCE
+    # =========================================================================
     async def sync_all_woocommerce_data(self, id_kenh: str):
-        """Đồng bộ toàn bộ Danh mục, Sản phẩm & Biến thể từ Woo về Postgres"""
         async with self.pg_pool.acquire() as conn:
             kenh = await conn.fetchrow("SELECT domain_website, token_truy_cap, token_lam_moi FROM kenh_ket_noi WHERE id = $1", id_kenh)
             if not kenh or not kenh['domain_website']: return
@@ -117,9 +150,7 @@ class RAGService:
             auth = (kenh['token_truy_cap'], kenh['token_lam_moi'])
 
             try:
-                # 1. Synchronize Categories
                 await self._sync_categories(conn, id_kenh, base_url, auth)
-                # 2. Synchronize Products & Variations
                 await self._sync_products_and_variations(conn, id_kenh, base_url, auth)
                 print(f"🎉 [SUCCESS] Đã đồng bộ hoàn tất dữ liệu Woo cho kênh {id_kenh}")
             except Exception as e:
@@ -141,7 +172,6 @@ class RAGService:
                     RETURNING id;
                 """, id_kenh, cat_id_ngoai, name, slug, desc)
 
-                # Vector hóa Danh mục
                 text_content = f"Danh mục: {name}. Mô tả: {desc}"
                 cat_vector = await self.embeddings.aembed_query(text_content)
                 await conn.execute("DELETE FROM danh_muc_embeddings WHERE id_danh_muc = $1", db_cat_id)
@@ -168,7 +198,6 @@ class RAGService:
                 link = p.get("permalink", "")
                 type_sp = p.get("type", "simple")
 
-                # Lưu Sản phẩm chính vào Postgres
                 db_sp_id = await conn.fetchval("""
                     INSERT INTO san_pham (id_kenh, id_san_pham_ngoai, ten_san_pham, gia, mo_ta, ton_kho, link_san_pham, loai_san_pham)
                     VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
@@ -178,7 +207,6 @@ class RAGService:
                     RETURNING id;
                 """, id_kenh, sp_id_ngoai, ten_sp, gia, mo_ta, ton_kho, link, type_sp)
 
-                # Fetch biến thể nếu là sản phẩm biến thể (variable)
                 var_text_list = []
                 if type_sp == "variable":
                     var_url = f"{base_url}/wp-json/wc/v3/products/{sp_id_ngoai}/variations"
@@ -188,8 +216,6 @@ class RAGService:
                             v_id_ngoai = str(v.get("id"))
                             v_gia = float(v.get("price") or gia)
                             v_ton_kho = v.get("stock_quantity") or 0
-                            
-                            # Lấy các thuộc tính (ví dụ: Size L, Màu Đỏ)
                             attrs = ", ".join([f"{a.get('name')}: {a.get('option')}" for a in v.get("attributes", [])])
                             
                             await conn.execute("""
@@ -201,7 +227,6 @@ class RAGService:
                             
                             var_text_list.append(f"Biến thể ({attrs}) - Giá: {v_gia}đ")
 
-                # Cần Embedding trước rồi mới lưu Vector Search cho sản phẩm
                 text_to_embed = f"Sản phẩm: {ten_sp}. Giá: {gia}đ. Mô tả: {mo_ta}. " + " ".join(var_text_list)
                 sp_vector = await self.embeddings.aembed_query(text_to_embed)
 
@@ -214,14 +239,10 @@ class RAGService:
             page += 1
 
     # =========================================================================
-    # 2. BỘ TRUY VẤN DỮ LIỆU TỪ POSTGRESQL KHI CÓ CÂU HỎI (RETRIEVAL WORKFLOW)
+    # 3. LUỒNG TRUY VẤN
     # =========================================================================
-
     async def search_products_from_postgres(self, conn, id_kenh, question, filters):
-        """Logic tìm kiếm Sản phẩm & Biến thể hoàn toàn trên Postgres"""
         query_vec = await self.embeddings.aembed_query(question)
-        
-        # 1. Vector search kết hợp Filter giá/tồn kho
         rows = await conn.fetch("""
             SELECT s.ten_san_pham, s.gia, s.mo_ta, s.ton_kho, s.link_san_pham,
                    COALESCE(string_agg(concat(b.thuoc_tinh, ' (Giá: ', b.gia, 'đ)'), '; '), 'Không có biến thể') as ds_bien_the
@@ -233,8 +254,7 @@ class RAGService:
             ORDER BY e.embedding <-> $2::vector LIMIT 5;
         """, id_kenh, str(query_vec))
 
-        if not rows:
-            return "Không tìm thấy sản phẩm nào phù hợp trong kho."
+        if not rows: return "Không tìm thấy sản phẩm nào phù hợp trong kho."
 
         res_text = "Danh sách sản phẩm tìm thấy trong hệ thống:\n"
         for r in rows:
@@ -243,16 +263,11 @@ class RAGService:
         return res_text
 
     async def search_rag_context(self, conn, id_kenh, id_ho_so_khach, question):
-        """Retrieval từ File Word cá nhân + Kho tri thức chung"""
         query_vec = await self.embeddings.aembed_query(question)
         rows_word = await conn.fetch("SELECT noi_dung FROM file_khach_hang_embeddings WHERE id_ho_so_khach = $1 ORDER BY embedding <-> $2::vector LIMIT 2;", id_ho_so_khach, str(query_vec))
         rows_common = await conn.fetch("SELECT noi_dung FROM kho_tri_thuc_ai WHERE id_kenh = $1 ORDER BY vector_dac_trung <-> $2::vector LIMIT 2;", id_kenh, str(query_vec))
         docs = [r['noi_dung'] for r in rows_word] + [r['noi_dung'] for r in rows_common]
         return "\n\n".join(docs) if docs else "Không có tài liệu."
-
-    # =========================================================================
-    # 3. LUỒNG XỬ LÝ CHÍNH
-    # =========================================================================
 
     async def process_message(self, id_tin_nhan):
         async with self.pg_pool.acquire() as conn:
@@ -266,11 +281,9 @@ class RAGService:
 
             question, id_cuoc_hoi_thoai, id_kenh, id_ho_so_khach = msg['noi_dung'], msg['id_cuoc_hoi_thoai'], msg['id_kenh'], msg['id_ho_so_khach']
             
-            # Lấy 5 tin nhắn gần nhất
             rows = await conn.fetch("SELECT loai_nguoi_gui, noi_dung FROM tin_nhan WHERE id_cuoc_hoi_thoai = $1 ORDER BY ngay_tao DESC LIMIT 5", id_cuoc_hoi_thoai)
             history_text = "\n".join([f"{'Khách hàng' if r['loai_nguoi_gui']=='khach_hang' else 'Bot'}: {r['noi_dung']}" for r in reversed(rows)])
 
-            # DeepSeek phân loại Intent
             analysis_chain = ChatPromptTemplate.from_template(ANALYSIS_PROMPT) | self.llm | StrOutputParser()
             raw_analysis = await analysis_chain.ainvoke({"history": history_text, "question": question})
             
@@ -282,22 +295,18 @@ class RAGService:
             standalone_question = res_json.get("standalone_question", question)
             target = res_json.get("target", "rag")
 
-            # Xử lý theo Target
             if target == "woocommerce":
-                # Lấy dữ liệu sản phẩm + biến thể TRỰC TIẾP từ PostgreSQL
                 api_context = await self.search_products_from_postgres(conn, id_kenh, standalone_question, res_json.get("filters", {}))
                 answer = await (ChatPromptTemplate.from_template(API_RESPONSE_PROMPT) | self.llm | StrOutputParser()).ainvoke({"api_context": api_context, "question": standalone_question})
             else:
-                # Retrieval từ RAG Documents trong Postgres
                 rag_context = await self.search_rag_context(conn, id_kenh, id_ho_so_khach, standalone_question)
                 answer = await (ChatPromptTemplate.from_template(SALES_PROMPT) | self.llm | StrOutputParser()).ainvoke({"context": rag_context, "question": standalone_question})
 
-            # Lưu phản hồi của Bot
             await conn.execute("INSERT INTO tin_nhan (id_cuoc_hoi_thoai, loai_nguoi_gui, noi_dung, loai_tin_nhan) VALUES ($1, 'bot', $2, 'van_ban')", id_cuoc_hoi_thoai, answer)
 
 rag_service = RAGService()
 
-# --- WORKERS & FASTAPI SETUP ---
+# --- WORKERS SETUP ---
 async def start_chat_worker():
     print("🚀 Worker Chat AI đã kích hoạt...")
     while True:
@@ -306,7 +315,7 @@ async def start_chat_worker():
             if packed:
                 _, msg_id_bytes = packed
                 asyncio.create_task(rag_service.process_message(msg_id_bytes.decode('utf-8')))
-        except Exception as e:
+        except Exception:
             await asyncio.sleep(0.2)
 
 async def start_ingest_worker():
@@ -319,7 +328,13 @@ async def start_ingest_worker():
                 job = json.loads(data_bytes.decode('utf-8'))
                 if job.get("type") == "sync_woo":
                     asyncio.create_task(rag_service.sync_all_woocommerce_data(job["id_kenh"]))
-        except Exception as e:
+                elif job.get("type") == "word":
+                    asyncio.create_task(rag_service.ingest_word_file(
+                        file_id=job["file_id"],
+                        file_path=job["file_path"],
+                        id_ho_so_khach=job["id_ho_so_khach"]
+                    ))
+        except Exception:
             await asyncio.sleep(0.5)
 
 @asynccontextmanager
