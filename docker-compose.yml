@@ -3,8 +3,8 @@ version: "3.8"
 services:
   rag_chatbot:
     build: .
-    image: rag_img
-    container_name: rag_chatbot
+    image: crm_fastApi_img
+    container_name: crm_fastApi
     ports:
       - "8003:8000"
     restart: always
